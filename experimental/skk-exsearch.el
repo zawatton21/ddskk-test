@@ -1,9 +1,10 @@
-;;; skk-exsearch.el --- 外部検索プログラム共用 interface -*- coding: iso-2022-jp -*-
+;;; skk-exsearch.el --- $B30It8!:w%W%m%0%i%`6&MQ(B interface -*- coding: iso-2022-jp -*-
 
 ;; Copyright (C) 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese
 
 ;; This file is part of Daredevil SKK.

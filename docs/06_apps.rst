@@ -4604,7 +4604,7 @@ DDSKK では、このような事態を避けるため、辞書バッファに�
 アノテーションは、
 
   1. ユーザが登録したもの、
-  2. 有辞書に元々登録されているもの、
+  2. 共有辞書に元々登録されているもの、
   3. それ以外の情報源から取得されるもの
 
 の３つに大別されます。
@@ -5779,14 +5779,6 @@ Google CGI API for Japanese Input を利用したかな漢字変換
 
    候補バッファの背景色（奇数ライン）を指定します。
 
-.. el:defvar:: skk-candidate-buffer-delete-other-windows
-
-   nil であれば、候補バッファ表示に際して window 配置を変更しない。
-   window 配置を popwin や shackle にまかせている場合は nil とすべき。
-
-   - `popwin: Popup Window Manager for Emacs <https://github.com/m2ym/popwin-el>`_
-   - `shackle: Enforce rules for popup windows <https://github.com/wasamasa/shackle>`_
-
 エコーエリアに表示する
 ----------------------
 
@@ -5915,6 +5907,19 @@ Google CGI API for Japanese Input を利用したかな漢字変換
    - :el:defface:`skk-emacs-abbrev-face`
 
 なお、インジケータを右クリックするとポップアップメニューが表示されます。
+
+インジケータの装飾
+------------------
+
+インジケータを装飾することができます。
+
+.. el:defvar:: skk-indicator-prefix
+
+   インジケータの接頭辞とする文字列を指定します。
+
+.. el:defvar:: skk-indicator-suffix-func
+
+   インジケータの接尾語とする文字列を返す関数を指定します。
 
 アイコン
 --------

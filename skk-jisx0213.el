@@ -1,9 +1,10 @@
-;;; skk-jisx0213.el --- SKK 用 JISX0213 文字コード関連プログラム -*- coding: iso-2022-jp -*-
+;;; skk-jisx0213.el --- SKK $BMQ(B JISX0213 $BJ8;z%3!<%I4XO"%W%m%0%i%`(B -*- coding: iso-2022-jp -*-
 
 ;; Copyright (C) 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 ;; Created: Sep. 30, 2000.
 

@@ -1,3 +1,16 @@
+* 17.2 (????-??-??)
+
+** インジケータのカスタマイズ
+
+インジケータ表示をカスタマイズできるよう、新たな変数 `skk-indicator-prefix'
+と `skk-indicator-suffix-func' を設けました。
+
+** window 管理を削除
+
+これまで、*SKK annotation* や *候補* などのバッファを表示する際には、skk 側で
+window の配置を工夫していましたが、これらバッファの表示に関しては emacs 側の
+`display-buffer-alist' で管理できることから、skk 側のコードは削除しました。
+
 * 17.1 (2020-08-15)
 
 ** ライセンス表記を統一 #136
@@ -1917,7 +1930,7 @@ works well with SKK by itself.  skk-vip.el is discarded.
 
 ** Experimental package skk-tutcode.el is provided by GUNJI Takao
 <gunji@sils.shoin.ac.jp>.  Now you can imput Japanese by TUT-code with SKK.
-
+
 Local variables:
 coding: utf-8
 mode: outline

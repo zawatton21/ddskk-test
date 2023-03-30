@@ -1,12 +1,13 @@
-;;; skk-kcode.el --- 文字コードを使った変換のためのプログラム -*- coding: iso-2022-jp -*-
+;;; skk-kcode.el --- $BJ8;z%3!<%I$r;H$C$?JQ49$N$?$a$N%W%m%0%i%`(B -*- coding: iso-2022-jp -*-
 
 ;; Copyright (C) 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
 ;;               1998, 1999, 2000
 ;;   Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
-;; Copyright (C) 1998-2010 SKK Development Team <skk@ring.gr.jp>
+;; Copyright (C) 1998-2010 SKK Development Team
 
 ;; Author: Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 
 ;; This file is part of Daredevil SKK.
@@ -38,8 +39,8 @@
 
 ;;;###autoload
 (defun skk-input-by-code-or-menu (&optional arg)
-  "変数 `skk-kcode-method' で指定された機能を用いて文字を挿入する。"
-  ;; `skk-rom-kana-base-rule-list' が指しているのはこの関数。
+  "$BJQ?t(B `skk-kcode-method' $B$G;XDj$5$l$?5!G=$rMQ$$$FJ8;z$rA^F~$9$k!#(B"
+  ;; `skk-rom-kana-base-rule-list' $B$,;X$7$F$$$k$N$O$3$N4X?t!#(B
   (interactive "*P")
   (let (list)
     (cl-case skk-kcode-method
@@ -57,7 +58,7 @@
     (skk-kakutei)))
 
 (defun skk-input-by-code (&optional arg)
-  "7/8 bit JIS コード もしくは 区点番号に対応する文字を挿入する。"
+  "7/8 bit JIS $B%3!<%I(B $B$b$7$/$O(B $B6hE@HV9f$KBP1~$9$kJ8;z$rA^F~$9$k!#(B"
   (interactive "*P")
   (when arg
     (setq skk-kcode-charset (intern (completing-read
@@ -84,8 +85,8 @@
 (defun skk-kcode-read-code-string ()
   (read-string (format (if skk-japanese-message-and-error
                            "\
-`%s' の文字を指定します。7/8 ビット JIS コード (00nn), 区点コード (00-00),\
- UNICODE (U+00nn), または [RET] (%s): "
+`%s' $B$NJ8;z$r;XDj$7$^$9!#(B7/8 $B%S%C%H(B JIS $B%3!<%I(B (00nn), $B6hE@%3!<%I(B (00-00),\
+ UNICODE (U+00nn), $B$^$?$O(B [RET] (%s): "
                          "\
 To find a character in `%s', type 7/8 bits JIS code (00nn),\
  KUTEN code (00-00), UNICODE (U+00nn), or [RET] for %s: ")
@@ -100,13 +101,13 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
          n1 n2 flag char)
     (cond
      ((eq len 2)
-      ;; ハイフン `-' で区切られた「区-点」
+      ;; $B%O%$%U%s(B `-' $B$G6h@Z$i$l$?!V6h(B-$BE@!W(B
       (setq n1 (+ (string-to-number (nth 0 list))
                   32 128)
             n2 (+ (string-to-number (nth 1 list))
                   32 128)))
      ((eq len 3)
-      ;; ハイフン `-' で区切られた「面-区-点」
+      ;; $B%O%$%U%s(B `-' $B$G6h@Z$i$l$?!VLL(B-$B6h(B-$BE@!W(B
       (setq flag (if (equal "2" (nth 0 list))
                      'x0213-2
                    'x0213-1)
@@ -115,13 +116,13 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
             n2 (+ (string-to-number (nth 2 list))
                   32 128)))
      ((string-match "^[uU]\\+\\(.*\\)$" str)
-      ;; `U+' で始まればユニコード
+      ;; `U+' $B$G;O$^$l$P%f%K%3!<%I(B
       (setq flag 'unicode
             n1 161
             n2 0
             char (string-to-number (match-string-no-properties 1 str) 16)))
      (t
-      ;; 上記以外は JIS コードとみなす
+      ;; $B>e5-0J30$O(B JIS $B%3!<%I$H$_$J$9(B
       (setq n1 (if (string= str "")
                    128
                  (+ (* 16 (skk-char-to-hex (aref str 0) 'jis))
@@ -133,7 +134,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
     ;;
     (when (or (> n1 256)
               (> n2 256))
-      (skk-error "無効なコードです"
+      (skk-error "$BL58z$J%3!<%I$G$9(B"
                  "Invalid code"))
     (list flag n1 n2 char)))
 
@@ -152,26 +153,26 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
      (skk-make-string n1 n2))))
 
 (defun skk-char-to-hex (char &optional jischar)
-  "CHAR を 16 進数とみなして、対応する数値を 10 進数で返す。"
+  "CHAR $B$r(B 16 $B?J?t$H$_$J$7$F!"BP1~$9$k?tCM$r(B 10 $B?J?t$GJV$9!#(B"
   (cond
    ;; a(97) -- f(102)
    ((and (<= 97 char) (<= char 102))
-    (- char 87))            ; a なら 10 が、f なら 15 が返る。
+    (- char 87))            ; a $B$J$i(B 10 $B$,!"(Bf $B$J$i(B 15 $B$,JV$k!#(B
    ;; A(65) -- F(70)
    ((and (<= 65 char) (<= char 70))
-    (- char 55))            ; A なら 10 が、F なら 15 が返る。
+    (- char 55))            ; A $B$J$i(B 10 $B$,!"(BF $B$J$i(B 15 $B$,JV$k!#(B
    ;; 0(48) -- 9(57)
    ((and (<= 48 char) (<= char 57))
     (if jischar
-        (- char 40)         ; 0 なら 8 が、9 なら 17 が返る。
-      (- char 48)))         ; 0 なら 0 が、9 なら 9 が返る。
+        (- char 40)         ; 0 $B$J$i(B 8 $B$,!"(B9 $B$J$i(B 17 $B$,JV$k!#(B
+      (- char 48)))         ; 0 $B$J$i(B 0 $B$,!"(B9 $B$J$i(B 9 $B$,JV$k!#(B
    (t
-    (skk-error "`%c' を 16 進数に変換できません"
+    (skk-error "`%c' $B$r(B 16 $B?J?t$KJQ49$G$-$^$;$s(B"
                "Cannot convert `%c' to hexadecimal number"
                char))))
 
 (defun skk-make-string (n1 n2)
-  "`skk-kcode-charset' が示す文字集合に従って n1 n2 に対応する STRING を返す"
+  "`skk-kcode-charset' $B$,<($9J8;z=89g$K=>$C$F(B n1 n2 $B$KBP1~$9$k(B STRING $B$rJV$9(B"
   (char-to-string (make-char skk-kcode-charset n1 n2)))
 
 (defun skk-next-n2-code (n)
@@ -200,7 +201,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
     (skk-input-by-code-or-menu-1 n1 n2)))
 
 (defun skk-input-by-code-or-menu-jump (n)
-  (let ((menu-keys1 (mapcar (lambda (char) ; 表示用のキーリスト
+  (let ((menu-keys1 (mapcar (lambda (char) ; $BI=<(MQ$N%-!<%j%9%H(B
                               (skk-char-to-unibyte-string (upcase char)))
                             skk-input-by-code-menu-keys1))
         kanji-char)
@@ -252,7 +253,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
              (signal 'quit nil))
             ;;
             ((not (characterp char))
-             (skk-message "`%s' は無効なキーです！"
+             (skk-message "`%s' $B$OL58z$J%-!<$G$9!*(B"
                           "`%s' is not valid here!"
                           (or (key-description key)
                               (key-description char)))
@@ -286,7 +287,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
             ((eq char ?\?)
              (skk-message
               "\
-`%s' EUC: %2x%2x (%3d, %3d), JIS: %2x%2x (%3d, %3d) [何かキーを押してください]"
+`%s' EUC: %2x%2x (%3d, %3d), JIS: %2x%2x (%3d, %3d) [$B2?$+%-!<$r2!$7$F$/$@$5$$(B]"
               "\
 `%s' EUC: %2x%2x (%3d, %3d), JIS: %2x%2x (%3d, %3d) [Hit any key to continue]"
               (caar chars)
@@ -298,7 +299,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
              (setq n n-org))
             ;;
             (t
-             (skk-message "`%c' は無効なキーです！"
+             (skk-message "`%c' $B$OL58z$J%-!<$G$9!*(B"
                           "`%c' is not valid here!"
                           char)
              (sit-for 1)
@@ -311,7 +312,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
                                  (car (cddr kanji-char)))))
 
 (defun skk-input-by-code-or-menu-1 (n1 n2)
-  (let ((menu-keys2 (mapcar (lambda (char) ; 表示用のキーリスト
+  (let ((menu-keys2 (mapcar (lambda (char) ; $BI=<(MQ$N%-!<%j%9%H(B
                               (skk-char-to-unibyte-string (upcase char)))
                             skk-input-by-code-menu-keys2))
         kanji-char)
@@ -353,7 +354,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
             ((skk-key-binding-member key skk-quit-commands skk-j-mode-map)
              (signal 'quit nil))
             ((not (characterp char))
-             (skk-message "`%s' は無効なキーです！" "`%s' is not valid here!"
+             (skk-message "`%s' $B$OL58z$J%-!<$G$9!*(B" "`%s' is not valid here!"
                           (or (key-description key) (key-description char)))
              (sit-for 1)
              (message "")
@@ -385,7 +386,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
             ((eq char ?\?)
              (skk-message
               "\
-`%s' EUC: %2x%2x (%3d, %3d), JIS: %2x%2x (%3d, %3d) [何かキーを押してください]"
+`%s' EUC: %2x%2x (%3d, %3d), JIS: %2x%2x (%3d, %3d) [$B2?$+%-!<$r2!$7$F$/$@$5$$(B]"
               "\
 `%s' EUC: %2x%2x (%3d, %3d), JIS: %2x%2x (%3d, %3d) [Hit any key to continue]"
               (car chars)
@@ -409,7 +410,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
                (setq n1 n1-org)))
             ;;
             (t
-             (skk-message "`%c' は無効なキーです！"
+             (skk-message "`%c' $B$OL58z$J%-!<$G$9!*(B"
                           "`%c' is not valid here!"
                           char)
              (sit-for 1)
@@ -419,17 +420,17 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
 
 ;;;###autoload
 (defun skk-display-code-for-char-at-point (&optional arg)
-  "ポイントにある文字の区点番号、JIS コード、EUC コード、シフト JIS コード\
-及びユニコードを表示する。"
+  "$B%]%$%s%H$K$"$kJ8;z$N6hE@HV9f!"(BJIS $B%3!<%I!"(BEUC $B%3!<%I!"%7%U%H(B JIS $B%3!<%I(B\
+$B5Z$S%f%K%3!<%I$rI=<($9$k!#(B"
   (interactive)
   (cond ((not skk-display-code-method)
          (insert (format "%s" (this-command-keys))))
         ((eobp)
-         (skk-message "カーソルがバッファの終端にあります"
+         (skk-message "$B%+!<%=%k$,%P%C%U%!$N=*C<$K$"$j$^$9(B"
                       "Cursor is at the end of the buffer"))
         (t
          (skk-display-code (following-char) (point))))
-  t) ; エコーした文字列をカレントバッファに挿入しないように。
+  t) ; $B%(%3!<$7$?J8;zNs$r%+%l%s%H%P%C%U%!$KA^F~$7$J$$$h$&$K!#(B
 
 (defun skk-display-code (char p)
   (let ((charset (char-charset char skk-charset-list))
@@ -484,7 +485,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
                       (unless (zerop (nth 2 char-data))
                         (concat ", "
                                 (propertize
-                                 (format "総%d画（%s部 %d画）"
+                                 (format "$BAm(B%d$B2h!J(B%s$BIt(B %d$B2h!K(B"
                                          (nth 2 char-data)
                                          (aref skk-tankan-radical-vector
                                                (nth 0 char-data))
@@ -513,7 +514,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
      ;;
      (t
       (setq mesg (format (if skk-japanese-message-and-error
-                             "文字集合 %s はサポートしていません"
+                             "$BJ8;z=89g(B %s $B$O%5%]!<%H$7$F$$$^$;$s(B"
                            "%s character set is not supported")
                          (char-charset char)))))
     ;;
@@ -559,10 +560,10 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
 
 ;;;; skk-list-chars
 ;; TODO
-;;   o mode-line に現在 charset を表示したい
-;;   o 挿入先のバッファ skk-list-chars-destination-buffer が存在しない場合の対処
-;;   o キー操作 a, e で区の先頭/末尾へ
-;;   o キー操作 <, > で先頭/末尾へ
+;;   o mode-line $B$K8=:_(B charset $B$rI=<($7$?$$(B
+;;   o $BA^F~@h$N%P%C%U%!(B skk-list-chars-destination-buffer $B$,B8:_$7$J$$>l9g$NBP=h(B
+;;   o $B%-!<A`:n(B a, e $B$G6h$N@hF,(B/$BKvHx$X(B
+;;   o $B%-!<A`:n(B <, > $B$G@hF,(B/$BKvHx$X(B
 
 (defun skk-list-chars-mode ()
   "Major mode for skk-list-chars.
@@ -582,7 +583,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
     (insert "\n"
             (propertize
              (format "%02d-#x--- 0-- 1-- 2-- 3-- 4-- 5-- 6-- 7-- 8-- 9-- A-- B-- C-- D-- E-- F" (- high 32)) 'face 'skk-list-chars-table-header-face))
-    (setq i (* (/ min 16) 16))      ; i は 下位バイト
+    (setq i (* (/ min 16) 16))      ; i $B$O(B $B2<0L%P%$%H(B
     (while (<= i max)           ; 0x21 .. 0x7e
       (when (zerop (% i 16))
         (insert (propertize (format "\n %5X0" (/ (+ (* high 256)
@@ -600,8 +601,8 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
 
 ;;;###autoload
 (defun skk-list-chars (arg)
-  "変数 `skk-kcode-charset' に従って文字一覧を表示する.
-\\[universal-argument] 付きで実行すると、following-char() を優先表示する."
+  "$BJQ?t(B `skk-kcode-charset' $B$K=>$C$FJ8;z0lMw$rI=<($9$k(B.
+\\[universal-argument] $BIU$-$G<B9T$9$k$H!"(Bfollowing-char() $B$rM%@hI=<($9$k(B."
   (interactive "P")
   (setq skk-list-chars-original-window-configuration
         (current-window-configuration))
@@ -617,7 +618,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
     (if (eq charset 'ascii)
         (setq charset 'japanese-jisx0208
               char (make-char 'japanese-jisx0208 33 33)))
-    (when skk-henkan-mode       ; ▽ or ▼ で呼ばれた場合
+    (when skk-henkan-mode       ; $B"&(B or $B"'(B $B$G8F$P$l$?>l9g(B
       (skk-kakutei))
     (setq skk-list-chars-destination-buffer (current-buffer))
     (set-buffer buf)
@@ -650,7 +651,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
   (interactive)
   (let ((c (following-char)))
     (if (eq 'ascii (car (split-char c)))
-        ;; 区切り行などで $ された場合
+        ;; $B6h@Z$j9T$J$I$G(B $ $B$5$l$?>l9g(B
         (next-completion 1)
       (skk-display-code c (point)))))
 
@@ -707,7 +708,7 @@ To find a character in `%s', type 7/8 bits JIS code (00nn),\
     (if (eobp)
         (forward-char -1)
       (if (eq 'ascii (car (split-char (following-char))))
-          ;; 区切り行などで RET された場合
+          ;; $B6h@Z$j9T$J$I$G(B RET $B$5$l$?>l9g(B
           (next-completion 1)
         (let ((c (following-char)))
           (set-buffer skk-list-chars-destination-buffer)

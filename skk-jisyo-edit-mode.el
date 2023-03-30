@@ -2,7 +2,8 @@
 
 ;; Copyright (C) 2001-2010 SKK Development Team
 
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 
 ;; This file is part of Daredevil SKK.
@@ -89,26 +90,26 @@
 
 ;;;###autoload
 (defun skk-edit-private-jisyo (&optional coding-system)
-  "個人辞書ファイル `skk-jisyo' を編集する。
-任意での個人辞書保存のあと、`skk-jisyo' を開き、`skk-jisyo-edit-mode' に入る。
-ローカルに 以下のキー定義が追加される。
+  "$B8D?M<-=q%U%!%$%k(B `skk-jisyo' $B$rJT=8$9$k!#(B
+$BG$0U$G$N8D?M<-=qJ]B8$N$"$H!"(B`skk-jisyo' $B$r3+$-!"(B`skk-jisyo-edit-mode' $B$KF~$k!#(B
+$B%m!<%+%k$K(B $B0J2<$N%-!<Dj5A$,DI2C$5$l$k!#(B
 
 key       binding
 ---       -------
 C-c C-c   Save & Exit
 C-c C-k   Abort
 
-SKK 使用中の場合は SKK による個人辞書バッファの更新が禁止される。
+SKK $B;HMQCf$N>l9g$O(B SKK $B$K$h$k8D?M<-=q%P%C%U%!$N99?7$,6X;_$5$l$k!#(B
 
-オプショナル引数 CODING-SYSTEM にて個人辞書のコード系を指定可能。
+$B%*%W%7%g%J%k0z?t(B CODING-SYSTEM $B$K$F8D?M<-=q$N%3!<%I7O$r;XDj2DG=!#(B
 
-この機能は従来の手動での個人辞書編集より配慮されているが、SKK 辞書の構文を
-チェックすることはできず、自己責任での編集であることは変わりない。"
+$B$3$N5!G=$O=>Mh$N<jF0$G$N8D?M<-=qJT=8$h$jG[N8$5$l$F$$$k$,!"(BSKK $B<-=q$N9=J8$r(B
+$B%A%'%C%/$9$k$3$H$O$G$-$:!"<+8J@UG$$G$NJT=8$G$"$k$3$H$OJQ$o$j$J$$!#(B"
   (interactive "P")
   (let (answer)
     (unless skk-jisyo-edit-user-accepts-editing
       (setq answer (skk-yes-or-no-p "\
-個人辞書の編集は辞書を壊す可能性があります。自己責任での実行に同意しますか？ "
+$B8D?M<-=q$NJT=8$O<-=q$r2u$92DG=@-$,$"$j$^$9!#<+8J@UG$$G$N<B9T$KF10U$7$^$9$+!)(B "
                                     "\
 You must edit your private dictionary at your own risk.  Do you accept it? "))
       (when answer
@@ -116,12 +117,12 @@ You must edit your private dictionary at your own risk.  Do you accept it? "))
   (when skk-jisyo-edit-user-accepts-editing
     (when coding-system
       (setq coding-system (read-coding-system
-                           "個人辞書のコーディングシステムを指定: "
+                           "$B8D?M<-=q$N%3!<%G%#%s%0%7%9%F%`$r;XDj(B: "
                            (skk-find-coding-system (skk-jisyo t)))))
     (unless coding-system
       (setq coding-system (skk-find-coding-system (skk-jisyo t))))
     ;;
-    (when (skk-y-or-n-p "個人辞書を保存しますか？ "
+    (when (skk-y-or-n-p "$B8D?M<-=q$rJ]B8$7$^$9$+!)(B "
                         "Save private jisyo? ")
       (skk-save-jisyo))
     (skk-edit-private-jisyo-1 coding-system)))
@@ -129,13 +130,13 @@ You must edit your private dictionary at your own risk.  Do you accept it? "))
 (defun skk-edit-private-jisyo-1 (coding-system)
   (setq skk-jisyo-edit-original-window-configuration
         (current-window-configuration))
-  ;; SKK 辞書の文字コードは誤判定がありうるため、注意する
+  ;; SKK $B<-=q$NJ8;z%3!<%I$O8mH=Dj$,$"$j$&$k$?$a!"Cm0U$9$k(B
   (let ((coding-system-for-read coding-system))
     (find-file (skk-jisyo)))
   (unless (eq major-mode 'skk-jisyo-edit-mode)
     (skk-jisyo-edit-mode))
-  ;; 編集中に再度実行しても、
-  ;; ↓ のようになるから skk-update-jisyo-function は復元される。
+  ;; $BJT=8Cf$K:FEY<B9T$7$F$b!"(B
+  ;; $B"-(B $B$N$h$&$K$J$k$+$i(B skk-update-jisyo-function $B$OI|85$5$l$k!#(B
   ;; '((lambda nil
   ;;     (setq skk-update-jisyo-function #'ignore))
   ;;   (lambda nil
@@ -158,7 +159,7 @@ You must edit your private dictionary at your own risk.  Do you accept it? "))
   (local-set-key "\C-c\C-c"
                  (lambda ()
                    (interactive)
-                   (when (skk-y-or-n-p "編集を終了しますか？ "
+                   (when (skk-y-or-n-p "$BJT=8$r=*N;$7$^$9$+!)(B "
                                        "Finish editing jisyo? ")
                      (save-buffer)
                      (kill-buffer (current-buffer))
@@ -169,19 +170,19 @@ You must edit your private dictionary at your own risk.  Do you accept it? "))
   (local-set-key "\C-c\C-k"
                  (lambda ()
                    (interactive)
-                   (when (skk-y-or-n-p "編集を中止しますか？ "
+                   (when (skk-y-or-n-p "$BJT=8$rCf;_$7$^$9$+!)(B "
                                        "Abort editing jisyo? ")
                      (set-buffer-modified-p nil)
                      (kill-buffer (current-buffer))
                      (set-window-configuration
                       skk-jisyo-edit-original-window-configuration))
                    (message nil)))
-  (skk-message "保存終了: C-c C-c, 編集中止: C-c C-k"
+  (skk-message "$BJ]B8=*N;(B: C-c C-c, $BJT=8Cf;_(B: C-c C-k"
                "Save & Exit: C-c C-c, Abort: C-c C-k"))
 
 (defadvice skk-henkan-in-minibuff (before notify-no-effect disable)
   (ding)
-  (skk-message "個人辞書の編集中です。登録は反映されません。"
+  (skk-message "$B8D?M<-=q$NJT=8Cf$G$9!#EPO?$OH?1G$5$l$^$;$s!#(B"
                "You are editing private jisyo.  This registration has no effect.")
   (sit-for 1.5))
 
@@ -189,7 +190,7 @@ You must edit your private dictionary at your own risk.  Do you accept it? "))
   (if (eq skk-henkan-mode 'active)
       (progn
         (ding)
-        (skk-message "個人辞書の編集中です。削除できません。"
+        (skk-message "$B8D?M<-=q$NJT=8Cf$G$9!#:o=|$G$-$^$;$s!#(B"
                      "You are editing private jisyo.  Can't purge."))
     ad-do-it))
 

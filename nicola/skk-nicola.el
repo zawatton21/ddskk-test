@@ -1,4 +1,4 @@
-;;; skk-nicola.el --- SKK に親指シフト入力インタフェイスを提供 -*- coding: iso-2022-jp -*-
+;;; skk-nicola.el --- SKK $B$K?F;X%7%U%HF~NO%$%s%?%U%'%$%9$rDs6!(B -*- coding: iso-2022-jp -*-
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000
 ;;   Itsushi Minoura <minoura@eva.hi-ho.ne.jp>
@@ -24,17 +24,17 @@
 
 ;;; Commentary:
 
-;; このプログラムは箕浦逸史さん作の NICOLA-SKK 0.39 を基に、 Daredevil SKK に
-;; 対応させたものです。原作のアイデアに基いて実装していく予定です。
+;; $B$3$N%W%m%0%i%`$OL'1:0o;K$5$s:n$N(B NICOLA-SKK 0.39 $B$r4p$K!"(B Daredevil SKK $B$K(B
+;; $BBP1~$5$;$?$b$N$G$9!#86:n$N%"%$%G%"$K4p$$$F<BAu$7$F$$$/M=Dj$G$9!#(B
 
-;; キー配列のルールは別ファイルに細分化しています。これらは、同じく箕浦さん作
-;; の omelet (たまご用の親指シフト入力インターフェイス) および同氏の web site
-;; の文章を基につくりました。
+;; $B%-!<G[Ns$N%k!<%k$OJL%U%!%$%k$K:YJ,2=$7$F$$$^$9!#$3$l$i$O!"F1$8$/L'1:$5$s:n(B
+;; $B$N(B omelet ($B$?$^$4MQ$N?F;X%7%U%HF~NO%$%s%?!<%U%'%$%9(B) $B$*$h$SF1;a$N(B web site
+;; $B$NJ8>O$r4p$K$D$/$j$^$7$?!#(B
 
-;; 同氏のアイデアと親指シフト入力に関するご尽力に敬意を表し、また感謝いたしま
-;; す。
+;; $BF1;a$N%"%$%G%"$H?F;X%7%U%HF~NO$K4X$9$k$4?TNO$K7I0U$rI=$7!"$^$?46<U$$$?$7$^(B
+;; $B$9!#(B
 
-;; 詳細については、同梱の README.NICOLA.md をご覧下さい。
+;; $B>\:Y$K$D$$$F$O!"F1:-$N(B README.NICOLA.md $B$r$4Mw2<$5$$!#(B
 
 ;;; Code:
 
@@ -56,14 +56,14 @@
 ;; Variables.
 
 (defcustom skk-nicola-interval 0.1
-  "*この時間以内に打鍵されたものを同時打鍵と判定する。
-単位は秒。デフォルトは 0.1 秒。"
+  "*$B$3$N;~4V0JFb$KBG80$5$l$?$b$N$rF1;~BG80$HH=Dj$9$k!#(B
+$BC10L$OIC!#%G%U%)%k%H$O(B 0.1 $BIC!#(B"
   :type 'number
   :group 'skk-nicola)
 
 (defcustom skk-nicola-latin-interval 0.1
-  "*この時間以内に打鍵されたものを同時打鍵と判定する。
-単位は秒。デフォルトは 0.1 秒。"
+  "*$B$3$N;~4V0JFb$KBG80$5$l$?$b$N$rF1;~BG80$HH=Dj$9$k!#(B
+$BC10L$OIC!#%G%U%)%k%H$O(B 0.1 $BIC!#(B"
   :type 'number
   :group 'skk-nicola)
 
@@ -73,7 +73,7 @@
           [noconvert])
          (t
           [muhenkan])))
-  "*左親指キーとして使うキー。"
+  "*$B:8?F;X%-!<$H$7$F;H$&%-!<!#(B"
   :type (if (get 'key-sequence 'widget-type)
             '(repeat key-sequence)
           '(repeat sexp))
@@ -86,19 +86,19 @@
                   [convert])
                  (t
                   [henkan]))))
-  "*右親指キーとして使うキー。"
+  "*$B1&?F;X%-!<$H$7$F;H$&%-!<!#(B"
   :type (if (get 'key-sequence 'widget-type)
             '(repeat key-sequence)
           '(repeat sexp))
   :group 'skk-nicola)
 
 (defcustom skk-nicola-use-lshift-as-space nil
-  "*Non-nil であれば左親指キーもスペースキーとして利用する。"
+  "*Non-nil $B$G$"$l$P:8?F;X%-!<$b%9%Z!<%9%-!<$H$7$FMxMQ$9$k!#(B"
   :type 'boolean
   :group 'skk-nicola)
 
 (defcustom skk-nicola-lshift-function nil
-  "*Non-nil であれば左親指キーを押したときにこの関数を実行する。"
+  "*Non-nil $B$G$"$l$P:8?F;X%-!<$r2!$7$?$H$-$K$3$N4X?t$r<B9T$9$k!#(B"
   :type 'function
   :group 'skk-nicola)
 
@@ -109,8 +109,8 @@
          '(?t ?n))
         (t
          '(?f ?j)))
-  "*変換開始位置もしくは送り開始位置の指定をする文字。
-これらの文字に当たるキーの同時打鍵を検出すると、 実行される。"
+  "*$BJQ493+;O0LCV$b$7$/$OAw$j3+;O0LCV$N;XDj$r$9$kJ8;z!#(B
+$B$3$l$i$NJ8;z$KEv$?$k%-!<$NF1;~BG80$r8!=P$9$k$H!"(B $B<B9T$5$l$k!#(B"
   :type '(repeat character)
   :group 'skk-nicola)
 
@@ -121,8 +121,8 @@
          '(?s ?e))
         (t
          '(?d ?k)))
-  "*カナ変換または カナ ⇔ かな 切り替えをする文字。
-これらの文字に当たるキーの同時打鍵を検出すると、 実行される。"
+  "*$B%+%JJQ49$^$?$O(B $B%+%J(B $B"N(B $B$+$J(B $B@Z$jBX$($r$9$kJ8;z!#(B
+$B$3$l$i$NJ8;z$KEv$?$k%-!<$NF1;~BG80$r8!=P$9$k$H!"(B $B<B9T$5$l$k!#(B"
   :type '(repeat character)
   :group 'skk-nicola)
 
@@ -131,8 +131,8 @@
          t)
         (t
          nil))
-  "*Non-nil なら OASYS 風の BS キーと取り消しキーを用意する。
-これは、JIS キーボードでは \":\" と \"]\" の位置に相当する。"
+  "*Non-nil $B$J$i(B OASYS $BIw$N(B BS $B%-!<$H<h$j>C$7%-!<$rMQ0U$9$k!#(B
+$B$3$l$O!"(BJIS $B%-!<%\!<%I$G$O(B \":\" $B$H(B \"]\" $B$N0LCV$KAjEv$9$k!#(B"
   :type 'boolean
   :group 'skk-nicola)
 
@@ -143,8 +143,8 @@
          '(?d ?h))
         (t
          '(?g ?h)))
-  "*接頭・接尾語入力をしたり、 abbrev モードに入る文字。
-これらの文字に当たるキーの同時打鍵を検出すると、 実行される。"
+  "*$B@\F,!&@\Hx8lF~NO$r$7$?$j!"(B abbrev $B%b!<%I$KF~$kJ8;z!#(B
+$B$3$l$i$NJ8;z$KEv$?$k%-!<$NF1;~BG80$r8!=P$9$k$H!"(B $B<B9T$5$l$k!#(B"
   :type '(repeat character)
   :group 'skk-nicola)
 
@@ -155,9 +155,9 @@
          '(?r ?i))
         (t
          '(?s ?l)))
-  "*接頭・接尾語入力をする。
-これらの文字に当たるキーの同時打鍵を検出すると、 実行される。
-abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars を使う。"
+  "*$B@\F,!&@\Hx8lF~NO$r$9$k!#(B
+$B$3$l$i$NJ8;z$KEv$?$k%-!<$NF1;~BG80$r8!=P$9$k$H!"(B $B<B9T$5$l$k!#(B
+abbrev $B$HF1$8%-!<$K$9$k>l9g$O(B skk-nicola-prefix-suffix-abbrev-chars $B$r;H$&!#(B"
   :type '(repeat character)
   :group 'skk-nicola)
 
@@ -168,45 +168,45 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
          '(?d ?h))
         (t
          '(?g ?h)))
-  "abbrev モードに入る文字。
-これらの文字に当たるキーの同時打鍵を検出すると、 実行される。
-接頭・接尾語入力と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars を使う。"
+  "abbrev $B%b!<%I$KF~$kJ8;z!#(B
+$B$3$l$i$NJ8;z$KEv$?$k%-!<$NF1;~BG80$r8!=P$9$k$H!"(B $B<B9T$5$l$k!#(B
+$B@\F,!&@\Hx8lF~NO$HF1$8%-!<$K$9$k>l9g$O(B skk-nicola-prefix-suffix-abbrev-chars $B$r;H$&!#(B"
   :type '(repeat character)
   :group 'skk-nicola)
 
 (defcustom skk-nicola-okuri-style 'nicola-skk
-  "*送り仮名のスタイル。
-`nicola-skk' を選ぶと、「▽し*っ ⇒ ▼知っ」のように変換する。
-`skk' を選ぶと、「▽し*って ⇒ ▼知って」のように変換する。"
+  "*$BAw$j2>L>$N%9%?%$%k!#(B
+`nicola-skk' $B$rA*$V$H!"!V"&$7(B*$B$C(B $B"M(B $B"'CN$C!W$N$h$&$KJQ49$9$k!#(B
+`skk' $B$rA*$V$H!"!V"&$7(B*$B$C$F(B $B"M(B $B"'CN$C$F!W$N$h$&$KJQ49$9$k!#(B"
   :type '(choice (const nicola-skk)
                  (const skk))
   :group 'skk-nicola)
 
 (defcustom skk-nicola-help-key "2"
-  "* \\[help] においてヘルプを表示するキー。"
+  "* \\[help] $B$K$*$$$F%X%k%W$rI=<($9$k%-!<!#(B"
   :type (if (get 'key-sequence 'widget-type)
             'key-sequence
           'sexp)
   :group 'skk-nicola)
 
 (defcustom skk-nicola-2nd-help-key "3"
-  "* \\[help] においてもうひとつのヘルプを表示するキー。"
+  "* \\[help] $B$K$*$$$F$b$&$R$H$D$N%X%k%W$rI=<($9$k%-!<!#(B"
   :type (if (get 'key-sequence 'widget-type)
             'key-sequence
           'sexp)
   :group 'skk-nicola)
 
 (defcustom skk-nicola-hiragana-mode-string
-  (cond ((eq skk-status-indicator 'left) "にこら:")
-        (t " にこら"))
-  "*ひらがなモードのインジケータ。"
+  (cond ((eq skk-status-indicator 'left) "$B$K$3$i(B:")
+        (t " $B$K$3$i(B"))
+  "*$B$R$i$,$J%b!<%I$N%$%s%8%1!<%?!#(B"
   :type 'string
   :group 'skk-nicola)
 
 (defcustom skk-nicola-katakana-mode-string
-  (cond ((eq skk-status-indicator 'left) "ニコラ:")
-        (t " ニコラ"))
-  "*カタカナモードのインジケータ。"
+  (cond ((eq skk-status-indicator 'left) "$B%K%3%i(B:")
+        (t " $B%K%3%i(B"))
+  "*$B%+%?%+%J%b!<%I$N%$%s%8%1!<%?!#(B"
   :type 'string
   :group 'skk-nicola)
 
@@ -235,8 +235,8 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
 ;; Functions.
 
 (defun skk-nicola-setup ()
-  "NICOLA の初期設定をする。"
-  ;; SKK の初回起動時のみ実行されるべきものはこの関数に入れる。
+  "NICOLA $B$N=i4|@_Dj$r$9$k!#(B"
+  ;; SKK $B$N=i2s5/F0;~$N$_<B9T$5$l$k$Y$-$b$N$O$3$N4X?t$KF~$l$k!#(B
   (dolist (key skk-nicola-lshift-keys)
     (define-key skk-j-mode-map
       key
@@ -318,7 +318,7 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
 
 ;;;###autoload
 (defun skk-nicola-help (&optional arg)
-  "現在使われている親指シフトキー配列を表示する。"
+  "$B8=:_;H$o$l$F$$$k?F;X%7%U%H%-!<G[Ns$rI=<($9$k!#(B"
   (interactive "p")
   (describe-variable
    (intern (format "skk-%s-keymap-display"
@@ -326,27 +326,27 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
 
 ;;;###autoload
 (defun skk-nicola-2nd-help ()
-  "skk-nicola.el 独自のキー定義一覧を表示する。"
+  "skk-nicola.el $BFH<+$N%-!<Dj5A0lMw$rI=<($9$k!#(B"
   (interactive)
   (skk-kanagaki-help-1
-   "* SKK 親指シフト入力 ヘルプ*"
-   "親指シフト入力モードの独自キー定義:"
+   "* SKK $B?F;X%7%U%HF~NO(B $B%X%k%W(B*"
+   "$B?F;X%7%U%HF~NO%b!<%I$NFH<+%-!<Dj5A(B:"
    (nconc
     ;;
     (mapcar
      #'(lambda (key)
          (cons (key-description key)
-               "左親指シフトキー"))
+               "$B:8?F;X%7%U%H%-!<(B"))
      skk-nicola-lshift-keys)
     ;;
     (mapcar
      #'(lambda (key)
          (cons (key-description key)
-               "右親指シフトキー"))
+               "$B1&?F;X%7%U%H%-!<(B"))
      skk-nicola-rshift-keys)
     ;;
     (list (cons "SPC"
-                "送りなし変換開始"))
+                "$BAw$j$J$7JQ493+;O(B"))
     ;;
     (list
      (cl-do ((spec (nth 4 skk-kanagaki-rule-tree)
@@ -361,7 +361,7 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
               (null spec))
           (when (stringp str)
             (cons str
-                  "コードまたはメニューによる入力")))))
+                  "$B%3!<%I$^$?$O%a%K%e!<$K$h$kF~NO(B")))))
     ;;
     (list
      (cl-do ((spec (nth 4 skk-kanagaki-rule-tree)
@@ -376,7 +376,7 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
          ((or str
               (null spec))
           (when (stringp str)
-            (cons str "今日の日付けを挿入")))))
+            (cons str "$B:#F|$NF|IU$1$rA^F~(B")))))
     ;;
     (list
      (cl-do ((spec (nth 4 skk-kanagaki-rule-tree)
@@ -391,47 +391,47 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
          ((or str
               (null spec))
           (when (stringp str)
-            (cons str "全英モード")))))
+            (cons str "$BA41Q%b!<%I(B")))))
     ;;
     (list
      (cons (format
             "%c + %c"
             (car skk-nicola-set-henkan-point-chars)
             (cadr skk-nicola-set-henkan-point-chars))
-           "変換開始点をセット、送り開始点指定")
+           "$BJQ493+;OE@$r%;%C%H!"Aw$j3+;OE@;XDj(B")
      (cons (format
             "%c + %c"
             (car skk-nicola-prefix-suffix-abbrev-chars)
             (cadr skk-nicola-prefix-suffix-abbrev-chars))
-           "接頭辞 or 接尾辞変換 (▽モード or ▼モード)、abbrev モード")
+           "$B@\F,<-(B or $B@\Hx<-JQ49(B ($B"&%b!<%I(B or $B"'%b!<%I(B)$B!"(Babbrev $B%b!<%I(B")
      (cons (format
             "%c + %c"
             (car skk-nicola-prefix-suffix-chars)
             (cadr skk-nicola-prefix-suffix-chars))
-           "接頭辞 or 接尾辞変換 (▽モード or ▼モード)")
+           "$B@\F,<-(B or $B@\Hx<-JQ49(B ($B"&%b!<%I(B or $B"'%b!<%I(B)")
      (cons (format
             "%c + %c"
             (car skk-nicola-abbrev-chars)
             (cadr skk-nicola-abbrev-chars))
-           "abbrev モード")
+           "abbrev $B%b!<%I(B")
      (cons (format
             "%c + %c"
             (car skk-nicola-toggle-kana-chars)
             (cadr skk-nicola-toggle-kana-chars))
-           "カナモード or カナ変換")
-     (cons "左親指シフト + 右親指シフト"
-           "latin モード ⇔ かなモード切り替え")
+           "$B%+%J%b!<%I(B or $B%+%JJQ49(B")
+     (cons "$B:8?F;X%7%U%H(B + $B1&?F;X%7%U%H(B"
+           "latin $B%b!<%I(B $B"N(B $B$+$J%b!<%I@Z$jBX$((B")
      (cons (format "M-x help %s" skk-nicola-help-key)
-           "現在の入力方式のキー配列を表示")
+           "$B8=:_$NF~NOJ}<0$N%-!<G[Ns$rI=<((B")
      (cons (format "M-x help %s" skk-nicola-2nd-help-key)
-           "このヘルプを表示")))))
+           "$B$3$N%X%k%W$rI=<((B")))))
 
 ;;;###autoload
 (defalias 'skk-nicola-self-insert-rshift 'skk-nicola-self-insert-lshift)
 
 ;;;###autoload
 (defun skk-nicola-self-insert-lshift (&optional arg parg)
-  "右または左シフトに割り付ける関数。"
+  "$B1&$^$?$O:8%7%U%H$K3d$jIU$1$k4X?t!#(B"
   (interactive "p")
   (unless parg
     (setq parg current-prefix-arg))
@@ -462,8 +462,8 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
 
 ;;;###autoload
 (defun skk-nicola-turn-on-j-mode (&optional arg)
-  "`skk-latin-mode' において、`skk-j-mode' に入るためのコマンド。
-左右親指キーの同時打鍵を検出した場合に `skk-j-mode' に入る。"
+  "`skk-latin-mode' $B$K$*$$$F!"(B`skk-j-mode' $B$KF~$k$?$a$N%3%^%s%I!#(B
+$B:81&?F;X%-!<$NF1;~BG80$r8!=P$7$?>l9g$K(B `skk-j-mode' $B$KF~$k!#(B"
   (interactive "*p")
   (if (sit-for skk-nicola-latin-interval t)
       ;; then
@@ -523,7 +523,7 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
 
 ;;;###autoload
 (defun skk-nicola-insert (&optional arg parg)
-  "同時打鍵を認識して、NICOLA かな入力をする。"
+  "$BF1;~BG80$rG'<1$7$F!"(BNICOLA $B$+$JF~NO$r$9$k!#(B"
   (interactive "*p")
   (let (time1
         time2
@@ -552,10 +552,10 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
                                  time1 time2
                                  arg))
        (t
-        ;; 最初の入力は単独打鍵でしかありえないと確定。
+        ;; $B:G=i$NF~NO$OC1FHBG80$G$7$+$"$j$($J$$$H3NDj!#(B
         (skk-nicola-insert-single this-command arg)
         (skk-unread-event next-event)))))
-    ;; 統計的価値があるかな...？
+    ;; $BE}7WE*2ACM$,$"$k$+$J(B...$B!)(B
                                         ;    (setq skk-nicola-temp-data
                                         ;     (cons
                                         ;      (list (or (skk-last-command-char) this-command)
@@ -565,11 +565,11 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
                                         ;        third)
                                         ;      skk-nicola-temp-data))
     )
-  ;; `skk-kana-input' が何も入力しないように、nil を返しておく。
+  ;; `skk-kana-input' $B$,2?$bF~NO$7$J$$$h$&$K!"(Bnil $B$rJV$7$F$*$/!#(B
   nil)
 
 (defun skk-nicola-format-time (time)
-  "`current-time' の返す結果を変換して評価できるようにする。"
+  "`current-time' $B$NJV$97k2L$rJQ49$7$FI>2A$G$-$k$h$&$K$9$k!#(B"
   (let ((time1 (* (float 65536) ;; 2^16
                   (car time)))
         (time2 (cadr time))
@@ -578,39 +578,39 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
     (+ time1 time2 time3)))
 
 (defun skk-nicola-event-to-key (event)
-  "EVENT を発生するキーを取得する。"
+  "EVENT $B$rH/@8$9$k%-!<$r<hF@$9$k!#(B"
   (if (symbolp event)
       (vector event)
     event))
 
-;; ～ NICOLA 規格書より ～
-;; 7.4.2　打鍵順序だけでは決定できない同時打鍵
+;; $B!A(B NICOLA $B5,3J=q$h$j(B $B!A(B
+;; 7.4.2$B!!BG80=g=x$@$1$G$O7hDj$G$-$J$$F1;~BG80(B
 ;;
-;;        文字キーa、親指キーs、文字キーbの３つのキーが、判定時間以内
-;;        の間隔で重複して押された場合は、中央に挟まれた親指キーsが文
-;;        字キーaを修飾するものか、文字キー bを修飾するものかを決定し
-;;        なければならない。（図６）
+;;        $BJ8;z%-!<(Ba$B!"?F;X%-!<(Bs$B!"J8;z%-!<(Bb$B$N#3$D$N%-!<$,!"H=Dj;~4V0JFb(B
+;;        $B$N4V3V$G=EJ#$7$F2!$5$l$?>l9g$O!"Cf1{$K64$^$l$??F;X%-!<(Bs$B$,J8(B
+;;        $B;z%-!<(Ba$B$r=$>~$9$k$b$N$+!"J8;z%-!<(B b$B$r=$>~$9$k$b$N$+$r7hDj$7(B
+;;        $B$J$1$l$P$J$i$J$$!#!J?^#6!K(B
 ;;
-;;        基本的には、押下時刻が、 より親指キーに近い文字キーとの間に
-;;        同時打鍵が成立すると判断する。
+;;        $B4pK\E*$K$O!"2!2<;~9o$,!"(B $B$h$j?F;X%-!<$K6a$$J8;z%-!<$H$N4V$K(B
+;;        $BF1;~BG80$,@.N)$9$k$HH=CG$9$k!#(B
 ;;
-;;              図6　　　「文字キーON→親指キーON→文字キーON」の例
+;;              $B?^(B6$B!!!!!!!VJ8;z%-!<(BON$B"*?F;X%-!<(BON$B"*J8;z%-!<(BON$B!W$NNc(B
 ;;
-;;              　　文字キーa 　　　　　　　|￣￣￣|
-;;              　　　　　　　　　　…………　　　　……………………
+;;              $B!!!!J8;z%-!<(Ba $B!!!!!!!!!!!!!!(B|$B!1!1!1(B|
+;;              $B!!!!!!!!!!!!!!!!!!!!!D!D!D!D!!!!!!!!!D!D!D!D!D!D!D!D(B
 ;;
-;;              　　親指キーs 　　　　　　　　　|￣￣￣|
-;;              　　　　　　　　　　………………　　　　………………
+;;              $B!!!!?F;X%-!<(Bs $B!!!!!!!!!!!!!!!!!!(B|$B!1!1!1(B|
+;;              $B!!!!!!!!!!!!!!!!!!!!!D!D!D!D!D!D!!!!!!!!!D!D!D!D!D!D(B
 ;;
-;;              　　文字キーb 　　　　　　　　　　　　|￣￣￣|
-;;              　　　　　　　　　　………………………　　　　………
+;;              $B!!!!J8;z%-!<(Bb $B!!!!!!!!!!!!!!!!!!!!!!!!(B|$B!1!1!1(B|
+;;              $B!!!!!!!!!!!!!!!!!!!!!D!D!D!D!D!D!D!D!D!!!!!!!!!D!D!D(B
 ;;
-;;             　　　　　　　　　　　　　　|-t1-|-t2-|
-;;                                         (t1、t2は共に判定時間以内)
+;;             $B!!!!!!!!!!!!!!!!!!!!!!!!!!!!(B|-t1-|-t2-|
+;;                                         (t1$B!"(Bt2$B$O6&$KH=Dj;~4V0JFb(B)
 ;;
-;;   t1=t2ならば、文字キーaと親指キーsが同時打鍵、文字キーbは単独打鍵。
+;;   t1=t2$B$J$i$P!"J8;z%-!<(Ba$B$H?F;X%-!<(Bs$B$,F1;~BG80!"J8;z%-!<(Bb$B$OC1FHBG80!#(B
 (defun skk-nicola-treat-triple (first next time1 time2 arg)
-  "3 つの打鍵のうち、どの 2 打鍵が同時打鍵か判定してバッファに挿入する。"
+  "3 $B$D$NBG80$N$&$A!"$I$N(B 2 $BBG80$,F1;~BG80$+H=Dj$7$F%P%C%U%!$KA^F~$9$k!#(B"
   (let ((period1 (- time2 time1))
         time3
         period2
@@ -619,10 +619,10 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
         third)
     (cond
      ((sit-for period1 t)
-      ;; 3 つめの打鍵は制限時間内になかった。同時打鍵と確定。(< t1 t2)
+      ;; 3 $B$D$a$NBG80$O@)8B;~4VFb$K$J$+$C$?!#F1;~BG80$H3NDj!#(B(< t1 t2)
       (skk-nicola-insert-double first next arg))
      (t
-      ;; 3 つめの打鍵が制限時間内にあった。その event を調べる。
+      ;; 3 $B$D$a$NBG80$,@)8B;~4VFb$K$"$C$?!#$=$N(B event $B$rD4$Y$k!#(B
       (setq period2 (- (setq time3 (skk-nicola-format-time
                                     (current-time)))
                        time2)
@@ -633,13 +633,13 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
       (cond
        ((and
          (skk-nicola-maybe-double-p next third)
-         ;; (要らないかも知らないが、多少 `sit-for' の返ってくる時
-         ;; 間と `current-time' が返す時間との間にズレが生じること
-         ;; もあるので、一応比較しておく)
+         ;; ($BMW$i$J$$$+$bCN$i$J$$$,!"B?>/(B `sit-for' $B$NJV$C$F$/$k;~(B
+         ;; $B4V$H(B `current-time' $B$,JV$9;~4V$H$N4V$K%:%l$,@8$8$k$3$H(B
+         ;; $B$b$"$k$N$G!"0l1~Hf3S$7$F$*$/(B)
          (> period1 period2))
-        ;; 前の 2 打鍵は同時打鍵ではないと確定。
-        ;; 後の 2 打鍵が同時打鍵かどうかは、更に次の入力を調べないと
-        ;; 確定しない。
+        ;; $BA0$N(B 2 $BBG80$OF1;~BG80$G$O$J$$$H3NDj!#(B
+        ;; $B8e$N(B 2 $BBG80$,F1;~BG80$+$I$&$+$O!"99$K<!$NF~NO$rD4$Y$J$$$H(B
+        ;; $B3NDj$7$J$$!#(B
         (skk-nicola-insert-single this-command arg)
         (skk-nicola-treat-triple
          (lookup-key skk-j-mode-map (or str next))
@@ -648,28 +648,28 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
          time3
          arg))
        (t
-        ;; 前の 2 打鍵が同時打鍵と確定。(< t1 t2)
+        ;; $BA0$N(B 2 $BBG80$,F1;~BG80$H3NDj!#(B(< t1 t2)
         (skk-nicola-insert-double this-command next arg)
         (skk-unread-event third-event)))))))
 
 (defun skk-nicola-insert-single (command arg &optional parg)
-  "単独打鍵を処理する。"
+  "$BC1FHBG80$r=hM}$9$k!#(B"
   (let ((char last-command-event))
     (cl-case command
       (skk-nicola-self-insert-rshift
-       ;; (変換・スペース)
+       ;; ($BJQ49!&%9%Z!<%9(B)
        (skk-nicola-space-function arg parg))
       (skk-nicola-self-insert-lshift
-       ;; 左シフト
+       ;; $B:8%7%U%H(B
        (skk-nicola-lshift-function arg))
       (t
-       ;; 文字
+       ;; $BJ8;z(B
        (skk-nicola-insert-kana char
                                skk-nicola-plain-rule
                                arg)))))
 
 (defun skk-nicola-insert-double (first next arg)
-  "同時打鍵を処理する。"
+  "$BF1;~BG80$r=hM}$9$k!#(B"
   (let ((command (cond
                   ((commandp first)
                    first)
@@ -686,62 +686,62 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
     ;;
     (cl-case (lookup-key skk-j-mode-map (or str next))
       (skk-nicola-self-insert-rshift
-       ;; 右シフト
+       ;; $B1&%7%U%H(B
        (cl-case command
          (skk-nicola-self-insert-rshift
-          ;; [右 右]
+          ;; [$B1&(B $B1&(B]
           (skk-bind-last-command-char ?\s
             (cond (skk-henkan-mode
                    ;;
                    (skk-kanagaki-insert arg)
                    (unless (>= skk-nicola-interval
                                1)
-                     ;; 単独打鍵を同一キー連続打鍵で代用する。
+                     ;; $BC1FHBG80$rF10l%-!<O"B3BG80$GBeMQ$9$k!#(B
                      (skk-kanagaki-insert arg)))
                   (t
                    (self-insert-command
                     (if (< 1 skk-nicola-interval)
-                        ;; 単独打鍵を同一キー連続打鍵で代用する。
+                        ;; $BC1FHBG80$rF10l%-!<O"B3BG80$GBeMQ$9$k!#(B
                         arg
                       (1+ arg)))))))
          (skk-nicola-self-insert-lshift
-          ;; [左 右]
+          ;; [$B:8(B $B1&(B]
           (skk-nicola-double-shift))
          (t
-          ;; [文字 右]
+          ;; [$BJ8;z(B $B1&(B]
           (skk-nicola-insert-kana char
                                   skk-nicola-rshift-rule
                                   arg))))
       (skk-nicola-self-insert-lshift
-       ;; 左シフト
+       ;; $B:8%7%U%H(B
        (cl-case command
          (skk-nicola-self-insert-lshift
-          ;;[左 左]
+          ;;[$B:8(B $B:8(B]
           (cond ((skk-in-minibuffer-p)
                  (exit-minibuffer))
                 (t
                  (skk-nicola-lshift-function arg)
                  (unless (< 1 skk-nicola-interval)
-                   ;; 単独打鍵を同一キー連続打鍵で代用する。
+                   ;; $BC1FHBG80$rF10l%-!<O"B3BG80$GBeMQ$9$k!#(B
                    (skk-nicola-lshift-function 1)))))
          (skk-nicola-self-insert-rshift
-          ;; [右 左]
+          ;; [$B1&(B $B:8(B]
           (skk-nicola-double-shift))
          (t
-          ;; [文字 左]
+          ;; [$BJ8;z(B $B:8(B]
           (skk-nicola-insert-kana char
                                   skk-nicola-lshift-rule
                                   arg))))
       (t
-       ;; 文字
+       ;; $BJ8;z(B
        (cond
         ((eq command 'skk-nicola-self-insert-rshift)
-         ;;  [右 文字]
+         ;;  [$B1&(B $BJ8;z(B]
          (skk-nicola-insert-kana next
                                  skk-nicola-rshift-rule
                                  arg))
         ((eq command 'skk-nicola-self-insert-lshift)
-         ;; [左 文字]
+         ;; [$B:8(B $BJ8;z(B]
          (skk-nicola-insert-kana next
                                  skk-nicola-lshift-rule
                                  arg))
@@ -763,16 +763,16 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
                     skk-nicola-prefix-suffix-abbrev-chars)
               (memq next
                     skk-nicola-prefix-suffix-abbrev-chars))
-         ;; [gh] suffix の 入力
+         ;; [gh] suffix $B$N(B $BF~NO(B
          (cond
           ((eq skk-henkan-mode 'active)
-           ;; 接尾語の処理
+           ;; $B@\Hx8l$N=hM}(B
            (skk-kakutei)
            (let (skk-kakutei-history)
              (skk-set-henkan-point-subr))
            (insert-and-inherit ?>))
           ((eq skk-henkan-mode 'on)
-           ;; 接頭語の処理
+           ;; $B@\F,8l$N=hM}(B
            (skk-kana-cleanup 'force)
            (insert-and-inherit ?>)
            (skk-set-marker skk-henkan-end-point
@@ -791,16 +791,16 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
                     skk-nicola-prefix-suffix-chars)
               (memq next
                     skk-nicola-prefix-suffix-chars))
-         ;; [sl] suffix の 入力
+         ;; [sl] suffix $B$N(B $BF~NO(B
          (cond
           ((eq skk-henkan-mode 'active)
-           ;; 接尾語の処理
+           ;; $B@\Hx8l$N=hM}(B
            (skk-kakutei)
            (let (skk-kakutei-history)
              (skk-set-henkan-point-subr))
            (insert-and-inherit ?>))
           ((eq skk-henkan-mode 'on)
-           ;; 接頭語の処理
+           ;; $B@\F,8l$N=hM}(B
            (skk-kana-cleanup 'force)
            (insert-and-inherit ?>)
            (skk-set-marker skk-henkan-end-point
@@ -827,7 +827,7 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
          ;; [dk]
          (skk-toggle-characters 1))
         (t
-         ;; [文字 文字]
+         ;; [$BJ8;z(B $BJ8;z(B]
          (let ((str (skk-nicola-insert-kana
                      char
                      skk-nicola-plain-rule
@@ -854,13 +854,13 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
                     isearch-cmds))))
          (unless (and (< 1 skk-nicola-interval)
                       (eq next char))
-           ;; 単独打鍵を同一キー連続打鍵で代用できるように。
+           ;; $BC1FHBG80$rF10l%-!<O"B3BG80$GBeMQ$G$-$k$h$&$K!#(B
            (skk-nicola-insert-kana
             next
             skk-nicola-plain-rule))))))))
 
 (defun skk-nicola-double-shift ()
-  "親指右キーと親指左キーの同時打鍵を処理する。"
+  "$B?F;X1&%-!<$H?F;X:8%-!<$NF1;~BG80$r=hM}$9$k!#(B"
   (cond
    ((and skk-j-mode
          (not skk-katakana))
@@ -870,7 +870,7 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
   nil)
 
 (defun skk-nicola-maybe-double-p (first next)
-  "FIRST と NEXT が同時打鍵だったら non-nil を返す。"
+  "FIRST $B$H(B NEXT $B$,F1;~BG80$@$C$?$i(B non-nil $B$rJV$9!#(B"
   (let ((command (cond
                   ((commandp first)
                    first)
@@ -887,12 +887,12 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
         (shifts '(skk-nicola-self-insert-lshift
                   skk-nicola-self-insert-rshift)))
     (or
-     ;; * どちらか一方が親指
+     ;; * $B$I$A$i$+0lJ}$,?F;X(B
      (or (memq command shifts)
          (memq (lookup-key skk-j-mode-map (or str
                                               next))
                shifts))
-     ;; * skk-nicola に於ける特殊同時打鍵キー
+     ;; * skk-nicola $B$K1w$1$kFC<lF1;~BG80%-!<(B
      (and (not (eq char next))
           (or
            ;; [fj]
@@ -922,8 +922,8 @@ abbrev と同じキーにする場合は skk-nicola-prefix-suffix-abbrev-chars �
                        skk-nicola-toggle-kana-chars)))))))
 
 (defun skk-nicola-insert-kana (char rule &optional arg)
-  "CHAR を RULE の中から探して入力すべき文字列を決定する。
-ARG を与えられた場合はその数だけ文字列を連結して入力する。"
+  "CHAR $B$r(B RULE $B$NCf$+$iC5$7$FF~NO$9$Y$-J8;zNs$r7hDj$9$k!#(B
+ARG $B$rM?$($i$l$?>l9g$O$=$N?t$@$1J8;zNs$rO"7k$7$FF~NO$9$k!#(B"
   (let* ((el (cadr (assq char rule)))
          (str (when el
                 (cond ((stringp el)
@@ -954,19 +954,19 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
            (skk-nicola-process-okuri))
           ((eq skk-henkan-mode 'active)
            (skk-kakutei)))
-    ;; 何かに使うことがあるかもしれないので、
-    ;; STR を返しておく。
+    ;; $B2?$+$K;H$&$3$H$,$"$k$+$b$7$l$J$$$N$G!"(B
+    ;; STR $B$rJV$7$F$*$/!#(B
     str))
 
 (defun skk-nicola-process-okuri ()
-  "送り開始の標識により送り開始点を認識し、送りあり変換を開始する。"
+  "$BAw$j3+;O$NI8<1$K$h$jAw$j3+;OE@$rG'<1$7!"Aw$j$"$jJQ49$r3+;O$9$k!#(B"
   (let ((okuri (buffer-substring-no-properties
                 (1+ skk-nicola-okuri-flag)
                 (point)))
         tag)
     (unless (and (not (eq skk-nicola-okuri-style
                           'nicola-skk))
-                 (member okuri '("っ" "ッ")))
+                 (member okuri '("$B$C(B" "$B%C(B")))
       (skk-save-point
        (goto-char skk-nicola-okuri-flag)
        (when (eq (following-char)
@@ -976,28 +976,28 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
        (when (member (buffer-substring-no-properties
                       (point)
                       (marker-position skk-nicola-okuri-flag))
-                     '("っ" "ッ"))
+                     '("$B$C(B" "$B%C(B"))
          (setq tag 'no-sokuon)))
       (skk-kanagaki-set-okurigana tag))))
 
 (defun skk-nicola-set-okuri-flag ()
-  "送り開始点を marker で標識し、送りあり変換の待ち状態に入る。
-`*' を挿入することで標識する。"
+  "$BAw$j3+;OE@$r(B marker $B$GI8<1$7!"Aw$j$"$jJQ49$NBT$A>uBV$KF~$k!#(B
+`*' $B$rA^F~$9$k$3$H$GI8<1$9$k!#(B"
   (interactive)
   (when (eq skk-henkan-mode 'on)
-    ;; ▽モードのときだけ機能する。
+    ;; $B"&%b!<%I$N$H$-$@$15!G=$9$k!#(B
     (let ((pt (point)))
       (unless (and (string= "*"
                             (buffer-substring-no-properties
                              (1- pt)
                              pt))
                    (markerp skk-nicola-okuri-flag))
-        ;; 既に標識済みなら何もしない。
+        ;; $B4{$KI8<1:Q$_$J$i2?$b$7$J$$!#(B
         (skk-set-marker skk-nicola-okuri-flag pt)
         (insert-and-inherit "*")))))
 
 (defun skk-nicola-space-function (&optional arg parg)
-  "親指右キー単独打鍵時の挙動を決める関数。"
+  "$B?F;X1&%-!<C1FHBG80;~$N5sF0$r7h$a$k4X?t!#(B"
   (skk-bind-last-command-char ?\s
     (cond
      ((eq skk-henkan-mode 'active)
@@ -1008,9 +1008,9 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
       (self-insert-command arg)))))
 
 (defun skk-nicola-lshift-function (&optional arg)
-  "親指左キー単独打鍵時の挙動を決める関数。"
+  "$B?F;X:8%-!<C1FHBG80;~$N5sF0$r7h$a$k4X?t!#(B"
   (cond (skk-henkan-mode
-         ;; 確定に使う。
+         ;; $B3NDj$K;H$&!#(B
          (skk-kakutei))
         (skk-nicola-use-lshift-as-space
          ;;
@@ -1020,7 +1020,7 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
              (call-interactively skk-nicola-lshift-function)
            (funcall skk-nicola-lshift-function arg)))
         (t
-         ;; 改行に使う。
+         ;; $B2~9T$K;H$&!#(B
          (if (skk-in-minibuffer-p)
              (exit-minibuffer)
            (newline arg)))))
@@ -1028,12 +1028,12 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
 ;; Pieces of Advice.
 
 (defadvice skk-kanagaki-initialize (after skk-nicols-setup activate)
-  ;; M-x skk-restart 対策として
+  ;; M-x skk-restart $BBP:v$H$7$F(B
   (add-hook 'skk-mode-hook 'skk-nicola-setup)
   (add-hook 'skk-mode-hook 'skk-nicola-setup-modeline))
 
 (defadvice skk-insert (before skk-nicola-update-flag activate)
-  "送り待ち状態を管理する。"
+  "$BAw$jBT$A>uBV$r4IM}$9$k!#(B"
   (when (or (and (markerp skk-nicola-okuri-flag)
                  (<= (point)
                      (marker-position
@@ -1042,11 +1042,11 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
     (setq skk-nicola-okuri-flag nil)))
 
 (defadvice skk-kakutei (before skk-nicola-update-flag activate)
-  "送り待ち状態を管理する。"
+  "$BAw$jBT$A>uBV$r4IM}$9$k!#(B"
   (when (and skk-j-mode
              (eq skk-henkan-mode 'on)
              (markerp skk-nicola-okuri-flag))
-    ;; 確定するときは送り開始の標識を消す。
+    ;; $B3NDj$9$k$H$-$OAw$j3+;O$NI8<1$r>C$9!#(B
     (skk-save-point
      (goto-char skk-nicola-okuri-flag)
      (when (eq ?* (following-char))
@@ -1055,7 +1055,7 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
   (setq skk-nicola-okuri-flag nil))
 
 (defadvice skk-previous-candidate (before skk-nicola-update-flag activate)
-  "送り待ち状態を管理する。"
+  "$BAw$jBT$A>uBV$r4IM}$9$k!#(B"
   (when (or (and (markerp skk-nicola-okuri-flag)
                  (<= (point)
                      (marker-position
@@ -1068,8 +1068,8 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
   (let* ((list (symbol-value
                 (intern (format "skk-%s-plain-rule-list"
                                 skk-kanagaki-keyboard-type))))
-         (cell1 (rassoc '("、") list))
-         (cell2 (rassoc '("。") list))
+         (cell1 (rassoc '("$B!"(B") list))
+         (cell2 (rassoc '("$B!#(B") list))
          marker)
     (cond
      ((and (eq skk-kanagaki-state 'kana)
@@ -1079,7 +1079,7 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
                (eq last-command-event
                    (car cell2)))
            skk-henkan-mode)
-      ;; なぜかこける。原因解明中。
+      ;; $B$J$<$+$3$1$k!#860x2rL@Cf!#(B
       (cond
        ((not (eq skk-henkan-mode 'active))
         (setq marker skk-henkan-start-point)
@@ -1099,7 +1099,7 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
       ad-do-it))))
 
 (defadvice skk-isearch-setup-keymap (before skk-nicola-workaround activate)
-  "親指キーでサーチが終了してしまわないようにする。"
+  "$B?F;X%-!<$G%5!<%A$,=*N;$7$F$7$^$o$J$$$h$&$K$9$k!#(B"
   (let ((keys (append skk-nicola-lshift-keys
                       skk-nicola-rshift-keys)))
     (while keys
@@ -1109,7 +1109,7 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
       (setq keys (cdr keys)))))
 
 (defadvice isearch-char-to-string (around skk-nicola-workaround activate)
-  "エラーが出ると検索が中断して使い辛いので、黙らせる。"
+  "$B%(%i!<$,=P$k$H8!:w$,CfCG$7$F;H$$?I$$$N$G!"L[$i$;$k!#(B"
   (cond ((and skk-use-kana-keyboard
               (featurep 'skk-isearch)
               (with-current-buffer

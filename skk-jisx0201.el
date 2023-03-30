@@ -1,9 +1,10 @@
-;;; skk-jisx0201.el --- JIS X 0201 ｶﾅ, Roman -*- coding: iso-2022-7bit -*-
+;;; skk-jisx0201.el --- JIS X 0201 (I6E(B, Roman -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 1999-2007  SKK Development Team <skk@ring.gr.jp>
+;; Copyright (C) 1999-2007  SKK Development Team
 
 ;; Author: Tsukamoto Tetsuo <czkmt@remus.dti.ne.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 ;; Created: Oct. 30, 1999.
 
@@ -24,37 +25,37 @@
 
 ;;; Commentary:
 
-;; <簡単な説明>
+;; <$B4JC1$J@bL@(B>
 
-;; ~/.skk に
+;; ~/.skk $B$K(B
 
 ;;   (setq skk-use-jisx0201-input-method t)
 
-;; と書くことでインストールされます。使い方は以下のようになります。
+;; $B$H=q$/$3$H$G%$%s%9%H!<%k$5$l$^$9!#;H$$J}$O0J2<$N$h$&$K$J$j$^$9!#(B
 
-;;   ◎カタカナモードにおいて、
-;;     ・"C-q" で全角カナモードと半角カナモードを切りかえます。
+;;   $B!}%+%?%+%J%b!<%I$K$*$$$F!"(B
+;;     $B!&(B"C-q" $B$GA43Q%+%J%b!<%I$HH>3Q%+%J%b!<%I$r@Z$j$+$($^$9!#(B
 
-;;   ◎ひらがな/カタカナ両モード内での▽モードにおいて、
-;;     ・"C-q" を押すと､見出し語として入力されたひらがな/カタカナをﾊﾝｶｸｶﾀｶﾅに変
-;;       換します。
+;;   $B!}$R$i$,$J(B/$B%+%?%+%JN>%b!<%IFb$G$N"&%b!<%I$K$*$$$F!"(B
+;;     $B!&(B"C-q" $B$r2!$9$H(I$$B8+=P$78l$H$7$FF~NO$5$l$?$R$i$,$J(B/$B%+%?%+%J$r(IJ]686@6E$B$KJQ(B
+;;       $B49$7$^$9!#(B
 
-;; `skk-jisx0201-roman-rule-list' に JISX0201.1976 Japanese Roman
-;; (latin-jisx0201) の文字列を定義しています。ただし GNU Emacs 23 以降、ファ
-;; イル保存時に JIS X 0201 Roman と ASCII の区別がされなくなったようです (円
-;; 記号およびオーバーラインを除く)。したがってこのファイルの現行版では、これ
-;; らの 2 文字以外は ASCII の文字が定義されています。
+;; `skk-jisx0201-roman-rule-list' $B$K(B JISX0201.1976 Japanese Roman
+;; (latin-jisx0201) $B$NJ8;zNs$rDj5A$7$F$$$^$9!#$?$@$7(B GNU Emacs 23 $B0J9_!"%U%!(B
+;; $B%$%kJ]B8;~$K(B JIS X 0201 Roman $B$H(B ASCII $B$N6hJL$,$5$l$J$/$J$C$?$h$&$G$9(B ($B1_(B
+;; $B5-9f$*$h$S%*!<%P!<%i%$%s$r=|$/(B)$B!#$7$?$,$C$F$3$N%U%!%$%k$N8=9THG$G$O!"$3$l(B
+;; $B$i$N(B 2 $BJ8;z0J30$O(B ASCII $B$NJ8;z$,Dj5A$5$l$F$$$^$9!#(B
 
-;; ｶﾅ と roman を切り替える機能 `skk-toggle-jisx0201' にはキー定義していませ
-;; ん。
+;; (I6E(B $B$H(B roman $B$r@Z$jBX$($k5!G=(B `skk-toggle-jisx0201' $B$K$O%-!<Dj5A$7$F$$$^$;(B
+;; $B$s!#(B
 
-;; <業務連絡>
+;; <$B6HL3O"Mm(B>
 
-;; GNU Emacs 20.3 ～ 22 でこのファイルを編集する場合は、ファイルを開く前に
+;; GNU Emacs 20.3 $B!A(B 22 $B$G$3$N%U%!%$%k$rJT=8$9$k>l9g$O!"%U%!%$%k$r3+$/A0$K(B
 
 ;;   (setq standard-translation-table-for-decode (make-translation-table nil))
 
-;; を評価してください。
+;; $B$rI>2A$7$F$/$@$5$$!#(B
 
 ;;; Code:
 
@@ -62,77 +63,77 @@
 
 (require 'japan-util)
 
-;; 諸般の事情により skk-vars.el に入れるべきでない変数
+;; $B=tHL$N;v>p$K$h$j(B skk-vars.el $B$KF~$l$k$Y$-$G$J$$JQ?t(B
 (defvar skk-jisx0201-base-rule-list
-  '(("a" nil "ｱ")
-    ("bb" "b" "ｯ") ("ba" nil "ﾊﾞ") ("be" nil "ﾍﾞ")
-    ("bi" nil "ﾋﾞ") ("bo" nil "ﾎﾞ") ("bu" nil "ﾌﾞ") ("bya" nil "ﾋﾞｬ")
-    ("bye" nil "ﾋﾞｪ") ("byi" nil "ﾋﾞｨ") ("byo" nil "ﾋﾞｮ") ("byu" nil "ﾋﾞｭ")
-    ("cc" "c" "ｯ") ("cha" nil "ﾁｬ") ("che" nil "ﾁｪ") ("chi" nil "ﾁ")
-    ("cho" nil "ﾁｮ") ("chu" nil "ﾁｭ") ("cya" nil "ﾁｬ") ("cye" nil "ﾁｪ")
-    ("cyi" nil "ﾁｨ") ("cyo" nil "ﾁｮ") ("cyu" nil "ﾁｭ")
-    ("dd" "d" "ｯ") ("da" nil "ﾀﾞ") ("de" nil "ﾃﾞ") ("dha" nil "ﾃﾞｬ")
-    ("dhe" nil "ﾃﾞｪ") ("dhi" nil "ﾃﾞｨ") ("dho" nil "ﾃﾞｮ") ("dhu" nil "ﾃﾞｭ")
-    ("di" nil "ﾁﾞ") ("do" nil "ﾄﾞ") ("du" nil "ﾂﾞ") ("dya" nil "ﾁﾞｬ")
-    ("dye" nil "ﾁﾞｪ") ("dyi" nil "ﾁﾞｨ") ("dyo" nil "ﾁﾞｮ") ("dyu" nil "ﾁﾞｭ")
-    ("e" nil "ｴ")
-    ("ff" "f" "ｯ") ("fa" nil "ﾌｧ") ("fe" nil "ﾌｪ") ("fi" nil "ﾌｨ")
-    ("fo" nil "ﾌｫ") ("fu" nil "ﾌ") ("fya" nil "ﾌｬ") ("fye" nil "ﾌｪ")
-    ("fyi" nil "ﾌｨ") ("fyo" nil "ﾌｮ") ("fyu" nil "ﾌｭ") ("gg" "g" "ｯ")
-    ("ga" nil "ｶﾞ") ("ge" nil "ｹﾞ") ("gi" nil "ｷﾞ") ("go" nil "ｺﾞ")
-    ("gu" nil "ｸﾞ") ("gya" nil "ｷﾞｬ") ("gye" nil "ｷﾞｪ") ("gyi" nil "ｷﾞｨ")
-    ("gyo" nil "ｷﾞｮ") ("gyu" nil "ｷﾞｭ")
-    ("ha" nil "ﾊ") ("he" nil "ﾍ") ("hi" nil "ﾋ") ("ho" nil "ﾎ")
-    ("hu" nil "ﾌ") ("hya" nil "ﾋｬ") ("hye" nil "ﾋｪ") ("hyi" nil "ﾋｨ")
-    ("hyo" nil "ﾋｮ") ("hyu" nil "ﾋｭ") ("i" nil "ｲ")
-    ("jj" "j" "ｯ") ("ja" nil "ｼﾞｬ") ("je" nil "ｼﾞｪ") ("ji" nil "ｼﾞ")
-    ("jo" nil "ｼﾞｮ") ("ju" nil "ｼﾞｭ") ("jya" nil "ｼﾞｬ") ("jye" nil "ｼﾞｪ")
-    ("jyi" nil "ｼﾞｨ") ("jyo" nil "ｼﾞｮ") ("jyu" nil "ｼﾞｭ")
-    ("kk" "k" "ｯ") ("ka" nil "ｶ") ("ke" nil "ｹ") ("ki" nil "ｷ")
-    ("ko" nil "ｺ") ("ku" nil "ｸ") ("kya" nil "ｷｬ") ("kye" nil "ｷｪ")
-    ("kyi" nil "ｷｨ") ("kyo" nil "ｷｮ") ("kyu" nil "ｷｭ")
-    ("mm" "c" "ｯ") ("ma" nil "ﾏ") ("me" nil "ﾒ") ("mi" nil "ﾐ")
-    ("mo" nil "ﾓ") ("mu" nil "ﾑ") ("mya" nil "ﾐｬ") ("mye" nil "ﾐｪ")
-    ("myi" nil "ﾐｨ") ("myo" nil "ﾐｮ") ("myu" nil "ﾐｭ")
-    ("n" nil "ﾝ") ("n'" nil "ﾝ") ("na" nil "ﾅ") ("ne" nil "ﾈ")
-    ("ni" nil "ﾆ") ("nn" nil "ﾝ") ("no" nil "ﾉ") ("nu" nil "ﾇ")
-    ("nya" nil "ﾆｬ") ("nye" nil "ﾆｪ") ("nyi" nil "ﾆｨ") ("nyo" nil "ﾆｮ")
-    ("nyu" nil "ﾆｭ")
-    ("o" nil "ｵ")
-    ("pp" "p" "ｯ") ("pa" nil "ﾊﾟ") ("pe" nil "ﾍﾟ") ("pi" nil "ﾋﾟ")
-    ("po" nil "ﾎﾟ") ("pu" nil "ﾌﾟ") ("pya" nil "ﾋﾟｬ") ("pye" nil "ﾋﾟｪ")
-    ("pyi" nil "ﾋﾟｨ") ("pyo" nil "ﾋﾟｮ") ("pyu" nil "ﾋﾟｭ")
-    ("rr" "r" "ｯ") ("ra" nil "ﾗ") ("re" nil "ﾚ") ("ri" nil "ﾘ")
-    ("ro" nil "ﾛ") ("ru" nil "ﾙ") ("rya" nil "ﾘｬ") ("rye" nil "ﾘｪ")
-    ("ryi" nil "ﾘｨ") ("ryo" nil "ﾘｮ") ("ryu" nil "ﾘｭ")
-    ("ss" "s" "ｯ") ("sa" nil "ｻ") ("se" nil "ｾ") ("sha" nil "ｼｬ")
-    ("she" nil "ｼｪ") ("shi" nil "ｼ") ("sho" nil "ｼｮ") ("shu" nil "ｼｭ")
-    ("si" nil "ｼ") ("so" nil "ｿ") ("su" nil "ｽ") ("sya" nil "ｼｬ")
-    ("sye" nil "ｼｪ") ("syi" nil "ｼｨ") ("syo" nil "ｼｮ") ("syu" nil "ｼｭ")
-    ("tt" "t" "ｯ") ("ta" nil "ﾀ") ("te" nil "ﾃ") ("tha" nil "ﾃｧ")
-    ("the" nil "ﾃｪ") ("thi" nil "ﾃｨ") ("tho" nil "ﾃｮ") ("thu" nil "ﾃｭ")
-    ("ti" nil "ﾁ") ("to" nil "ﾄ") ("tsu" nil "ﾂ") ("tu" nil "ﾂ")
-    ("tya" nil "ﾁｬ") ("tye" nil "ﾁｪ") ("tyi" nil "ﾁｨ") ("tyo" nil "ﾁｮ")
-    ("tyu" nil "ﾁｭ")
-    ("u" nil "ｳ")
-    ("vv" "v" "ｯ") ("va" nil "ｳﾞｧ") ("ve" nil "ｳﾞｪ") ("vi" nil "ｳﾞｨ")
-    ("vo" nil "ｳﾞｫ") ("vu" nil "ｳﾞ")
-    ("ww" "w" "ｯ") ("wa" nil "ﾜ") ("we" nil "ｳｪ") ("wi" nil "ｳｨ")
-    ("wo" nil "ｦ") ("wu" nil "ｳ")
-    ("xx" "x" "ｯ") ("xa" nil "ｧ") ("xe" nil "ｪ") ("xi" nil "ｨ")
-    ("xka" nil "ｶ") ("xke" nil "ｹ") ("xo" nil "ｫ") ("xtsu" nil "ｯ")
-    ("xtu" nil "ｯ") ("xu" nil "ｩ") ("xwa" nil "ﾜ") ("xwe" nil "ｪ")
-    ("xwi" nil "ｨ") ("xya" nil "ｬ") ("xyo" nil "ｮ") ("xyu" nil "ｭ")
-    ("yy" "y" "ｯ") ("ya" nil "ﾔ") ("ye" nil "ｲｪ") ("yo" nil "ﾖ")
-    ("yu" nil "ﾕ")
-    ("zz" "z" "ｯ") ("z," nil "‥") ("z-" nil "～") ("z." nil "…")
-    ("z/" nil "･") ("z[" nil "『") ("z]" nil "』") ("za" nil "ｻﾞ")
-    ("ze" nil "ｾﾞ") ("zh" nil "←") ("zi" nil "ｼﾞ") ("zj" nil "↓")
-    ("zk" nil "↑") ("zl" nil "→") ("zo" nil "ｿﾞ") ("zu" nil "ｽﾞ")
-    ("zya" nil "ｼﾞｬ") ("zye" nil "ｼﾞｪ") ("zyi" nil "ｼﾞｨ") ("zyo" nil "ｼﾞｮ")
-    ("zyu" nil "ｼﾞｭ")
-    ("," nil "､") ("." nil "｡") ("-" nil "ｰ") (":" nil ":") (";" nil ";")
-    ("?" nil "?") ("[" nil "｢") ("]" nil "｣")
+  '(("a" nil "(I1(B")
+    ("bb" "b" "(I/(B") ("ba" nil "(IJ^(B") ("be" nil "(IM^(B")
+    ("bi" nil "(IK^(B") ("bo" nil "(IN^(B") ("bu" nil "(IL^(B") ("bya" nil "(IK^,(B")
+    ("bye" nil "(IK^*(B") ("byi" nil "(IK^((B") ("byo" nil "(IK^.(B") ("byu" nil "(IK^-(B")
+    ("cc" "c" "(I/(B") ("cha" nil "(IA,(B") ("che" nil "(IA*(B") ("chi" nil "(IA(B")
+    ("cho" nil "(IA.(B") ("chu" nil "(IA-(B") ("cya" nil "(IA,(B") ("cye" nil "(IA*(B")
+    ("cyi" nil "(IA((B") ("cyo" nil "(IA.(B") ("cyu" nil "(IA-(B")
+    ("dd" "d" "(I/(B") ("da" nil "(I@^(B") ("de" nil "(IC^(B") ("dha" nil "(IC^,(B")
+    ("dhe" nil "(IC^*(B") ("dhi" nil "(IC^((B") ("dho" nil "(IC^.(B") ("dhu" nil "(IC^-(B")
+    ("di" nil "(IA^(B") ("do" nil "(ID^(B") ("du" nil "(IB^(B") ("dya" nil "(IA^,(B")
+    ("dye" nil "(IA^*(B") ("dyi" nil "(IA^((B") ("dyo" nil "(IA^.(B") ("dyu" nil "(IA^-(B")
+    ("e" nil "(I4(B")
+    ("ff" "f" "(I/(B") ("fa" nil "(IL'(B") ("fe" nil "(IL*(B") ("fi" nil "(IL((B")
+    ("fo" nil "(IL+(B") ("fu" nil "(IL(B") ("fya" nil "(IL,(B") ("fye" nil "(IL*(B")
+    ("fyi" nil "(IL((B") ("fyo" nil "(IL.(B") ("fyu" nil "(IL-(B") ("gg" "g" "(I/(B")
+    ("ga" nil "(I6^(B") ("ge" nil "(I9^(B") ("gi" nil "(I7^(B") ("go" nil "(I:^(B")
+    ("gu" nil "(I8^(B") ("gya" nil "(I7^,(B") ("gye" nil "(I7^*(B") ("gyi" nil "(I7^((B")
+    ("gyo" nil "(I7^.(B") ("gyu" nil "(I7^-(B")
+    ("ha" nil "(IJ(B") ("he" nil "(IM(B") ("hi" nil "(IK(B") ("ho" nil "(IN(B")
+    ("hu" nil "(IL(B") ("hya" nil "(IK,(B") ("hye" nil "(IK*(B") ("hyi" nil "(IK((B")
+    ("hyo" nil "(IK.(B") ("hyu" nil "(IK-(B") ("i" nil "(I2(B")
+    ("jj" "j" "(I/(B") ("ja" nil "(I<^,(B") ("je" nil "(I<^*(B") ("ji" nil "(I<^(B")
+    ("jo" nil "(I<^.(B") ("ju" nil "(I<^-(B") ("jya" nil "(I<^,(B") ("jye" nil "(I<^*(B")
+    ("jyi" nil "(I<^((B") ("jyo" nil "(I<^.(B") ("jyu" nil "(I<^-(B")
+    ("kk" "k" "(I/(B") ("ka" nil "(I6(B") ("ke" nil "(I9(B") ("ki" nil "(I7(B")
+    ("ko" nil "(I:(B") ("ku" nil "(I8(B") ("kya" nil "(I7,(B") ("kye" nil "(I7*(B")
+    ("kyi" nil "(I7((B") ("kyo" nil "(I7.(B") ("kyu" nil "(I7-(B")
+    ("mm" "c" "(I/(B") ("ma" nil "(IO(B") ("me" nil "(IR(B") ("mi" nil "(IP(B")
+    ("mo" nil "(IS(B") ("mu" nil "(IQ(B") ("mya" nil "(IP,(B") ("mye" nil "(IP*(B")
+    ("myi" nil "(IP((B") ("myo" nil "(IP.(B") ("myu" nil "(IP-(B")
+    ("n" nil "(I](B") ("n'" nil "(I](B") ("na" nil "(IE(B") ("ne" nil "(IH(B")
+    ("ni" nil "(IF(B") ("nn" nil "(I](B") ("no" nil "(II(B") ("nu" nil "(IG(B")
+    ("nya" nil "(IF,(B") ("nye" nil "(IF*(B") ("nyi" nil "(IF((B") ("nyo" nil "(IF.(B")
+    ("nyu" nil "(IF-(B")
+    ("o" nil "(I5(B")
+    ("pp" "p" "(I/(B") ("pa" nil "(IJ_(B") ("pe" nil "(IM_(B") ("pi" nil "(IK_(B")
+    ("po" nil "(IN_(B") ("pu" nil "(IL_(B") ("pya" nil "(IK_,(B") ("pye" nil "(IK_*(B")
+    ("pyi" nil "(IK_((B") ("pyo" nil "(IK_.(B") ("pyu" nil "(IK_-(B")
+    ("rr" "r" "(I/(B") ("ra" nil "(IW(B") ("re" nil "(IZ(B") ("ri" nil "(IX(B")
+    ("ro" nil "(I[(B") ("ru" nil "(IY(B") ("rya" nil "(IX,(B") ("rye" nil "(IX*(B")
+    ("ryi" nil "(IX((B") ("ryo" nil "(IX.(B") ("ryu" nil "(IX-(B")
+    ("ss" "s" "(I/(B") ("sa" nil "(I;(B") ("se" nil "(I>(B") ("sha" nil "(I<,(B")
+    ("she" nil "(I<*(B") ("shi" nil "(I<(B") ("sho" nil "(I<.(B") ("shu" nil "(I<-(B")
+    ("si" nil "(I<(B") ("so" nil "(I?(B") ("su" nil "(I=(B") ("sya" nil "(I<,(B")
+    ("sye" nil "(I<*(B") ("syi" nil "(I<((B") ("syo" nil "(I<.(B") ("syu" nil "(I<-(B")
+    ("tt" "t" "(I/(B") ("ta" nil "(I@(B") ("te" nil "(IC(B") ("tha" nil "(IC'(B")
+    ("the" nil "(IC*(B") ("thi" nil "(IC((B") ("tho" nil "(IC.(B") ("thu" nil "(IC-(B")
+    ("ti" nil "(IA(B") ("to" nil "(ID(B") ("tsu" nil "(IB(B") ("tu" nil "(IB(B")
+    ("tya" nil "(IA,(B") ("tye" nil "(IA*(B") ("tyi" nil "(IA((B") ("tyo" nil "(IA.(B")
+    ("tyu" nil "(IA-(B")
+    ("u" nil "(I3(B")
+    ("vv" "v" "(I/(B") ("va" nil "(I3^'(B") ("ve" nil "(I3^*(B") ("vi" nil "(I3^((B")
+    ("vo" nil "(I3^+(B") ("vu" nil "(I3^(B")
+    ("ww" "w" "(I/(B") ("wa" nil "(I\(B") ("we" nil "(I3*(B") ("wi" nil "(I3((B")
+    ("wo" nil "(I&(B") ("wu" nil "(I3(B")
+    ("xx" "x" "(I/(B") ("xa" nil "(I'(B") ("xe" nil "(I*(B") ("xi" nil "(I((B")
+    ("xka" nil "(I6(B") ("xke" nil "(I9(B") ("xo" nil "(I+(B") ("xtsu" nil "(I/(B")
+    ("xtu" nil "(I/(B") ("xu" nil "(I)(B") ("xwa" nil "(I\(B") ("xwe" nil "(I*(B")
+    ("xwi" nil "(I((B") ("xya" nil "(I,(B") ("xyo" nil "(I.(B") ("xyu" nil "(I-(B")
+    ("yy" "y" "(I/(B") ("ya" nil "(IT(B") ("ye" nil "(I2*(B") ("yo" nil "(IV(B")
+    ("yu" nil "(IU(B")
+    ("zz" "z" "(I/(B") ("z," nil "$B!E(B") ("z-" nil "$B!A(B") ("z." nil "$B!D(B")
+    ("z/" nil "(I%(B") ("z[" nil "$B!X(B") ("z]" nil "$B!Y(B") ("za" nil "(I;^(B")
+    ("ze" nil "(I>^(B") ("zh" nil "$B"+(B") ("zi" nil "(I<^(B") ("zj" nil "$B"-(B")
+    ("zk" nil "$B",(B") ("zl" nil "$B"*(B") ("zo" nil "(I?^(B") ("zu" nil "(I=^(B")
+    ("zya" nil "(I<^,(B") ("zye" nil "(I<^*(B") ("zyi" nil "(I<^((B") ("zyo" nil "(I<^.(B")
+    ("zyu" nil "(I<^-(B")
+    ("," nil "(I$(B") ("." nil "(I!(B") ("-" nil "(I0(B") (":" nil ":") (";" nil ";")
+    ("?" nil "?") ("[" nil "(I"(B") ("]" nil "(I#(B")
     ("l" nil skk-latin-mode)
     ("q" nil skk-toggle-katakana)
     ("L" nil skk-jisx0208-latin-mode)
@@ -143,7 +144,7 @@
     ("@" nil skk-today)
     ("\\" nil skk-input-by-code-or-menu)
     (skk-kakutei-key nil skk-kakutei))
-  "*SKK JISX0201 モードのベースのルール。")
+  "*SKK JISX0201 $B%b!<%I$N%Y!<%9$N%k!<%k!#(B")
 
 (defvar skk-jisx0201-roman-rule-list
   '(("!" nil "!") ("\"" nil "\"") ("#" nil "#") ("$" nil "$") ("%" nil "%")
@@ -159,7 +160,7 @@
     ("P" nil "P") ("Q" nil "Q") ("R" nil "R") ("S" nil "S") ("T" nil "T")
     ("U" nil "U") ("V" nil "V") ("W" nil "W") ("X" nil "X") ("Y" nil "Y")
     ("Z" nil "Z")
-    ("[" nil "[") ("\\" nil "\\") ("]" nil "]") ("^" nil "^") ("_" nil "_")
+    ("[" nil "[") ("\\" nil "\(J\(B") ("]" nil "]") ("^" nil "^") ("_" nil "_")
     ("`" nil "`")
     ("a" nil "a") ("b" nil "b") ("c" nil "c") ("d" nil "d") ("e" nil "e")
     ("f" nil "f") ("g" nil "g") ("h" nil "h") ("i" nil "i") ("j" nil "j")
@@ -167,13 +168,13 @@
     ("p" nil "p") ("q" nil "q") ("r" nil "r") ("s" nil "s") ("t" nil "t")
     ("u" nil "u") ("v" nil "v") ("w" nil "w") ("x" nil "x") ("y" nil "y")
     ("z" nil "z")
-    ("{" nil "{") ("|" nil "|") ("}" nil "}") ("~" nil "~"))
-  "*SKK JISX0201 モードの Roman のルール。")
+    ("{" nil "{") ("|" nil "|") ("}" nil "}") ("~" nil "(J~(B"))
+  "*SKK JISX0201 $B%b!<%I$N(B Roman $B$N%k!<%k!#(B")
 
 (defvar skk-jisx0201-rule-list
   '(("\(" nil "(")
     ("{" nil "{"))
-  "*SKK JISX0201 モードの追加のルール。")
+  "*SKK JISX0201 $B%b!<%I$NDI2C$N%k!<%k!#(B")
 
 (setq skk-jisx0201-base-rule-tree
       (skk-compile-rule-list skk-jisx0201-base-rule-list
@@ -185,7 +186,7 @@
 
 ;; inline functions.
 (defsubst skk-jisx0201-mode-on (&optional arg)
-  "SKK JIS X 0201 (カナ) モードを起動する。"
+  "SKK JIS X 0201 ($B%+%J(B) $B%b!<%I$r5/F0$9$k!#(B"
   (make-local-variable 'skk-rule-tree)
   (setq skk-mode t
         skk-jisx0201-mode t
@@ -225,7 +226,7 @@
   (kill-local-variable 'skk-rule-tree))
 
 (defadvice skk-set-okurigana (around skk-jisx0201-ad activate)
-  "半角カナの送り仮名を正しく取得する。"
+  "$BH>3Q%+%J$NAw$j2>L>$r@5$7$/<hF@$9$k!#(B"
   (cond
    (skk-jisx0201-mode
     (skk-save-point
@@ -243,7 +244,7 @@
              (buffer-substring-no-properties
               (setq pt2 (point)) pt1)))
       (cond
-       ((member okuri '("ﾞ" "ﾟ"))
+       ((member okuri '("(I^(B" "(I_(B"))
         (setq okuri
               (concat (skk-save-point
                        (backward-char 2)
@@ -257,7 +258,7 @@
                (backward-char 2)
                (buffer-substring-no-properties
                 (point) pt2)))
-        (unless (member sokuon '("ｯ"))
+        (unless (member sokuon '("(I/(B"))
           (setq sokuon nil))))
       ;;
       (when okuri
@@ -274,7 +275,7 @@
     ad-do-it)))
 
 (defadvice skk-insert (around skk-jisx0201-ad activate)
-  "SKK JIS X 0201 モードの文字入力を行う。"
+  "SKK JIS X 0201 $B%b!<%I$NJ8;zF~NO$r9T$&!#(B"
   (cond
    (skk-jisx0201-mode
     (let ((arg (ad-get-arg 0))
@@ -320,20 +321,20 @@
     ad-do-it)))
 
 (defadvice skk-search-sagyo-henkaku (before skk-jisx0201-set-okuri activate)
-  "SKK JIS X 0201 モードでは送り仮名を半角カナにする。"
+  "SKK JIS X 0201 $B%b!<%I$G$OAw$j2>L>$rH>3Q%+%J$K$9$k!#(B"
   (when skk-jisx0201-mode
-    (ad-set-arg 0 '("ｻ" "ｼ" "ｽ" "ｾ"))))
+    (ad-set-arg 0 '("(I;(B" "(I<(B" "(I=(B" "(I>(B"))))
 
 ;; functions.
 ;;;###autoload
 (defun skk-jisx0201-mode (arg)
-  "SKK のモードを JIS X 0201 モードに変更する。"
+  "SKK $B$N%b!<%I$r(B JIS X 0201 $B%b!<%I$KJQ99$9$k!#(B"
   (interactive "P")
   (skk-kakutei)
   (skk-jisx0201-mode-on))
 
 (defun skk-toggle-jisx0201 (arg)
-  "半角カナモードとローマ字モードを切り替える。"
+  "$BH>3Q%+%J%b!<%I$H%m!<%^;z%b!<%I$r@Z$jBX$($k!#(B"
   (interactive "P")
   (cond
    ((eq skk-henkan-mode 'on)
@@ -352,11 +353,11 @@
     (buffer-string)))
 
 (defun skk-jisx0201-zenkaku (str)
-  "STR の JIS X 0201 カナ文字を対応する JIS X 0208 の文字で置き換える。"
+  "STR $B$N(B JIS X 0201 $B%+%JJ8;z$rBP1~$9$k(B JIS X 0208 $B$NJ8;z$GCV$-49$($k!#(B"
   (skk-jisx0201-string-conversion str #'skk-jisx0201-zenkaku-region))
 
 (defun skk-jisx0201-hankaku (str)
-  "STR の JIS X 0208 文字を対応する JIS X 0201 カナの文字で置き換える。"
+  "STR $B$N(B JIS X 0208 $BJ8;z$rBP1~$9$k(B JIS X 0201 $B%+%J$NJ8;z$GCV$-49$($k!#(B"
   (skk-jisx0201-string-conversion str #'japanese-hankaku-region))
 
 ;;;###autoload
@@ -380,16 +381,16 @@
   (japanese-zenkaku-region start end 'katakana-only))
 
 (defun skk-jisx0201-henkan (arg)
-  "▽モードであれば、領域のひらがな/カタカナを ﾊﾝｶｸｶﾀｶﾅ に変換する。
-▼モードでは何もしない。
-その他のモードでは、オリジナルのキー割り付けでバインドされているコマンドを実行
-する。"
+  "$B"&%b!<%I$G$"$l$P!"NN0h$N$R$i$,$J(B/$B%+%?%+%J$r(B (IJ]686@6E(B $B$KJQ49$9$k!#(B
+$B"'%b!<%I$G$O2?$b$7$J$$!#(B
+$B$=$NB>$N%b!<%I$G$O!"%*%j%8%J%k$N%-!<3d$jIU$1$G%P%$%s%I$5$l$F$$$k%3%^%s%I$r<B9T(B
+$B$9$k!#(B"
   (interactive "*P")
   (skk-henkan-skk-region-by-func #'skk-jisx0201-region arg))
 
 (defun skk-jisx0201-region (start end)
-  "領域のひらがな/カタカナを ﾊﾝｶｸｶﾀｶﾅ に変換する。
-引数の START と END は数字でもマーカーでも良い。"
+  "$BNN0h$N$R$i$,$J(B/$B%+%?%+%J$r(B (IJ]686@6E(B $B$KJQ49$9$k!#(B
+$B0z?t$N(B START $B$H(B END $B$O?t;z$G$b%^!<%+!<$G$bNI$$!#(B"
   (interactive "*r\nP")
   (setq end (set-marker (make-marker) end))
   (skk-hiragana-to-jisx0201-region start end)
@@ -400,7 +401,7 @@
 (defun skk-hiragana-to-jisx0201-region (start end)
   (skk-search-and-replace
    start end
-   "[ぁ-ん。、・ー゛゜]+"
+   "[$B$!(B-$B$s!#!"!&!<!+!,(B]+"
    (lambda (matched)
      (save-match-data
        (skk-jisx0201-hankaku matched)))))
@@ -409,7 +410,7 @@
 (defun skk-katakana-to-jisx0201-region (start end)
   (skk-search-and-replace
    start end
-   "[ァ-ヴ。、・ー゛゜]+"
+   "[$B%!(B-$B%t!#!"!&!<!+!,(B]+"
    (lambda (matched)
      (save-match-data
        (skk-jisx0201-hankaku matched)))))

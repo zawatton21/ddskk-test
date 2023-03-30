@@ -1,6 +1,7 @@
 # Makefile: makefile for SKK.
 #
-# Maintainer: SKK Development Team <skk@ring.gr.jp>
+# Maintainer: SKK Development Team
+# URL: https://github.com/skk-dev/ddskk
 
 
 VERSION = 17.1
@@ -82,7 +83,7 @@ TAGS:
 
 clean:
 	-$(RM) leim-list.el skk-autoloads.el skk-setup.el *.elc experimental/*.elc \
-	auto-autoloads.el custom-load.el ert.el checkdoc.log\
+	auto-autoloads.el custom-load.el ert.el checkdoc.log \
 	./doc/skk.info* ./doc/skk.html* ./doc/skk.pdf \
 	./doc/*.aux ./doc/*.cp* ./doc/*.fn* ./doc/*.ky* ./doc/*.log ./doc/*.toc ./doc/*.vr* \
 	`find . -name '*~'` `find . -name '.*~'` `find . -name '.#*'`

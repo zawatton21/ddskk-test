@@ -30,7 +30,8 @@
 @c          Tsuyoshi AKIHO <akiho@sky.email.ne.jp>
 @c          SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
 @c          Satoshi Harauchi <satoshi@sys.sdl.melco.co.jp>
-@c  Maintainer: SKK Development Team <skk@ring.gr.jp>
+@c  Maintainer: SKK Development Team
+@c  URL: https://github.com/skk-dev/ddskk
 @c  Keywords: japanese
 @c
 @set SKK-VERSION 17.1
@@ -9399,10 +9400,6 @@ skk abbrev モードであることを示すカーソル色。標準は、royalb
  *候補*バッファの背景色（奇数ライン）を指定します。
 @end defvr
 
-@defvr {ユーザ変数} skk-candidate-buffer-delete-other-windows
- nil であれば、*候補*バッファ表示に際して window 配置を変更しない。
-@end defvr
-
 @end cartouche
 @end defvr
 
@@ -9557,6 +9554,7 @@ skk abbrev モードであることを示すカーソル色。標準は、royalb
 
 @menu
 * インジケータ::
+* インジケータの装飾::
 * アイコン::
 @end menu
 
@@ -9595,6 +9593,23 @@ Emacs 21 以上 @footnote{変数 @code{mule-version} の値が 5.0 以上の Ema
 @end itemize
 
 なお、インジケータを右クリックするとポップアップメニューが表示されます。
+
+@node インジケータの装飾
+@subsubsection インジケータの装飾
+
+インジケータを装飾することができます。
+
+@defvr {ユーザ変数} skk-indicator-prefix
+
+インジケータの接頭辞とする文字列を指定します。
+
+@end defvr
+
+@defvr {ユーザ変数} skk-indicator-suffix-func
+
+インジケータの接尾語とする文字列を返す関数を指定します。
+
+@end defvr
 
 @node アイコン
 @subsubsection アイコン
@@ -10780,14 +10795,7 @@ X Window System 上では、@command{xmodmap} というプログラムを使っ�
 これは 1, 2 とはかなり違ったアプローチです。SKK 本来のローマ字的入力を捨
 てて、富士通のワープロ OASYS のような親指シフト入力を修得します。
 @footnote{親指シフト入力の詳細については、ここでは述べません。興味がある
-場合は、日本語入力コンソーシアムの Web サイト
-
-@display
-@url{http://nicola.sunicom.co.jp/}
-@end display
-
-@noindent
-を訪れてください。}
+場合は、日本語入力コンソーシアムの Web サイト @url{http://nicola.sunicom.co.jp/} を訪れてください。}
 @cindex OASYS
 @cindex NICOLA
 @cindex 日本語入力コンソーシアム

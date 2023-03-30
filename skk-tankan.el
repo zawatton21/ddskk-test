@@ -1,10 +1,11 @@
-;;; skk-tankan.el --- SKK 単漢字変換プログラム -*- coding: iso-2022-jp -*-
+;;; skk-tankan.el --- SKK $BC14A;zJQ49%W%m%0%i%`(B -*- coding: iso-2022-jp -*-
 ;; Copyright (C) 2003 YAGI Tatsuya <ynyaaa@ybb.ne.jp>
 ;; Copyright (C) 2010 Tsuyoshi Kitamoto <tsuyoshi.kitamoto@gmail.com>
 
 ;; Author: YAGI Tatsuya <ynyaaa@ybb.ne.jp>
 ;; Author: Tsuyoshi Kitamoto <tsuyoshi.kitamoto@gmail.com>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese
 
 ;; This file is part of Daredevil SKK.
@@ -24,54 +25,54 @@
 
 ;;; Commentary:
 
-;; 1. 使い方
+;; 1. $B;H$$J}(B
 
-;; 1-a. 読みの最後に、読みの一部として @ を入力してから変換すると、
-;;      一文字のみからなる候補に絞り込んだ上で、
-;;      候補を総画数順でソートしてから変換します。
+;; 1-a. $BFI$_$N:G8e$K!"FI$_$N0lIt$H$7$F(B @ $B$rF~NO$7$F$+$iJQ49$9$k$H!"(B
+;;      $B0lJ8;z$N$_$+$i$J$k8uJd$K9J$j9~$s$@>e$G!"(B
+;;      $B8uJd$rAm2h?t=g$G%=!<%H$7$F$+$iJQ49$7$^$9!#(B
 
-;; 1-b. 「読み」部分が数値であれば、その数値を総画数とする候補を表示します。
-;;        ▽12@<SPC> [Q 1 2 @ <SPC>]
+;; 1-b. $B!VFI$_!WItJ,$,?tCM$G$"$l$P!"$=$N?tCM$rAm2h?t$H$9$k8uJd$rI=<($7$^$9!#(B
+;;        $B"&(B12@<SPC> [Q 1 2 @ <SPC>]
 ;;
-;; 1-c. 「読み」部分が @ であれば、部首変換を開始します。
-;;        ▽@@<SPC> [Q @ @ <SPC>]
+;; 1-c. $B!VFI$_!WItJ,$,(B @ $B$G$"$l$P!"It<sJQ49$r3+;O$7$^$9!#(B
+;;        $B"&(B@@<SPC> [Q @ @ <SPC>]
 
-;; 2. 設定方法
+;; 2. $B@_DjJ}K!(B
 
-;; ~/.skk には次の様なことを書いておきます。
+;; ~/.skk $B$K$O<!$NMM$J$3$H$r=q$$$F$*$-$^$9!#(B
 
-;; ;; 検索先の指定は
-;; ;; skk-search-prog-list に指定できる要素 (function . args) に対して
-;; ;; (skk-tankan-search 'function . args) を指定する
-;; ;; ほかの skk-search-prog-list を変更する設定より後に設定すべきです。
+;; ;; $B8!:w@h$N;XDj$O(B
+;; ;; skk-search-prog-list $B$K;XDj$G$-$kMWAG(B (function . args) $B$KBP$7$F(B
+;; ;; (skk-tankan-search 'function . args) $B$r;XDj$9$k(B
+;; ;; $B$[$+$N(B skk-search-prog-list $B$rJQ99$9$k@_Dj$h$j8e$K@_Dj$9$Y$-$G$9!#(B
 
-;; ;; 確定変換を用いない場合は、以下のように skk-search-prog-list の先頭に
-;; ;; 追加しても構いません。
+;; ;; $B3NDjJQ49$rMQ$$$J$$>l9g$O!"0J2<$N$h$&$K(B skk-search-prog-list $B$N@hF,$K(B
+;; ;; $BDI2C$7$F$b9=$$$^$;$s!#(B
 ;; (add-to-list 'skk-search-prog-list
 ;;              '(skk-tankan-search 'skk-search-jisyo-file
 ;;                                  skk-large-jisyo 10000))
 
-;; ;; しかし、確定変換を併用する場合は、 skk-search-kakutei-jisyo-file
-;; ;; または代わりの確定プログラムが skk-search-prog-list の先頭に
-;; ;; なければいけません。その場合は代わりに以下の設定をします。
+;; ;; $B$7$+$7!"3NDjJQ49$rJ;MQ$9$k>l9g$O!"(B skk-search-kakutei-jisyo-file
+;; ;; $B$^$?$OBe$o$j$N3NDj%W%m%0%i%`$,(B skk-search-prog-list $B$N@hF,$K(B
+;; ;; $B$J$1$l$P$$$1$^$;$s!#$=$N>l9g$OBe$o$j$K0J2<$N@_Dj$r$7$^$9!#(B
 ;; (setq skk-search-prog-list
 ;;       (cons (car skk-search-prog-list)
 ;;         (cons '(skk-tankan-search 'skk-search-jisyo-file
 ;;                       skk-large-jisyo 10000)
 ;;           (cdr skk-search-prog-list))))
 
-;; ;; 単漢字検索のキーを @ にする(デフォルト)
+;; ;; $BC14A;z8!:w$N%-!<$r(B @ $B$K$9$k(B($B%G%U%)%k%H(B)
 ;; (setq skk-tankan-search-key ?@)
 
-;; ;; ;; @ を入力できるようにする          ; DDSKK 14.2 からは不要です。
-;; ;; (setq skk-rom-kana-rule-list         ; メーリングリスト 2010-11-27
+;; ;; ;; @ $B$rF~NO$G$-$k$h$&$K$9$k(B          ; DDSKK 14.2 $B$+$i$OITMW$G$9!#(B
+;; ;; (setq skk-rom-kana-rule-list         ; $B%a!<%j%s%0%j%9%H(B 2010-11-27
 ;; ;;       (append skk-rom-kana-rule-list
 ;; ;;            '(("@" nil "@"))))
 
-;; ;; annotation として画数と部首を表示する
+;; ;; annotation $B$H$7$F2h?t$HIt<s$rI=<($9$k(B
 ;; (setq skk-show-annotation t)
 
-;; ;; 単漢字入力は学習対象からはずす
+;; ;; $BC14A;zF~NO$O3X=,BP>]$+$i$O$:$9(B
 ;; (add-hook 'skk-search-excluding-word-pattern-function
 ;;    #'(lambda (kakutei-word)
 ;;        (string-match (format "%s$"
@@ -79,37 +80,37 @@
 ;;                   (char-to-string skk-tankan-search-key)))
 ;;              skk-henkan-key)))
 
-;; ;; 文字 CHAR の ANNOTATION (文字列) を変更したい場合
+;; ;; $BJ8;z(B CHAR $B$N(B ANNOTATION ($BJ8;zNs(B) $B$rJQ99$7$?$$>l9g(B
 ;; ;; (aset skk-tankan-annotation-table CHAR ANNOTATION)
 
-;; ;; メモリを節約したい人向け (部首と画数以外のデータを保持しません)
+;; ;; $B%a%b%j$r@aLs$7$?$$?M8~$1(B ($BIt<s$H2h?t0J30$N%G!<%?$rJ];}$7$^$;$s(B)
 ;; ;; (setq skk-tankan-annotation-table nil)
 
 ;;; Code:
 
 (require 'skk)
 
-;;; 部首番号を部首を表す文字列に変換するための配列
+;;; $BIt<sHV9f$rIt<s$rI=$9J8;zNs$KJQ49$9$k$?$a$NG[Ns(B
 (defconst skk-tankan-radical-vector
   (let ((v (string-to-vector "\
-〓\
-一｜丶丿乙亅\
-二亠人儿入八冂冖冫几凵刀力勹匕匚匸十卜卩厂厶又\
-口囗土士夂夊夕大女子宀寸小尢尸屮山巛工己巾干幺广廴廾弋弓彑彡彳\
-心戈戸手支攴文斗斤方旡日曰月木欠止歹殳毋比毛氏气水火爪父爻爿片牙牛犬\
-玄玉瓜瓦甘生用田疋病癶白皮皿目矛矢石示禺禾穴立\
-竹米糸缶网羊羽老而耒耳聿肉臣自至臼舌舛舟艮色艸虍虫血行衣襾\
-見角言谷豆豕豸貝赤走足身車辛辰進邑酉釆里\
-金長門阜隶隹雨青非面\
-革韋韭音頁風飛食首香\
-馬骨高髟鬥鬯鬲\
-鬼魚鳥鹵鹿麥麻\
-黄黍黒黹\
-黽鼎鼓鼠\
-鼻齊\
-齒\
-龍龜\
-龠\
+$B".(B\
+$B0l!CP&P(25P-(B\
+$BFsP5?MQ9F~H,QDQLQRQ\QaEaNOR1R8R9R>==KNRGRLRSKt(B\
+$B8}SxEZ;NTiTjM<Bg=w;RU_@#>.UwUyV%;3V_9)8J6R43VvVxW.W0W55]W@WDWF(B\
+$B?4Xy8M<j;YZ=J8EM6TJ}Z\F|[)7nLZ7g;_]F]U]YHfLS;a]c?e2PD^Ic`+`-JR2g5m8$(B\
+$B8<6L1;4$4E@8MQEDI%IBb"GrHi;.L\L7Lp@P<(c<2S7jN)(B\
+$BC]JF;e4Lf&MS1)O7<)fP<*ffFy?C<+;j11@eA$=.:1?'ggiHCn7l9T0ak((B\
+$B8+3Q8@C+F&l5l83-@VAvB-?H<V?IC$?JM8FSHPN$(B\
+$B6bD9LgIlp0p21+@DHsLL(B\
+$B3Wpjpl2;JGIwHt?)<s9a(B\
+$BGO9|9bqur(r.r/(B\
+$B545{D;sC</sNKc(B\
+$B2+5P9usc(B\
+$BsfE$8]AM(B\
+$BI!sn(B\
+$Bso(B\
+$BN6s}(B\
+$Bs~(B\
 "))
         (i 0))
     (while (< i (length v))
@@ -129,7 +130,7 @@
                           (+ 32 (nth 1 cell)) (+ 32 (nth 2 cell)))))))
     v))
 
-;;; 部首に対応する部分の画数を表す配列
+;;; $BIt<s$KBP1~$9$kItJ,$N2h?t$rI=$9G[Ns(B
 (defconst skk-tankan-stroke-for-radical-vector
   [0 1 1 1 1 1 1
      2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
@@ -148,240 +149,240 @@
      14 14 (12 12 15 15) (10 16) (11 16) 17])
 
 (defconst skk-tankan-radical-name
-  ;; 読みは http://ja.wiktionary.org/wiki/Wiktionary:漢字索引 部首
-  ;; から引用した。
-  ["〓"
-   "いち"               ;1
-   "ぼう、たてぼう"         ;2
-   "てん"               ;3
-   "の"                 ;4
-   "おつ"               ;5
-   "はねぼう"               ;6
-   "に"                 ;7
-   "なべぶた"               ;8
-   "ひと、ひとがしら"           ;9
-   "にんにょう、ひとあし"       ;10
-   "いる、いりがしら、いりやね"     ;11
-   "はち、はちがしら"           ;12
-   "けいがまえ、まきがまえ、どうがまえ" ;13
-   "わかんむり"             ;14
-   "にすい"             ;15
-   "つくえ、つくえきにょう、かぜかんむり" ;16
-   "かんにょう、うけばこ"       ;17
-   "かたな"             ;18
-   "ちから"             ;19
-   "つつみがまえ"           ;20
-   "ひ、あいくち"           ;21
-   "はこがまえ"             ;22
-   "かくしがまえ"           ;23
-   "じゅう"             ;24
-   "ぼく、ぼくのと"         ;25
-   "ふしづくり"             ;26
-   "がんだれ"               ;27
-   "む"                 ;28
-   "また"               ;29
-   "くち、くちへん"         ;30
-   "くにがまえ"             ;31
-   "つち、つちへん"         ;32
-   "さむらい、さむらいかんむり"     ;33
-   "ふゆがしら、ちかんむり"     ;34
-   "すいにょう、なつのあし"     ;35
-   "ゆう、ゆうべ"           ;36
-   "だい、だいかんむり、だいかしら" ;37
-   "おんな、おんなへん"         ;38
-   "こ、こへん"             ;39
-   "うかんむり"             ;40
-   "すん"               ;41
-   "しょう、しょうがしら、なおがしら"   ;42
-   "だいのまげあし"         ;43
-   "しかばね、しかばねかんむり"     ;44
-   "てつ、くさのめ"         ;45
-   "やま、やまへん"         ;46
-   "まがりかわ"             ;47
-   "こう、たくみへん"           ;48
-   "こ、き、おのれ、い、すでに、し、み" ;49
-   "はば、はばへん、きんべん"       ;50
-   "かん、いちじゅう"           ;51
-   "よう、いとがしら"           ;52
-   "まだれ"             ;53
-   "えんにょう、いんにょう"     ;54
-   "きょう、こまぬき"           ;55
-   "よく、しきがまえ"           ;56
-   "ゆみ、ゆみへん"         ;57
-   "けいがしら"             ;58
-   "さんづくり、けかざり"       ;59
-   "ぎょうにんべん"         ;60
-   "こころ"             ;61
-   "ほこ、ほこづくり"           ;62
-   "と、とかんむり"         ;63
-   "て"                 ;64
-   "しにょう、えだにょう"       ;65
-   "ぼくづくり、ぼくにょう、のぶん" ;66
-   "ぶん"               ;67
-   "と、とます"             ;68
-   "おの、おのづくり"           ;69
-   "ほう、ほうへん、かたへん"       ;70
-   "なし、むにょう、すでのつくり"   ;71
-   "ひ、ひへん、にちへん"       ;72
-   "ひらび"             ;73
-   "つき、つきへん"         ;74
-   "き、きへん"             ;75
-   "あくび"             ;76
-   "とめる、とめへん"           ;77
-   "がつへん、かばねへん"       ;78
-   "ほこづくり、るまた"         ;79
-   "なかれ、はは"           ;80
-   "ならびひ、くらべる"         ;81
-   "け"                 ;82
-   "うじ"               ;83
-   "きがまえ"               ;84
-   "みず、したみず"         ;85
-   "ひ、ひへん"             ;86
-   "つめ、そうにょう"           ;87
-   "ちち"               ;88
-   "こう"               ;89
-   "しょう、しょうへん"         ;90
-   "かた、かたへん"         ;91
-   "きば、きばへん"         ;92
-   "うし"               ;93
-   "いぬ"               ;94
-   "げん"               ;95
-   "たま"               ;96
-   "うり"               ;97
-   "かわら"             ;98
-   "あまい"             ;99
-   "いきる、うまれる"           ;100
-   "もちいる"               ;101
-   "た、たへん"             ;102
-   "ひき"               ;103
-   "やまいだれ"             ;104
-   "はつがしら"             ;105
-   "しろ"               ;106
-   "けがわ、ひのかわ"           ;107
-   "さら"               ;108
-   "め、めへん"             ;109
-   "ほこ、ほこへん"         ;110
-   "や、やへん"             ;111
-   "いし、いしへん"         ;112
-   "しめす"             ;113
-   "じゅうのあし"           ;114
-   "のぎ、のぎへん"         ;115
-   "あな、あなかんむり"         ;116
-   "たつ、たつへん"         ;117
-   "たけ、たけかんむり"         ;118
-   "こめ、こめへん"         ;119
-   "いと"               ;120
-   "ほとぎ、ほとぎへん、ふ"     ;121
-   "あみがしら"             ;122
-   "ひつじ、ひつじへん"         ;123
-   "はね"               ;124
-   "おいかんむり"           ;125
-   "しこうして"             ;126
-   "らいすき、らいへん"         ;127
-   "みみ、みみへん"         ;128
-   "いつ、ふでづくり"           ;129
-   "にく"               ;130
-   "しん"               ;131
-   "じ、みずから"           ;132
-   "いたる、いたるへん"         ;133
-   "うす"               ;134
-   "した、したへん"         ;135
-   "まいあし"               ;136
-   "ふね、ふねへん"         ;137
-   "ごん、ごんづくり、ねづくり、うしとら" ;138
-   "いろ"               ;139
-   "くさ、くさかんむり"         ;140
-   "とらかんむり、とらがしら"       ;141
-   "むし、むしへん"         ;142
-   "ち"                 ;143
-   "ぎょうがまえ、ゆきがまえ"       ;144
-   "ころも"             ;145
-   "にし、おおいかんむり"       ;146
-   "みる"               ;147
-   "つの、つのへん"         ;148
-   "ことば、げん、ごんべん"     ;149
-   "たに、たにへん"         ;150
-   "まめ、まめへん"         ;151
-   "いのこ、いのこへん、ぶた"       ;152
-   "むじなへん"             ;153
-   "かい、かいへん、こがい"     ;154
-   "あか"               ;155
-   "はしる、そうにょう"         ;156
-   "あし、あしへん"         ;157
-   "み、みへん"             ;158
-   "くるま、くるまへん"         ;159
-   "しん、からい"           ;160
-   "しんのたつ"             ;161
-   "しんにょう、しんにゅう"     ;162
-   "むら"               ;163
-   "とりへん、ひよみのとり、さけのとり" ;164
-   "のごめ、のごめへん"         ;165
-   "さと、さとへん"         ;166
-   "かね、かねへん"         ;167
-   "ながい"             ;168
-   "もん、もんがまえ、かどがまえ"   ;169
-   "おか"               ;170
-   "れいづくり"             ;171
-   "ふるとり"               ;172
-   "あめ、あめかんむり"         ;173
-   "あお"               ;174
-   "あらず"             ;175
-   "めん"               ;176
-   "かわへん、つくりがわ"       ;177
-   "なめしがわ"             ;178
-   "にら"               ;179
-   "おと、おとへん"         ;180
-   "おおがい"               ;181
-   "かぜ"               ;182
-   "とぶ"               ;183
-   "しょく、しょくへん"         ;184
-   "くび"               ;185
-   "かおり"             ;186
-   "うま、うまへん"         ;187
-   "ほね、ほねへん"         ;188
-   "たかい"             ;189
-   "かみかんむり、かみがしら"       ;190
-   "とうがまえ、たたかいがまえ"     ;191
-   "ちょう、においざけ"         ;192
-   "かなえ"             ;193
-   "おに、きにょう"         ;194
-   "さかな、うおへん"           ;195
-   "とり、とりへん"         ;196
-   "しお"               ;197
-   "しか"               ;198
-   "むぎ、ばくにょう"           ;199
-   "あさ、あさかんむり"         ;200
-   "き"                 ;201
-   "きび"               ;202
-   "くろ"               ;203
-   "ぬいとり、ふつへん、ち"     ;204
-   "べんあし、かえる、べん"     ;205
-   "かなえ、てい"           ;206
-   "つづみ"             ;207
-   "ねずみ、ねずみへん"         ;208
-   "はな、はなへん"         ;209
-   "せい"               ;210
-   "は、はへん"             ;211
-   "りゅう"             ;212
-   "かめ"               ;213
-   "やく、ふえ"             ;214
+  ;; $BFI$_$O(B http://ja.wiktionary.org/wiki/Wiktionary:$B4A;z:w0z(B $BIt<s(B
+  ;; $B$+$i0zMQ$7$?!#(B
+  ["$B".(B"
+   "$B$$$A(B"               ;1
+   "$B$\$&!"$?$F$\$&(B"         ;2
+   "$B$F$s(B"               ;3
+   "$B$N(B"                 ;4
+   "$B$*$D(B"               ;5
+   "$B$O$M$\$&(B"               ;6
+   "$B$K(B"                 ;7
+   "$B$J$Y$V$?(B"               ;8
+   "$B$R$H!"$R$H$,$7$i(B"           ;9
+   "$B$K$s$K$g$&!"$R$H$"$7(B"       ;10
+   "$B$$$k!"$$$j$,$7$i!"$$$j$d$M(B"     ;11
+   "$B$O$A!"$O$A$,$7$i(B"           ;12
+   "$B$1$$$,$^$(!"$^$-$,$^$(!"$I$&$,$^$((B" ;13
+   "$B$o$+$s$`$j(B"             ;14
+   "$B$K$9$$(B"             ;15
+   "$B$D$/$(!"$D$/$($-$K$g$&!"$+$<$+$s$`$j(B" ;16
+   "$B$+$s$K$g$&!"$&$1$P$3(B"       ;17
+   "$B$+$?$J(B"             ;18
+   "$B$A$+$i(B"             ;19
+   "$B$D$D$_$,$^$((B"           ;20
+   "$B$R!"$"$$$/$A(B"           ;21
+   "$B$O$3$,$^$((B"             ;22
+   "$B$+$/$7$,$^$((B"           ;23
+   "$B$8$e$&(B"             ;24
+   "$B$\$/!"$\$/$N$H(B"         ;25
+   "$B$U$7$E$/$j(B"             ;26
+   "$B$,$s$@$l(B"               ;27
+   "$B$`(B"                 ;28
+   "$B$^$?(B"               ;29
+   "$B$/$A!"$/$A$X$s(B"         ;30
+   "$B$/$K$,$^$((B"             ;31
+   "$B$D$A!"$D$A$X$s(B"         ;32
+   "$B$5$`$i$$!"$5$`$i$$$+$s$`$j(B"     ;33
+   "$B$U$f$,$7$i!"$A$+$s$`$j(B"     ;34
+   "$B$9$$$K$g$&!"$J$D$N$"$7(B"     ;35
+   "$B$f$&!"$f$&$Y(B"           ;36
+   "$B$@$$!"$@$$$+$s$`$j!"$@$$$+$7$i(B" ;37
+   "$B$*$s$J!"$*$s$J$X$s(B"         ;38
+   "$B$3!"$3$X$s(B"             ;39
+   "$B$&$+$s$`$j(B"             ;40
+   "$B$9$s(B"               ;41
+   "$B$7$g$&!"$7$g$&$,$7$i!"$J$*$,$7$i(B"   ;42
+   "$B$@$$$N$^$2$"$7(B"         ;43
+   "$B$7$+$P$M!"$7$+$P$M$+$s$`$j(B"     ;44
+   "$B$F$D!"$/$5$N$a(B"         ;45
+   "$B$d$^!"$d$^$X$s(B"         ;46
+   "$B$^$,$j$+$o(B"             ;47
+   "$B$3$&!"$?$/$_$X$s(B"           ;48
+   "$B$3!"$-!"$*$N$l!"$$!"$9$G$K!"$7!"$_(B" ;49
+   "$B$O$P!"$O$P$X$s!"$-$s$Y$s(B"       ;50
+   "$B$+$s!"$$$A$8$e$&(B"           ;51
+   "$B$h$&!"$$$H$,$7$i(B"           ;52
+   "$B$^$@$l(B"             ;53
+   "$B$($s$K$g$&!"$$$s$K$g$&(B"     ;54
+   "$B$-$g$&!"$3$^$L$-(B"           ;55
+   "$B$h$/!"$7$-$,$^$((B"           ;56
+   "$B$f$_!"$f$_$X$s(B"         ;57
+   "$B$1$$$,$7$i(B"             ;58
+   "$B$5$s$E$/$j!"$1$+$6$j(B"       ;59
+   "$B$.$g$&$K$s$Y$s(B"         ;60
+   "$B$3$3$m(B"             ;61
+   "$B$[$3!"$[$3$E$/$j(B"           ;62
+   "$B$H!"$H$+$s$`$j(B"         ;63
+   "$B$F(B"                 ;64
+   "$B$7$K$g$&!"$($@$K$g$&(B"       ;65
+   "$B$\$/$E$/$j!"$\$/$K$g$&!"$N$V$s(B" ;66
+   "$B$V$s(B"               ;67
+   "$B$H!"$H$^$9(B"             ;68
+   "$B$*$N!"$*$N$E$/$j(B"           ;69
+   "$B$[$&!"$[$&$X$s!"$+$?$X$s(B"       ;70
+   "$B$J$7!"$`$K$g$&!"$9$G$N$D$/$j(B"   ;71
+   "$B$R!"$R$X$s!"$K$A$X$s(B"       ;72
+   "$B$R$i$S(B"             ;73
+   "$B$D$-!"$D$-$X$s(B"         ;74
+   "$B$-!"$-$X$s(B"             ;75
+   "$B$"$/$S(B"             ;76
+   "$B$H$a$k!"$H$a$X$s(B"           ;77
+   "$B$,$D$X$s!"$+$P$M$X$s(B"       ;78
+   "$B$[$3$E$/$j!"$k$^$?(B"         ;79
+   "$B$J$+$l!"$O$O(B"           ;80
+   "$B$J$i$S$R!"$/$i$Y$k(B"         ;81
+   "$B$1(B"                 ;82
+   "$B$&$8(B"               ;83
+   "$B$-$,$^$((B"               ;84
+   "$B$_$:!"$7$?$_$:(B"         ;85
+   "$B$R!"$R$X$s(B"             ;86
+   "$B$D$a!"$=$&$K$g$&(B"           ;87
+   "$B$A$A(B"               ;88
+   "$B$3$&(B"               ;89
+   "$B$7$g$&!"$7$g$&$X$s(B"         ;90
+   "$B$+$?!"$+$?$X$s(B"         ;91
+   "$B$-$P!"$-$P$X$s(B"         ;92
+   "$B$&$7(B"               ;93
+   "$B$$$L(B"               ;94
+   "$B$2$s(B"               ;95
+   "$B$?$^(B"               ;96
+   "$B$&$j(B"               ;97
+   "$B$+$o$i(B"             ;98
+   "$B$"$^$$(B"             ;99
+   "$B$$$-$k!"$&$^$l$k(B"           ;100
+   "$B$b$A$$$k(B"               ;101
+   "$B$?!"$?$X$s(B"             ;102
+   "$B$R$-(B"               ;103
+   "$B$d$^$$$@$l(B"             ;104
+   "$B$O$D$,$7$i(B"             ;105
+   "$B$7$m(B"               ;106
+   "$B$1$,$o!"$R$N$+$o(B"           ;107
+   "$B$5$i(B"               ;108
+   "$B$a!"$a$X$s(B"             ;109
+   "$B$[$3!"$[$3$X$s(B"         ;110
+   "$B$d!"$d$X$s(B"             ;111
+   "$B$$$7!"$$$7$X$s(B"         ;112
+   "$B$7$a$9(B"             ;113
+   "$B$8$e$&$N$"$7(B"           ;114
+   "$B$N$.!"$N$.$X$s(B"         ;115
+   "$B$"$J!"$"$J$+$s$`$j(B"         ;116
+   "$B$?$D!"$?$D$X$s(B"         ;117
+   "$B$?$1!"$?$1$+$s$`$j(B"         ;118
+   "$B$3$a!"$3$a$X$s(B"         ;119
+   "$B$$$H(B"               ;120
+   "$B$[$H$.!"$[$H$.$X$s!"$U(B"     ;121
+   "$B$"$_$,$7$i(B"             ;122
+   "$B$R$D$8!"$R$D$8$X$s(B"         ;123
+   "$B$O$M(B"               ;124
+   "$B$*$$$+$s$`$j(B"           ;125
+   "$B$7$3$&$7$F(B"             ;126
+   "$B$i$$$9$-!"$i$$$X$s(B"         ;127
+   "$B$_$_!"$_$_$X$s(B"         ;128
+   "$B$$$D!"$U$G$E$/$j(B"           ;129
+   "$B$K$/(B"               ;130
+   "$B$7$s(B"               ;131
+   "$B$8!"$_$:$+$i(B"           ;132
+   "$B$$$?$k!"$$$?$k$X$s(B"         ;133
+   "$B$&$9(B"               ;134
+   "$B$7$?!"$7$?$X$s(B"         ;135
+   "$B$^$$$"$7(B"               ;136
+   "$B$U$M!"$U$M$X$s(B"         ;137
+   "$B$4$s!"$4$s$E$/$j!"$M$E$/$j!"$&$7$H$i(B" ;138
+   "$B$$$m(B"               ;139
+   "$B$/$5!"$/$5$+$s$`$j(B"         ;140
+   "$B$H$i$+$s$`$j!"$H$i$,$7$i(B"       ;141
+   "$B$`$7!"$`$7$X$s(B"         ;142
+   "$B$A(B"                 ;143
+   "$B$.$g$&$,$^$(!"$f$-$,$^$((B"       ;144
+   "$B$3$m$b(B"             ;145
+   "$B$K$7!"$*$*$$$+$s$`$j(B"       ;146
+   "$B$_$k(B"               ;147
+   "$B$D$N!"$D$N$X$s(B"         ;148
+   "$B$3$H$P!"$2$s!"$4$s$Y$s(B"     ;149
+   "$B$?$K!"$?$K$X$s(B"         ;150
+   "$B$^$a!"$^$a$X$s(B"         ;151
+   "$B$$$N$3!"$$$N$3$X$s!"$V$?(B"       ;152
+   "$B$`$8$J$X$s(B"             ;153
+   "$B$+$$!"$+$$$X$s!"$3$,$$(B"     ;154
+   "$B$"$+(B"               ;155
+   "$B$O$7$k!"$=$&$K$g$&(B"         ;156
+   "$B$"$7!"$"$7$X$s(B"         ;157
+   "$B$_!"$_$X$s(B"             ;158
+   "$B$/$k$^!"$/$k$^$X$s(B"         ;159
+   "$B$7$s!"$+$i$$(B"           ;160
+   "$B$7$s$N$?$D(B"             ;161
+   "$B$7$s$K$g$&!"$7$s$K$e$&(B"     ;162
+   "$B$`$i(B"               ;163
+   "$B$H$j$X$s!"$R$h$_$N$H$j!"$5$1$N$H$j(B" ;164
+   "$B$N$4$a!"$N$4$a$X$s(B"         ;165
+   "$B$5$H!"$5$H$X$s(B"         ;166
+   "$B$+$M!"$+$M$X$s(B"         ;167
+   "$B$J$,$$(B"             ;168
+   "$B$b$s!"$b$s$,$^$(!"$+$I$,$^$((B"   ;169
+   "$B$*$+(B"               ;170
+   "$B$l$$$E$/$j(B"             ;171
+   "$B$U$k$H$j(B"               ;172
+   "$B$"$a!"$"$a$+$s$`$j(B"         ;173
+   "$B$"$*(B"               ;174
+   "$B$"$i$:(B"             ;175
+   "$B$a$s(B"               ;176
+   "$B$+$o$X$s!"$D$/$j$,$o(B"       ;177
+   "$B$J$a$7$,$o(B"             ;178
+   "$B$K$i(B"               ;179
+   "$B$*$H!"$*$H$X$s(B"         ;180
+   "$B$*$*$,$$(B"               ;181
+   "$B$+$<(B"               ;182
+   "$B$H$V(B"               ;183
+   "$B$7$g$/!"$7$g$/$X$s(B"         ;184
+   "$B$/$S(B"               ;185
+   "$B$+$*$j(B"             ;186
+   "$B$&$^!"$&$^$X$s(B"         ;187
+   "$B$[$M!"$[$M$X$s(B"         ;188
+   "$B$?$+$$(B"             ;189
+   "$B$+$_$+$s$`$j!"$+$_$,$7$i(B"       ;190
+   "$B$H$&$,$^$(!"$?$?$+$$$,$^$((B"     ;191
+   "$B$A$g$&!"$K$*$$$6$1(B"         ;192
+   "$B$+$J$((B"             ;193
+   "$B$*$K!"$-$K$g$&(B"         ;194
+   "$B$5$+$J!"$&$*$X$s(B"           ;195
+   "$B$H$j!"$H$j$X$s(B"         ;196
+   "$B$7$*(B"               ;197
+   "$B$7$+(B"               ;198
+   "$B$`$.!"$P$/$K$g$&(B"           ;199
+   "$B$"$5!"$"$5$+$s$`$j(B"         ;200
+   "$B$-(B"                 ;201
+   "$B$-$S(B"               ;202
+   "$B$/$m(B"               ;203
+   "$B$L$$$H$j!"$U$D$X$s!"$A(B"     ;204
+   "$B$Y$s$"$7!"$+$($k!"$Y$s(B"     ;205
+   "$B$+$J$(!"$F$$(B"           ;206
+   "$B$D$E$_(B"             ;207
+   "$B$M$:$_!"$M$:$_$X$s(B"         ;208
+   "$B$O$J!"$O$J$X$s(B"         ;209
+   "$B$;$$(B"               ;210
+   "$B$O!"$O$X$s(B"             ;211
+   "$B$j$e$&(B"             ;212
+   "$B$+$a(B"               ;213
+   "$B$d$/!"$U$((B"             ;214
    ]
-  "部首の読み")
+  "$BIt<s$NFI$_(B")
 
-;; ;; ↓何かに使えそうな alist
+;; ;; $B"-2?$+$K;H$($=$&$J(B alist
 ;; (let ((i 0)
 ;;       alist)
 ;;   (mapc #'(lambda (radical)
 ;;      (mapc #'(lambda (yomi)
 ;;            (setq alist (cons (cons radical yomi) alist)))
-;;        (split-string (aref skk-tankan-radical-name i) "、"))
+;;        (split-string (aref skk-tankan-radical-name i) "$B!"(B"))
 ;;      (setq i (1+ i)))
 ;;  (append skk-tankan-radical-vector nil))
 ;;   alist)
 
 
-;;; japanese-jisx0208, japanese-jisx0213-1 用の部首・画数データ
-;; 1面-14区-01点 から 2Byte ずつ使用している
+;;; japanese-jisx0208, japanese-jisx0213-1 $BMQ$NIt<s!&2h?t%G!<%?(B
+;; 1$BLL(B-14$B6h(B-01$BE@(B $B$+$i(B 2Byte $B$:$D;HMQ$7$F$$$k(B
 ;; 1st byte = radical number
 ;; 2nd byte = (sub radical index) << 6 | strokes in radical
 (defconst skk-tankan-radical-stroke-table-0213-1 "\
@@ -1359,9 +1360,9 @@
 \326\005\046\206\054\010\063\005\150\012\170\115\
 ")
 
-;;; japanese-jisx0213-2 用の部首・画数データ
-;; 2-1-1 から 2Byte ずつ使用(skk-tankan-radical-stroke-table-0213-1 に同じ)
-;; ただし未使用の区はとばしている
+;;; japanese-jisx0213-2 $BMQ$NIt<s!&2h?t%G!<%?(B
+;; 2-1-1 $B$+$i(B 2Byte $B$:$D;HMQ(B(skk-tankan-radical-stroke-table-0213-1 $B$KF1$8(B)
+;; $B$?$@$7L$;HMQ$N6h$O$H$P$7$F$$$k(B
 (defconst skk-tankan-radical-stroke-table-0213-2 "\
 \001\001\001\001\001\003\001\003\002\002\002\002\002\003\004\000\
 \004\002\004\002\004\005\004\005\004\005\004\005\005\100\005\105\
@@ -1677,7 +1678,7 @@
 \000\000\000\000\000\000\000\000\000\000\000\000\
 ")
 
-
+
 ;;; get/set char's annotation
 (defun skk-tankan-get-char-annotation (char)
   (if skk-tankan-annotation-table
@@ -1689,18 +1690,18 @@
   (let ((v (aref skk-tankan-stroke-for-radical-vector radical)))
     (if (integerp v)
         v
-      (nth (lsh dat -6) v))))
+      (nth (ash dat -6) v))))
 
 ;;; get char's radical, strokes in radical, total strokes
 (defun skk-tankan-get-char-data (char)
-  "文字を表す整数 CHAR を与えると、その文字に関する部首、部首内画数、総画数を
-リストで返す。"
-  ;; (string-to-char "単")
+  "$BJ8;z$rI=$9@0?t(B CHAR $B$rM?$($k$H!"$=$NJ8;z$K4X$9$kIt<s!"It<sFb2h?t!"Am2h?t$r(B
+$B%j%9%H$GJV$9!#(B"
+  ;; (string-to-char "$BC1(B")
   ;;   => 57777
   ;; (skk-tankan-get-char-data 57777)
   ;;   => (24 7 9)
   ;; (aref skk-tankan-radical-vector 24)
-  ;;   => "十"
+  ;;   => "$B==(B"
   (let* ((charset (char-charset char skk-charset-list))
          (fun (cdr (assq charset skk-tankan-get-char-data-functions))))
     (or (and fun
@@ -1720,21 +1721,21 @@
         radical dat stroke)
     (if (null n)
         nil
-      (setq n (* 2 n)           ; table は、1 文字あたり 2 byte を使用
-            radical (aref table n)  ; 部首番号
+      (setq n (* 2 n)           ; table $B$O!"(B1 $BJ8;z$"$?$j(B 2 byte $B$r;HMQ(B
+            radical (aref table n)  ; $BIt<sHV9f(B
             dat (aref table (1+ n)) ;
-            stroke (logand 63 dat)) ; 部首内画数
+            stroke (logand 63 dat)) ; $BIt<sFb2h?t(B
       (list radical stroke
             (+ stroke (skk-tankan-stroke-for-radical radical dat))))))
 
-;; (string-to-char "亜")  => 55329
+;; (string-to-char "$B0!(B")  => 55329
 ;; (split-char 55329)     => (japanese-jisx0208 48 33)
-;; split-char の結果を 16進に直すと JISコード が得られる。
+;; split-char $B$N7k2L$r(B 16$B?J$KD>$9$H(B JIS$B%3!<%I(B $B$,F@$i$l$k!#(B
 ;; (format "%x %x" 48 33) => "30 21"
 
 ;; ?! = 33 = 0x21
-;; 01区～13区までは非漢字領域
-;; 区ひとつ当たり (- (* 16 6) 2) = 94
+;; 01$B6h!A(B13$B6h$^$G$OHs4A;zNN0h(B
+;; $B6h$R$H$DEv$?$j(B (- (* 16 6) 2) = 94
 
 ;; (skk-tankan-encode-0213-1 55329) => 188
 
@@ -1766,16 +1767,16 @@
     list))
 
 (defun skk-search-by-stroke-or-radical (num method)
-  "JIS X 0208 又は JIS X 0213-[12] の文字集合のうち指定の方法で単漢字を検索する。
-METHOD が 0 であれば数値 NUM は部首番号として、
-METHOD が 2 であれば数値 NUM は総画数として検索を実行する。
-戻り値は (\"力\" \"了\" \"又\" …) のリストである。"
+  "JIS X 0208 $BKt$O(B JIS X 0213-[12] $B$NJ8;z=89g$N$&$A;XDj$NJ}K!$GC14A;z$r8!:w$9$k!#(B
+METHOD $B$,(B 0 $B$G$"$l$P?tCM(B NUM $B$OIt<sHV9f$H$7$F!"(B
+METHOD $B$,(B 2 $B$G$"$l$P?tCM(B NUM $B$OAm2h?t$H$7$F8!:w$r<B9T$9$k!#(B
+$BLa$jCM$O(B (\"$BNO(B\" \"$BN;(B\" \"$BKt(B\" $B!D(B) $B$N%j%9%H$G$"$k!#(B"
   ;; TODO
-  ;; 回りくどいループと skk-tankan-get-char-data 経由は明らかに無駄。
-  ;; skk-tankan-radical-stroke-table-0213-1 を直接参照するよう書き換える。
-  ;; ↑の 1st byte が部首番号。
-  ;; ↑の 2nd byte + skk-tankan-stroke-for-radical-vector が総画数。
-  ;; index から char へは skk-tankan-encode-0213-1 を逆算すれば可能。
+  ;; $B2s$j$/$I$$%k!<%W$H(B skk-tankan-get-char-data $B7PM3$OL@$i$+$KL5BL!#(B
+  ;; skk-tankan-radical-stroke-table-0213-1 $B$rD>@\;2>H$9$k$h$&=q$-49$($k!#(B
+  ;; $B",$N(B 1st byte $B$,It<sHV9f!#(B
+  ;; $B",$N(B 2nd byte + skk-tankan-stroke-for-radical-vector $B$,Am2h?t!#(B
+  ;; index $B$+$i(B char $B$X$O(B skk-tankan-encode-0213-1 $B$r5U;;$9$l$P2DG=!#(B
 
   (append
    (skk-search-by-stroke-or-radical-sub ?\x2e ?\x7e ?\x21 ?\x7e
@@ -1792,13 +1793,13 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
                                         num method 'japanese-jisx0213-2)))
 
 (defun skk-tankan-bushu-compread ()
-  "配列 `skk-tankan-radical-vector' の内容を一覧表示して選択する。
-戻り値は数値である。"
+  "$BG[Ns(B `skk-tankan-radical-vector' $B$NFbMF$r0lMwI=<($7$FA*Br$9$k!#(B
+$BLa$jCM$O?tCM$G$"$k!#(B"
   ;; Memo
-  ;;   skk-tankan-radical-vector は固定値（不変）なので、
-  ;;   本来であれば alist も動的に生成せずに固定値で良い。
-  ;;   ただし、face を導入してしまった(2011-1-3)ので、動的に face を適用させるため
-  ;;   当面は alist も動的に生成する。
+  ;;   skk-tankan-radical-vector $B$O8GDjCM!JITJQ!K$J$N$G!"(B
+  ;;   $BK\Mh$G$"$l$P(B alist $B$bF0E*$K@8@.$;$:$K8GDjCM$GNI$$!#(B
+  ;;   $B$?$@$7!"(Bface $B$rF3F~$7$F$7$^$C$?(B(2011-1-3)$B$N$G!"F0E*$K(B face $B$rE,MQ$5$;$k$?$a(B
+  ;;   $BEvLL$O(B alist $B$bF0E*$K@8@.$9$k!#(B
   (let ((i 1)
         (len (length skk-tankan-radical-vector))
         alist)
@@ -1815,7 +1816,7 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
                         alist))
       (setq i (1+ i)))
 
-    (setq i (string-to-number (completing-read "部首を番号で選択（TABで一覧表示）: "
+    (setq i (string-to-number (completing-read "$BIt<s$rHV9f$GA*Br!J(BTAB$B$G0lMwI=<(!K(B: "
                                                alist nil t)))
     (message "%s %s"
              (aref skk-tankan-radical-vector i)
@@ -1840,13 +1841,13 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
                               (cons (cons (format "%-16s (%03d) %s" yomi i radical)
                                           nil)
                                     alist)))
-                    (split-string (aref skk-tankan-radical-name i) "、"))
+                    (split-string (aref skk-tankan-radical-name i) "$B!"(B"))
               (setq i (1+ i)))
           (cdr (append skk-tankan-radical-vector nil)))
     alist))
 
 (defun skk-tankan-yomi-compread ()
-  (let ((radical (completing-read "部首を読みで選択（TABで一覧表示）: "
+  (let ((radical (completing-read "$BIt<s$rFI$_$GA*Br!J(BTAB$B$G0lMwI=<(!K(B: "
                                   skk-tankan-name-radical-alist nil t)))
     (if (equal "" radical)
         0
@@ -1856,9 +1857,9 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
 
 ;;;###autoload
 (defun skk-tankan (arg)
-  "単漢字変換を開始する。
-\\[skk-tankan] で部首変換を、
-\\[universal-argument] 数値 \\[skk-tankan] で総画数変換を開始する。"
+  "$BC14A;zJQ49$r3+;O$9$k!#(B
+\\[skk-tankan] $B$GIt<sJQ49$r!"(B
+\\[universal-argument] $B?tCM(B \\[skk-tankan] $B$GAm2h?tJQ49$r3+;O$9$k!#(B"
   (interactive "P")
   (let (tankan)
     (if (integerp arg)
@@ -1873,7 +1874,7 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
           (setq tankan (skk-search-by-stroke-or-radical i 0)))))
 
     (when tankan
-      (let ((buf (get-buffer-create "*単漢字*"))
+      (let ((buf (get-buffer-create "*$BC14A;z(B*"))
             list)
         (setq skk-tankan-mode-original-window-configuration
               (current-window-configuration))
@@ -1888,7 +1889,7 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
                           (substring str 2))))
         (set-buffer-modified-p nil)
         (setq buffer-read-only t)
-        (pop-to-buffer "*単漢字*")
+        (pop-to-buffer "*$BC14A;z(B*")
         (goto-char (point-min))
         (skk-tankan-mode)
         (skk-tankan-overlay)))))
@@ -1931,7 +1932,7 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
 
 (defun skk-tankan-mode-quit ()
   (interactive)
-  (kill-buffer "*単漢字*")
+  (kill-buffer "*$BC14A;z(B*")
   (set-window-configuration skk-tankan-mode-original-window-configuration))
 
 (defun skk-tankan-mode-display-code ()
@@ -1941,9 +1942,9 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
 
 ;;;###autoload
 (defun skk-tankan-search (func &rest args)
-  "変数 `skk-henkan-key' で指定された「読み」に基づいて単漢字変換を実行する。
-通常は `skk-search-prog-list' の１要素として次の形式で指定される。
-'(skk-tankan-search 'skk-search-jisyo-file
+  "$BJQ?t(B `skk-henkan-key' $B$G;XDj$5$l$?!VFI$_!W$K4p$E$$$FC14A;zJQ49$r<B9T$9$k!#(B
+$BDL>o$O(B `skk-search-prog-list' $B$N#1MWAG$H$7$F<!$N7A<0$G;XDj$5$l$k!#(B
+\\='(skk-tankan-search \\='skk-search-jisyo-file
                     skk-large-jisyo 10000))"
   (when (string-match (format "%s$" (regexp-quote
                                      (char-to-string skk-tankan-search-key)))
@@ -1952,16 +1953,16 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
       ;; get KOUHO list
       (skk-tankan-select-tankanji-kouho
        (cons nil (cond
-                  ;; ▽12@ <SPC> => 総画数変換
+                  ;; $B"&(B12@ <SPC> => $BAm2h?tJQ49(B
                   ((string-match "^[0-9]+$" skk-henkan-key)
                    (skk-search-by-stroke-or-radical
                     (string-to-number skk-henkan-key) 2))
-                  ;; ▽@@ <SPC> => 部首変換
+                  ;; $B"&(B@@ <SPC> => $BIt<sJQ49(B
                   ((equal (char-to-string skk-tankan-search-key)
                           skk-henkan-key)
                    (skk-search-by-stroke-or-radical
                     (skk-tankan-bushu-compread) 0))
-                  ;; ▽あ <SPC> => "読み"単漢字変換
+                  ;; $B"&$"(B <SPC> => "$BFI$_(B"$BC14A;zJQ49(B
                   (t
                    (apply func args))))))))
 
@@ -1997,7 +1998,7 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
     (mapcar (lambda (cell)
               (let ((anno (if (zerop (nth 2 cell))
                               (nth 1 cell)
-                            (format "%d画(%s部%d画)%s"
+                            (format "%d$B2h(B(%s$BIt(B%d$B2h(B)%s"
                                     (nth 4 cell)
                                     (aref skk-tankan-radical-vector
                                           (nth 2 cell))
@@ -2030,667 +2031,667 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
             (apply #'skk-tankan-search server-prog)
           nil))))
 
-
+
 ;;; annotation data for japanese-jisx0208
 (when skk-tankan-annotation-table
   (let ((l '(
 
-             (?　 "和字間隔,IDEOGRAPHIC SPACE")
-             (?、 "読点,IDEOGRAPHIC COMMA")
-             (?。 "句点,IDEOGRAPHIC FULL STOP")
-             (?， "コンマ,COMMA")
-             (?． "ピリオド,FULL STOP")
-             (?・ "中点,KATAKANA MIDDLE DOT")
-             (?： "コロン,COLON")
-             (?； "セミコロン,SEMICOLON")
-             (?？ "疑問符,QUESTION MARK")
-             (?！ "感嘆符,EXCLAMATION MARK")
-             (?゛ "濁点,KATAKANA-HIRAGANA VOICED SOUND MARK")
-             (?゜ "半濁点,KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK")
-             (?´ "アクサンテギュ,アキュートアクセント,プライム記号,ACUTE ACCENT")
-             (?｀ "アクサングラーブ,グレーブアクセント,GRAVE ACCENT")
-             (?¨ "ウムラウト,ダイエレシス,DIAERESIS")
-             (?＾ "アクサンシルコンフレックス,サーカムフレックスアクセント,CIRCUMFLEX ACCENT")
-             (?￣ "オーバーライン,論理否定記号,OVERLINE")
-             (?＿ "アンダーライン,LOW LINE")
-             (?ヽ "片仮名繰返し記号,KATAKANA ITERATION MARK")
-             (?ヾ "片仮名繰返し記号(濁点),KATAKANA VOICED ITERATION MARK")
-             (?ゝ "平仮名繰返し記号,HIRAGANA ITERATION MARK")
-             (?ゞ "平仮名繰返し記号(濁点),HIRAGANA VOICED ITERATION MARK")
-             (?〃 "同じく記号,DITTO MARK")
-             (?仝 "同上記号,CJK UNIFIED IDEOGRAPH-4EDD")
-             (?々 "繰返し記号,IDEOGRAPHIC ITERATION MARK")
-             (?〆 "しめ,IDEOGRAPHIC CLOSING MARK")
-             (?〇 "漢数字ゼロ,IDEOGRAPHIC NUMBER ZERO")
-             (?ー "長音記号,KATAKANA-HIRAGANA PROLONGED SOUND MARK")
-             (?― "ダッシュ(全角),EM DASH")
-             (?‐ "ハイフン(四分),HYPHEN")
-             (?／ "斜線,SOLIDUS")
-             (?＼ "逆斜線,REVERSE SOLIDUS")
-             (?～ "波ダッシュ,WAVE DASH")
-             (?∥ "双柱,DOUBLE VERTICAL LINE")
-             (?｜ "縦線,VERTICAL LINE")
-             (?… "三点リーダ,HORIZONTAL ELLIPSIS")
-             (?‥ "二点リーダ,TWO DOT LEADER")
-             (?‘ "左シングル引用符,左シングルクォーテーションマーク,LEFT SINGLE QUOTATION MARK")
-             (?’ "右シングル引用符,右シングルクォーテーションマーク,RIGHT SINGLE QUOTATION MARK")
-             (?“ "左ダブル引用符,左ダブルクォーテーションマーク,LEFT DOUBLE QUOTATION MARK")
-             (?” "右ダブル引用符,右ダブルクォーテーションマーク,RIGHT DOUBLE QUOTATION MARK")
-             (?（ "始め小括弧,始め丸括弧,LEFT PARENTHESIS")
-               (?） "終わり小括弧,終わり丸括弧,RIGHT PARENTHESIS")
-             (?〔 "始めきっこう(亀甲)括弧,LEFT TORTOISE SHELL BRACKET")
-               (?〕 "終わりきっこう(亀甲)括弧,RIGHT TORTOISE SHELL BRACKET")
-             (?［ "始め大括弧,始め角括弧,LEFT SQUARE BRACKET")
-               (?］ "終わり大括弧,終わり角括弧,RIGHT SQUARE BRACKET")
-             (?｛ "始め中括弧,始め波括弧,LEFT CURLY BRACKET")
-               (?｝ "終わり中括弧,終わり波括弧,RIGHT CURLY BRACKET")
-             (?〈 "始め山括弧,LEFT ANGLE BRACKET")
-               (?〉 "終わり山括弧,RIGHT ANGLE BRACKET")
-             (?《 "始め二重山括弧,LEFT DOUBLE ANGLE BRACKET")
-               (?》 "終わり二重山括弧,RIGHT DOUBLE ANGLE BRACKET")
-             (?「 "始めかぎ括弧,LEFT CORNER BRACKET")
-               (?」 "終わりかぎ括弧,RIGHT CORNER BRACKET")
-             (?『 "始め二重かぎ括弧,LEFT WHITE CORNER BRACKET")
-               (?』 "終わり二重かぎ括弧,RIGHT WHITE CORNER BRACKET")
-             (?【 "始めすみ付き括弧,LEFT BLACK LENTICULAR BRACKET")
-               (?】 "終わりすみ付き括弧,RIGHT BLACK LENTICULAR BRACKET")
-             (?＋ "正符号,加算記号,PLUS SIGN")
-             (?－ "負符号,減算記号,MINUS SIGN")
-             (?± "正又は負符号,PLUS-MINUS SIGN")
-             (?× "乗算記号,MULTIPLICATION SIGN")
-             (?÷ "除算記号,DIVISION SIGN")
-             (?＝ "等号,EQUALS SIGN")
-             (?≠ "等号否定,NOT EQUAL TO")
-             (?＜ "不等号(より小),LESS-THAN SIGN")
-             (?＞ "不等号(より大),GREATER-THAN SIGN")
-             (?≦ "より小さいか又は等しい,LESS-THAN OVER EQUAL TO")
-             (?≧ "より大きいか又は等しい,GREATER-THAN OVER EQUAL TO")
-             (?∞ "無限大,INFINITY")
-             (?∴ "ゆえに,THEREFORE")
-             (?♂ "雄記号,MALE SIGN")
-             (?♀ "雌記号,FEMALE SIGN")
-             (?° "度,DEGREE SIGN")
-             (?′ "分,PRIME")
-             (?″ "秒,DOUBLE PRIME")
-             (?℃ "セ氏度記号,DEGREE CELSIUS")
-             (?￥ "円記号,YEN SIGN")
-             (?＄ "ドル記号,DOLLAR SIGN")
-             (?￠ "セント記号,CENT SIGN")
-             (?￡ "ポンド記号,POUND SIGN")
-             (?％ "パーセント記号,PERCENT SIGN")
-             (?＃ "番号記号,井げた,NUMBER SIGN")
-             (?＆ "アンパサンド,AMPERSAND")
-             (?＊ "星印,アステリスク,ASTERISK")
-             (?＠ "単価記号,COMMERCIAL AT")
-             (?§ "節記号,SECTION SIGN")
-             (?☆ "白星,WHITE STAR")
-             (?★ "黒星,BLACK STAR")
-             (?○ "丸印,白丸,WHITE CIRCLE")
-             (?● "黒丸,BLACK CIRCLE")
-             (?◎ "二重丸,BULLSEYE")
-             (?◇ "ひし形,WHITE DIAMOND")
-             (?◆ "黒ひし形,BLACK DIAMOND")
-             (?□ "四角,WHITE SQUARE")
-             (?■ "黒四角,BLACK SQUARE")
-             (?△ "三角,WHITE UP-POINTING TRIANGLE")
-             (?▲ "黒三角,BLACK UP-POINTING TRIANGLE")
-             (?▽ "逆三角,WHITE DOWN-POINTING TRIANGLE")
-             (?▼ "逆黒三角,BLACK DOWN-POINTING TRIANGLE")
-             (?※ "米印,REFERENCE MARK")
-             (?〒 "郵便記号,POSTAL MARK")
-             (?→ "右矢印,RIGHTWARDS ARROW")
-             (?← "左矢印,LEFTWARDS ARROW")
-             (?↑ "上矢印,UPWARDS ARROW")
-             (?↓ "下矢印,DOWNWARDS ARROW")
-             (?〓 "げた記号,GETA MARK")
-             (?∈ "属する,ELEMENT OF")
-             (?∋ "元として含む,CONTAINS AS MEMBER")
-             (?⊆ "部分集合,SUBSET OF OR EQUAL TO")
-             (?⊇ "部分集合(逆方向),SUPERSET OF OR EQUAL TO")
-             (?⊂ "真部分集合,SUBSET OF")
-             (?⊃ "真部分集合(逆方向),SUPERSET OF")
-             (?∪ "合併集合,UNION")
-             (?∩ "共通集合,INTERSECTION")
-             (?∧ "及び(合接),LOGICAL AND")
-             (?∨ "又は(離接),LOGICAL OR")
-             (?￢ "否定,NOT SIGN")
-             (?⇒ "ならば(含意),RIGHTWARDS DOUBLE ARROW")
-             (?⇔ "同値,LEFT RIGHT DOUBLE ARROW")
-             (?∀ "すべての(普通限定子),FOR ALL")
-             (?∃ "存在する(存在限定子),THERE EXISTS")
-             (?∠ "角,ANGLE")
-             (?⊥ "垂直,UP TACK")
-             (?⌒ "弧,ARC")
-             (?∂ "デル,ラウンドディー,PARTIAL DIFFERENTIAL")
-             (?∇ "ナブラ,NABLA")
-             (?≡ "常に等しい,合同,IDENTICAL TO")
-             (?≒ "ほとんど等しい,APPROXIMATELY EQUAL TO OR THE IMAGE OF")
-             (?≪ "非常に小さい,MUCH LESS-THAN")
-             (?≫ "非常に大きい,MUCH GREATER-THAN")
-             (?√ "根号,SQUARE ROOT")
-             (?∽ "相似,REVERSED TILDE")
-             (?∝ "比例,PROPORTIONAL TO")
-             (?∵ "なぜならば,BECAUSE")
-             (?∫ "積分記号,INTEGRAL")
-             (?∬ "2重積分記号,DOUBLE INTEGRAL")
-             (?Å "オングストローム,ANGSTROM SIGN")
-             (?‰ "パーミル,PER MILLE SIGN")
-             (?♯ "シャープ,MUSIC SHARP SIGN")
-             (?♭ "フラット,MUSIC FLAT SIGN")
-             (?♪ "音符,EIGHTH NOTE")
-             (?† "ダガー,DAGGER")
-             (?‡ "ダブルダガー,DOUBLE DAGGER")
-             (?¶ "段落記号,PILCROW SIGN")
-             (?◯ "大きな丸,LARGE CIRCLE")
-             (?０ "0,DIGIT ZERO")
-             (?１ "1,DIGIT ONE")
-             (?２ "2,DIGIT TWO")
-             (?３ "3,DIGIT THREE")
-             (?４ "4,DIGIT FOUR")
-             (?５ "5,DIGIT FIVE")
-             (?６ "6,DIGIT SIX")
-             (?７ "7,DIGIT SEVEN")
-             (?８ "8,DIGIT EIGHT")
-             (?９ "9,DIGIT NINE")
-             (?Ａ "ラテン大文字A,LATIN CAPITAL LETTER A")
-             (?Ｂ "ラテン大文字B,LATIN CAPITAL LETTER B")
-             (?Ｃ "ラテン大文字C,LATIN CAPITAL LETTER C")
-             (?Ｄ "ラテン大文字D,LATIN CAPITAL LETTER D")
-             (?Ｅ "ラテン大文字E,LATIN CAPITAL LETTER E")
-             (?Ｆ "ラテン大文字F,LATIN CAPITAL LETTER F")
-             (?Ｇ "ラテン大文字G,LATIN CAPITAL LETTER G")
-             (?Ｈ "ラテン大文字H,LATIN CAPITAL LETTER H")
-             (?Ｉ "ラテン大文字I,LATIN CAPITAL LETTER I")
-             (?Ｊ "ラテン大文字J,LATIN CAPITAL LETTER J")
-             (?Ｋ "ラテン大文字K,LATIN CAPITAL LETTER K")
-             (?Ｌ "ラテン大文字L,LATIN CAPITAL LETTER L")
-             (?Ｍ "ラテン大文字M,LATIN CAPITAL LETTER M")
-             (?Ｎ "ラテン大文字N,LATIN CAPITAL LETTER N")
-             (?Ｏ "ラテン大文字O,LATIN CAPITAL LETTER O")
-             (?Ｐ "ラテン大文字P,LATIN CAPITAL LETTER P")
-             (?Ｑ "ラテン大文字Q,LATIN CAPITAL LETTER Q")
-             (?Ｒ "ラテン大文字R,LATIN CAPITAL LETTER R")
-             (?Ｓ "ラテン大文字S,LATIN CAPITAL LETTER S")
-             (?Ｔ "ラテン大文字T,LATIN CAPITAL LETTER T")
-             (?Ｕ "ラテン大文字U,LATIN CAPITAL LETTER U")
-             (?Ｖ "ラテン大文字V,LATIN CAPITAL LETTER V")
-             (?Ｗ "ラテン大文字W,LATIN CAPITAL LETTER W")
-             (?Ｘ "ラテン大文字X,LATIN CAPITAL LETTER X")
-             (?Ｙ "ラテン大文字Y,LATIN CAPITAL LETTER Y")
-             (?Ｚ "ラテン大文字Z,LATIN CAPITAL LETTER Z")
-             (?ａ "ラテン小文字A,LATIN SMALL LETTER A")
-             (?ｂ "ラテン小文字B,LATIN SMALL LETTER B")
-             (?ｃ "ラテン小文字C,LATIN SMALL LETTER C")
-             (?ｄ "ラテン小文字D,LATIN SMALL LETTER D")
-             (?ｅ "ラテン小文字E,LATIN SMALL LETTER E")
-             (?ｆ "ラテン小文字F,LATIN SMALL LETTER F")
-             (?ｇ "ラテン小文字G,LATIN SMALL LETTER G")
-             (?ｈ "ラテン小文字H,LATIN SMALL LETTER H")
-             (?ｉ "ラテン小文字I,LATIN SMALL LETTER I")
-             (?ｊ "ラテン小文字J,LATIN SMALL LETTER J")
-             (?ｋ "ラテン小文字K,LATIN SMALL LETTER K")
-             (?ｌ "ラテン小文字L,LATIN SMALL LETTER L")
-             (?ｍ "ラテン小文字M,LATIN SMALL LETTER M")
-             (?ｎ "ラテン小文字N,LATIN SMALL LETTER N")
-             (?ｏ "ラテン小文字O,LATIN SMALL LETTER O")
-             (?ｐ "ラテン小文字P,LATIN SMALL LETTER P")
-             (?ｑ "ラテン小文字Q,LATIN SMALL LETTER Q")
-             (?ｒ "ラテン小文字R,LATIN SMALL LETTER R")
-             (?ｓ "ラテン小文字S,LATIN SMALL LETTER S")
-             (?ｔ "ラテン小文字T,LATIN SMALL LETTER T")
-             (?ｕ "ラテン小文字U,LATIN SMALL LETTER U")
-             (?ｖ "ラテン小文字V,LATIN SMALL LETTER V")
-             (?ｗ "ラテン小文字W,LATIN SMALL LETTER W")
-             (?ｘ "ラテン小文字X,LATIN SMALL LETTER X")
-             (?ｙ "ラテン小文字Y,LATIN SMALL LETTER Y")
-             (?ｚ "ラテン小文字Z,LATIN SMALL LETTER Z")
-             (?ぁ "小書き平仮名あ,HIRAGANA LETTER SMALL A")
-             (?あ "平仮名あ,HIRAGANA LETTER A")
-             (?ぃ "小書き平仮名い,HIRAGANA LETTER SMALL I")
-             (?い "平仮名い,HIRAGANA LETTER I")
-             (?ぅ "小書き平仮名う,HIRAGANA LETTER SMALL U")
-             (?う "平仮名う,HIRAGANA LETTER U")
-             (?ぇ "小書き平仮名え,HIRAGANA LETTER SMALL E")
-             (?え "平仮名え,HIRAGANA LETTER E")
-             (?ぉ "小書き平仮名お,HIRAGANA LETTER SMALL O")
-             (?お "平仮名お,HIRAGANA LETTER O")
-             (?か "平仮名か,HIRAGANA LETTER KA")
-             (?が "濁点付き平仮名か,HIRAGANA LETTER GA")
-             (?き "平仮名き,HIRAGANA LETTER KI")
-             (?ぎ "濁点付き平仮名き,HIRAGANA LETTER GI")
-             (?く "平仮名く,HIRAGANA LETTER KU")
-             (?ぐ "濁点付き平仮名く,HIRAGANA LETTER GU")
-             (?け "平仮名け,HIRAGANA LETTER KE")
-             (?げ "濁点付き平仮名け,HIRAGANA LETTER GE")
-             (?こ "平仮名こ,HIRAGANA LETTER KO")
-             (?ご "濁点付き平仮名こ,HIRAGANA LETTER GO")
-             (?さ "平仮名さ,HIRAGANA LETTER SA")
-             (?ざ "濁点付き平仮名さ,HIRAGANA LETTER ZA")
-             (?し "平仮名し,HIRAGANA LETTER SI")
-             (?じ "濁点付き平仮名し,HIRAGANA LETTER ZI")
-             (?す "平仮名す,HIRAGANA LETTER SU")
-             (?ず "濁点付き平仮名す,HIRAGANA LETTER ZU")
-             (?せ "平仮名せ,HIRAGANA LETTER SE")
-             (?ぜ "濁点付き平仮名せ,HIRAGANA LETTER ZE")
-             (?そ "平仮名そ,HIRAGANA LETTER SO")
-             (?ぞ "濁点付き平仮名そ,HIRAGANA LETTER ZO")
-             (?た "平仮名た,HIRAGANA LETTER TA")
-             (?だ "濁点付き平仮名た,HIRAGANA LETTER DA")
-             (?ち "平仮名ち,HIRAGANA LETTER TI")
-             (?ぢ "濁点付き平仮名ち,HIRAGANA LETTER DI")
-             (?っ "小書き平仮名つ,HIRAGANA LETTER SMALL TU")
-             (?つ "平仮名つ,HIRAGANA LETTER TU")
-             (?づ "濁点付き平仮名つ,HIRAGANA LETTER DU")
-             (?て "平仮名て,HIRAGANA LETTER TE")
-             (?で "濁点付き平仮名て,HIRAGANA LETTER DE")
-             (?と "平仮名と,HIRAGANA LETTER TO")
-             (?ど "濁点付き平仮名と,HIRAGANA LETTER DO")
-             (?な "平仮名な,HIRAGANA LETTER NA")
-             (?に "平仮名に,HIRAGANA LETTER NI")
-             (?ぬ "平仮名ぬ,HIRAGANA LETTER NU")
-             (?ね "平仮名ね,HIRAGANA LETTER NE")
-             (?の "平仮名の,HIRAGANA LETTER NO")
-             (?は "平仮名は,HIRAGANA LETTER HA")
-             (?ば "濁点付き平仮名は,HIRAGANA LETTER BA")
-             (?ぱ "半濁点付き平仮名は,HIRAGANA LETTER PA")
-             (?ひ "平仮名ひ,HIRAGANA LETTER HI")
-             (?び "濁点付き平仮名ひ,HIRAGANA LETTER BI")
-             (?ぴ "半濁点付き平仮名ひ,HIRAGANA LETTER PI")
-             (?ふ "平仮名ふ,HIRAGANA LETTER HU")
-             (?ぶ "濁点付き平仮名ふ,HIRAGANA LETTER BU")
-             (?ぷ "半濁点付き平仮名ふ,HIRAGANA LETTER PU")
-             (?へ "平仮名へ,HIRAGANA LETTER HE")
-             (?べ "濁点付き平仮名へ,HIRAGANA LETTER BE")
-             (?ぺ "半濁点付き平仮名へ,HIRAGANA LETTER PE")
-             (?ほ "平仮名ほ,HIRAGANA LETTER HO")
-             (?ぼ "濁点付き平仮名ほ,HIRAGANA LETTER BO")
-             (?ぽ "半濁点付き平仮名ほ,HIRAGANA LETTER PO")
-             (?ま "平仮名ま,HIRAGANA LETTER MA")
-             (?み "平仮名み,HIRAGANA LETTER MI")
-             (?む "平仮名む,HIRAGANA LETTER MU")
-             (?め "平仮名め,HIRAGANA LETTER ME")
-             (?も "平仮名も,HIRAGANA LETTER MO")
-             (?ゃ "小書き平仮名や,HIRAGANA LETTER SMALL YA")
-             (?や "平仮名や,HIRAGANA LETTER YA")
-             (?ゅ "小書き平仮名ゆ,HIRAGANA LETTER SMALL YU")
-             (?ゆ "平仮名ゆ,HIRAGANA LETTER YU")
-             (?ょ "小書き平仮名よ,HIRAGANA LETTER SMALL YO")
-             (?よ "平仮名よ,HIRAGANA LETTER YO")
-             (?ら "平仮名ら,HIRAGANA LETTER RA")
-             (?り "平仮名り,HIRAGANA LETTER RI")
-             (?る "平仮名る,HIRAGANA LETTER RU")
-             (?れ "平仮名れ,HIRAGANA LETTER RE")
-             (?ろ "平仮名ろ,HIRAGANA LETTER RO")
-             (?ゎ "小書き平仮名わ,HIRAGANA LETTER SMALL WA")
-             (?わ "平仮名わ,HIRAGANA LETTER WA")
-             (?ゐ "平仮名ゐ,HIRAGANA LETTER WI")
-             (?ゑ "平仮名ゑ,HIRAGANA LETTER WE")
-             (?を "平仮名を,HIRAGANA LETTER WO")
-             (?ん "平仮名ん,HIRAGANA LETTER N")
-             (?ァ "小書き片仮名ア,KATAKANA LETTER SMALL A")
-             (?ア "片仮名ア,KATAKANA LETTER A")
-             (?ィ "小書き片仮名イ,KATAKANA LETTER SMALL I")
-             (?イ "片仮名イ,KATAKANA LETTER I")
-             (?ゥ "小書き片仮名ウ,KATAKANA LETTER SMALL U")
-             (?ウ "片仮名ウ,KATAKANA LETTER U")
-             (?ェ "小書き片仮名エ,KATAKANA LETTER SMALL E")
-             (?エ "片仮名エ,KATAKANA LETTER E")
-             (?ォ "小書き片仮名オ,KATAKANA LETTER SMALL O")
-             (?オ "片仮名オ,KATAKANA LETTER O")
-             (?カ "片仮名カ,KATAKANA LETTER KA")
-             (?ガ "濁点付き片仮名カ,KATAKANA LETTER GA")
-             (?キ "片仮名キ,KATAKANA LETTER KI")
-             (?ギ "濁点付き片仮名キ,KATAKANA LETTER GI")
-             (?ク "片仮名ク,KATAKANA LETTER KU")
-             (?グ "濁点付き片仮名ク,KATAKANA LETTER GU")
-             (?ケ "片仮名ケ,KATAKANA LETTER KE")
-             (?ゲ "濁点付き片仮名ケ,KATAKANA LETTER GE")
-             (?コ "片仮名コ,KATAKANA LETTER KO")
-             (?ゴ "濁点付き片仮名コ,KATAKANA LETTER GO")
-             (?サ "片仮名サ,KATAKANA LETTER SA")
-             (?ザ "濁点付き片仮名サ,KATAKANA LETTER ZA")
-             (?シ "片仮名シ,KATAKANA LETTER SI")
-             (?ジ "濁点付き片仮名シ,KATAKANA LETTER ZI")
-             (?ス "片仮名ス,KATAKANA LETTER SU")
-             (?ズ "濁点付き片仮名ス,KATAKANA LETTER ZU")
-             (?セ "片仮名セ,KATAKANA LETTER SE")
-             (?ゼ "濁点付き片仮名セ,KATAKANA LETTER ZE")
-             (?ソ "片仮名ソ,KATAKANA LETTER SO")
-             (?ゾ "濁点付き片仮名ソ,KATAKANA LETTER ZO")
-             (?タ "片仮名タ,KATAKANA LETTER TA")
-             (?ダ "濁点付き片仮名タ,KATAKANA LETTER DA")
-             (?チ "片仮名チ,KATAKANA LETTER TI")
-             (?ヂ "濁点付き片仮名チ,KATAKANA LETTER DI")
-             (?ッ "小書き片仮名ツ,KATAKANA LETTER SMALL TU")
-             (?ツ "片仮名ツ,KATAKANA LETTER TU")
-             (?ヅ "濁点付き片仮名ツ,KATAKANA LETTER DU")
-             (?テ "片仮名テ,KATAKANA LETTER TE")
-             (?デ "濁点付き片仮名テ,KATAKANA LETTER DE")
-             (?ト "片仮名ト,KATAKANA LETTER TO")
-             (?ド "濁点付き片仮名ト,KATAKANA LETTER DO")
-             (?ナ "片仮名ナ,KATAKANA LETTER NA")
-             (?ニ "片仮名ニ,KATAKANA LETTER NI")
-             (?ヌ "片仮名ヌ,KATAKANA LETTER NU")
-             (?ネ "片仮名ネ,KATAKANA LETTER NE")
-             (?ノ "片仮名ノ,KATAKANA LETTER NO")
-             (?ハ "片仮名ハ,KATAKANA LETTER HA")
-             (?バ "濁点付き片仮名ハ,KATAKANA LETTER BA")
-             (?パ "半濁点付き片仮名ハ,KATAKANA LETTER PA")
-             (?ヒ "片仮名ヒ,KATAKANA LETTER HI")
-             (?ビ "濁点付き片仮名ヒ,KATAKANA LETTER BI")
-             (?ピ "半濁点付き片仮名ヒ,KATAKANA LETTER PI")
-             (?フ "片仮名フ,KATAKANA LETTER HU")
-             (?ブ "濁点付き片仮名フ,KATAKANA LETTER BU")
-             (?プ "半濁点付き片仮名フ,KATAKANA LETTER PU")
-             (?ヘ "片仮名ヘ,KATAKANA LETTER HE")
-             (?ベ "濁点付き片仮名ヘ,KATAKANA LETTER BE")
-             (?ペ "半濁点付き片仮名ヘ,KATAKANA LETTER PE")
-             (?ホ "片仮名ホ,KATAKANA LETTER HO")
-             (?ボ "濁点付き片仮名ホ,KATAKANA LETTER BO")
-             (?ポ "半濁点付き片仮名ホ,KATAKANA LETTER PO")
-             (?マ "片仮名マ,KATAKANA LETTER MA")
-             (?ミ "片仮名ミ,KATAKANA LETTER MI")
-             (?ム "片仮名ム,KATAKANA LETTER MU")
-             (?メ "片仮名メ,KATAKANA LETTER ME")
-             (?モ "片仮名モ,KATAKANA LETTER MO")
-             (?ャ "小書き片仮名ヤ,KATAKANA LETTER SMALL YA")
-             (?ヤ "片仮名ヤ,KATAKANA LETTER YA")
-             (?ュ "小書き片仮名ユ,KATAKANA LETTER SMALL YU")
-             (?ユ "片仮名ユ,KATAKANA LETTER YU")
-             (?ョ "小書き片仮名ヨ,KATAKANA LETTER SMALL YO")
-             (?ヨ "片仮名ヨ,KATAKANA LETTER YO")
-             (?ラ "片仮名ラ,KATAKANA LETTER RA")
-             (?リ "片仮名リ,KATAKANA LETTER RI")
-             (?ル "片仮名ル,KATAKANA LETTER RU")
-             (?レ "片仮名レ,KATAKANA LETTER RE")
-             (?ロ "片仮名ロ,KATAKANA LETTER RO")
-             (?ヮ "小書き片仮名ワ,KATAKANA LETTER SMALL WA")
-             (?ワ "片仮名ワ,KATAKANA LETTER WA")
-             (?ヰ "片仮名ヰ,KATAKANA LETTER WI")
-             (?ヱ "片仮名ヱ,KATAKANA LETTER WE")
-             (?ヲ "片仮名ヲ,KATAKANA LETTER WO")
-             (?ン "片仮名ン,KATAKANA LETTER N")
-             (?ヴ "濁点付き片仮名ウ,KATAKANA LETTER VU")
-             (?ヵ "小書き片仮名カ,KATAKANA LETTER SMALL KA")
-             (?ヶ "小書き片仮名ケ,KATAKANA LETTER SMALL KE")
-             (?Α "ギリシア大文字ALPHA,GREEK CAPITAL LETTER ALPHA")
-             (?Β "ギリシア大文字BETA,GREEK CAPITAL LETTER BETA")
-             (?Γ "ギリシア大文字GAMMA,GREEK CAPITAL LETTER GAMMA")
-             (?Δ "ギリシア大文字DELTA,GREEK CAPITAL LETTER DELTA")
-             (?Ε "ギリシア大文字EPSILON,GREEK CAPITAL LETTER EPSILON")
-             (?Ζ "ギリシア大文字ZETA,GREEK CAPITAL LETTER ZETA")
-             (?Η "ギリシア大文字ETA,GREEK CAPITAL LETTER ETA")
-             (?Θ "ギリシア大文字THETA,GREEK CAPITAL LETTER THETA")
-             (?Ι "ギリシア大文字IOTA,GREEK CAPITAL LETTER IOTA")
-             (?Κ "ギリシア大文字KAPPA,GREEK CAPITAL LETTER KAPPA")
-             (?Λ "ギリシア大文字LAMBDA,GREEK CAPITAL LETTER LAMBDA")
-             (?Μ "ギリシア大文字MU,GREEK CAPITAL LETTER MU")
-             (?Ν "ギリシア大文字NU,GREEK CAPITAL LETTER NU")
-             (?Ξ "ギリシア大文字XI,GREEK CAPITAL LETTER XI")
-             (?Ο "ギリシア大文字OMICRON,GREEK CAPITAL LETTER OMICRON")
-             (?Π "ギリシア大文字PI,GREEK CAPITAL LETTER PI")
-             (?Ρ "ギリシア大文字RHO,GREEK CAPITAL LETTER RHO")
-             (?Σ "ギリシア大文字SIGMA,GREEK CAPITAL LETTER SIGMA")
-             (?Τ "ギリシア大文字TAU,GREEK CAPITAL LETTER TAU")
-             (?Υ "ギリシア大文字UPSILON,GREEK CAPITAL LETTER UPSILON")
-             (?Φ "ギリシア大文字PHI,GREEK CAPITAL LETTER PHI")
-             (?Χ "ギリシア大文字CHI,GREEK CAPITAL LETTER CHI")
-             (?Ψ "ギリシア大文字PSI,GREEK CAPITAL LETTER PSI")
-             (?Ω "ギリシア大文字OMEGA,GREEK CAPITAL LETTER OMEGA")
-             (?α "ギリシア小文字ALPHA,GREEK SMALL LETTER ALPHA")
-             (?β "ギリシア小文字BETA,GREEK SMALL LETTER BETA")
-             (?γ "ギリシア小文字GAMMA,GREEK SMALL LETTER GAMMA")
-             (?δ "ギリシア小文字DELTA,GREEK SMALL LETTER DELTA")
-             (?ε "ギリシア小文字EPSILON,GREEK SMALL LETTER EPSILON")
-             (?ζ "ギリシア小文字ZETA,GREEK SMALL LETTER ZETA")
-             (?η "ギリシア小文字ETA,GREEK SMALL LETTER ETA")
-             (?θ "ギリシア小文字THETA,GREEK SMALL LETTER THETA")
-             (?ι "ギリシア小文字IOTA,GREEK SMALL LETTER IOTA")
-             (?κ "ギリシア小文字KAPPA,GREEK SMALL LETTER KAPPA")
-             (?λ "ギリシア小文字LAMBDA,GREEK SMALL LETTER LAMBDA")
-             (?μ "ギリシア小文字MU,GREEK SMALL LETTER MU")
-             (?ν "ギリシア小文字NU,GREEK SMALL LETTER NU")
-             (?ξ "ギリシア小文字XI,GREEK SMALL LETTER XI")
-             (?ο "ギリシア小文字OMICRON,GREEK SMALL LETTER OMICRON")
-             (?π "ギリシア小文字PI,GREEK SMALL LETTER PI")
-             (?ρ "ギリシア小文字RHO,GREEK SMALL LETTER RHO")
-             (?σ "ギリシア小文字SIGMA,GREEK SMALL LETTER SIGMA")
-             (?τ "ギリシア小文字TAU,GREEK SMALL LETTER TAU")
-             (?υ "ギリシア小文字UPSILON,GREEK SMALL LETTER UPSILON")
-             (?φ "ギリシア小文字PHI,GREEK SMALL LETTER PHI")
-             (?χ "ギリシア小文字CHI,GREEK SMALL LETTER CHI")
-             (?ψ "ギリシア小文字PSI,GREEK SMALL LETTER PSI")
-             (?ω "ギリシア小文字OMEGA,GREEK SMALL LETTER OMEGA")
-             (?А "キリール大文字A,CYRILLIC CAPITAL LETTER A")
-             (?Б "キリール大文字BE,CYRILLIC CAPITAL LETTER BE")
-             (?В "キリール大文字VE,CYRILLIC CAPITAL LETTER VE")
-             (?Г "キリール大文字GHE,CYRILLIC CAPITAL LETTER GHE")
-             (?Д "キリール大文字DE,CYRILLIC CAPITAL LETTER DE")
-             (?Е "キリール大文字IE,CYRILLIC CAPITAL LETTER IE")
-             (?Ё "キリール大文字IO,CYRILLIC CAPITAL LETTER IO")
-             (?Ж "キリール大文字ZHE,CYRILLIC CAPITAL LETTER ZHE")
-             (?З "キリール大文字ZE,CYRILLIC CAPITAL LETTER ZE")
-             (?И "キリール大文字I,CYRILLIC CAPITAL LETTER I")
-             (?Й "キリール大文字SHORT I,CYRILLIC CAPITAL LETTER SHORT I")
-             (?К "キリール大文字KA,CYRILLIC CAPITAL LETTER KA")
-             (?Л "キリール大文字EL,CYRILLIC CAPITAL LETTER EL")
-             (?М "キリール大文字EM,CYRILLIC CAPITAL LETTER EM")
-             (?Н "キリール大文字EN,CYRILLIC CAPITAL LETTER EN")
-             (?О "キリール大文字O,CYRILLIC CAPITAL LETTER O")
-             (?П "キリール大文字PE,CYRILLIC CAPITAL LETTER PE")
-             (?Р "キリール大文字ER,CYRILLIC CAPITAL LETTER ER")
-             (?С "キリール大文字ES,CYRILLIC CAPITAL LETTER ES")
-             (?Т "キリール大文字TE,CYRILLIC CAPITAL LETTER TE")
-             (?У "キリール大文字U,CYRILLIC CAPITAL LETTER U")
-             (?Ф "キリール大文字EF,CYRILLIC CAPITAL LETTER EF")
-             (?Х "キリール大文字HA,CYRILLIC CAPITAL LETTER HA")
-             (?Ц "キリール大文字TSE,CYRILLIC CAPITAL LETTER TSE")
-             (?Ч "キリール大文字CHE,CYRILLIC CAPITAL LETTER CHE")
-             (?Ш "キリール大文字SHA,CYRILLIC CAPITAL LETTER SHA")
-             (?Щ "キリール大文字SHCHA,CYRILLIC CAPITAL LETTER SHCHA")
-             (?Ъ "キリール大文字HARD SIGN,CYRILLIC CAPITAL LETTER HARD SIGN")
-             (?Ы "キリール大文字YERU,CYRILLIC CAPITAL LETTER YERU")
-             (?Ь "キリール大文字SOFT SIGN,CYRILLIC CAPITAL LETTER SOFT SIGN")
-             (?Э "キリール大文字E,CYRILLIC CAPITAL LETTER E")
-             (?Ю "キリール大文字YU,CYRILLIC CAPITAL LETTER YU")
-             (?Я "キリール大文字YA,CYRILLIC CAPITAL LETTER YA")
-             (?а "キリール小文字A,CYRILLIC SMALL LETTER A")
-             (?б "キリール小文字BE,CYRILLIC SMALL LETTER BE")
-             (?в "キリール小文字VE,CYRILLIC SMALL LETTER VE")
-             (?г "キリール小文字GHE,CYRILLIC SMALL LETTER GHE")
-             (?д "キリール小文字DE,CYRILLIC SMALL LETTER DE")
-             (?е "キリール小文字IE,CYRILLIC SMALL LETTER IE")
-             (?ё "キリール小文字IO,CYRILLIC SMALL LETTER IO")
-             (?ж "キリール小文字ZHE,CYRILLIC SMALL LETTER ZHE")
-             (?з "キリール小文字ZE,CYRILLIC SMALL LETTER ZE")
-             (?и "キリール小文字I,CYRILLIC SMALL LETTER I")
-             (?й "キリール小文字SHORT I,CYRILLIC SMALL LETTER SHORT I")
-             (?к "キリール小文字KA,CYRILLIC SMALL LETTER KA")
-             (?л "キリール小文字EL,CYRILLIC SMALL LETTER EL")
-             (?м "キリール小文字EM,CYRILLIC SMALL LETTER EM")
-             (?н "キリール小文字EN,CYRILLIC SMALL LETTER EN")
-             (?о "キリール小文字O,CYRILLIC SMALL LETTER O")
-             (?п "キリール小文字PE,CYRILLIC SMALL LETTER PE")
-             (?р "キリール小文字ER,CYRILLIC SMALL LETTER ER")
-             (?с "キリール小文字ES,CYRILLIC SMALL LETTER ES")
-             (?т "キリール小文字TE,CYRILLIC SMALL LETTER TE")
-             (?у "キリール小文字U,CYRILLIC SMALL LETTER U")
-             (?ф "キリール小文字EF,CYRILLIC SMALL LETTER EF")
-             (?х "キリール小文字HA,CYRILLIC SMALL LETTER HA")
-             (?ц "キリール小文字TSE,CYRILLIC SMALL LETTER TSE")
-             (?ч "キリール小文字CHE,CYRILLIC SMALL LETTER CHE")
-             (?ш "キリール小文字SHA,CYRILLIC SMALL LETTER SHA")
-             (?щ "キリール小文字SHCHA,CYRILLIC SMALL LETTER SHCHA")
-             (?ъ "キリール小文字HARD SIGN,CYRILLIC SMALL LETTER HARD SIGN")
-             (?ы "キリール小文字YERU,CYRILLIC SMALL LETTER YERU")
-             (?ь "キリール小文字SOFT SIGN,CYRILLIC SMALL LETTER SOFT SIGN")
-             (?э "キリール小文字E,CYRILLIC SMALL LETTER E")
-             (?ю "キリール小文字YU,CYRILLIC SMALL LETTER YU")
-             (?я "キリール小文字YA,CYRILLIC SMALL LETTER YA")
-             (?─ "横細線素片,BOX DRAWINGS LIGHT HORIZONTAL")
-             (?│ "縦細線素片,BOX DRAWINGS LIGHT VERTICAL")
-             (?┌ "細線素片左上,BOX DRAWINGS LIGHT DOWN AND RIGHT")
-             (?┐ "細線素片右上,BOX DRAWINGS LIGHT DOWN AND LEFT")
-             (?┘ "細線素片右下,BOX DRAWINGS LIGHT UP AND LEFT")
-             (?└ "細線素片左下,BOX DRAWINGS LIGHT UP AND RIGHT")
-             (?├ "細線素片左,BOX DRAWINGS LIGHT VERTICAL AND RIGHT")
-             (?┬ "細線素片上,BOX DRAWINGS LIGHT DOWN AND HORIZONTAL")
-             (?┤ "細線素片右,BOX DRAWINGS LIGHT VERTICAL AND LEFT")
-             (?┴ "細線素片下,BOX DRAWINGS LIGHT UP AND HORIZONTAL")
-             (?┼ "細線素片中央,BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL")
-             (?━ "横太線素片,BOX DRAWINGS HEAVY HORIZONTAL")
-             (?┃ "縦太線素片,BOX DRAWINGS HEAVY VERTICAL")
-             (?┏ "太線素片左上,BOX DRAWINGS HEAVY DOWN AND RIGHT")
-             (?┓ "太線素片右上,BOX DRAWINGS HEAVY DOWN AND LEFT")
-             (?┛ "太線素片右下,BOX DRAWINGS HEAVY UP AND LEFT")
-             (?┗ "太線素片左下,BOX DRAWINGS HEAVY UP AND RIGHT")
-             (?┣ "太線素片左,BOX DRAWINGS HEAVY VERTICAL AND RIGHT")
-             (?┳ "太線素片上,BOX DRAWINGS HEAVY DOWN AND HORIZONTAL")
-             (?┫ "太線素片右,BOX DRAWINGS HEAVY VERTICAL AND LEFT")
-             (?┻ "太線素片下,BOX DRAWINGS HEAVY UP AND HORIZONTAL")
-             (?╋ "太線素片中央,BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL")
-             (?┠ "縦太線横細線素片左,BOX DRAWINGS VERTICAL HEAVY AND RIGHT LIGHT")
-             (?┯ "横太線縦細線素片上,BOX DRAWINGS DOWN LIGHT AND HORIZONTAL HEAVY")
-             (?┨ "縦太線横細線素片右,BOX DRAWINGS VERTICAL HEAVY AND LEFT LIGHT")
-             (?┷ "横太線縦細線素片下,BOX DRAWINGS UP LIGHT AND HORIZONTAL HEAVY")
-             (?┿ "縦細線横太線素片中央,BOX DRAWINGS VERTICAL LIGHT AND HORIZONTAL HEAVY")
-             (?┝ "縦細線横太線素片左,BOX DRAWINGS VERTICAL LIGHT AND RIGHT HEAVY")
-             (?┰ "横細線縦太線素片上,BOX DRAWINGS DOWN HEAVY AND HORIZONTAL LIGHT")
-             (?┥ "縦細線横太線素片右,BOX DRAWINGS VERTICAL LIGHT AND LEFT HEAVY")
-             (?┸ "横細線縦太線素片下,BOX DRAWINGS UP HEAVY AND HORIZONTAL LIGHT")
-             (?╂ "横細線縦太線素片中央,BOX DRAWINGS VERTICAL HEAVY AND HORIZONTAL LIGHT")
-             (?唖 "83字体変更")
-             (?鯵 "83入替え(鰺)")
-             (?閏 "うるう。閠(典拠不詳)は別字")
-             (?焔 "83字体変更")
-             (?鴬 "83入替え(鶯)。鶯(うぐいす)の略字。鷽(うそ)は別字")
-             (?鴎 "83字体変更")
-             (?馨 "配列の乱れ。19区 29浬(かいり) 30馨(かおる) 31蛙(かえる)")
-             (?蛎 "83入替え(蠣)")
-             (?撹 "83入替え(攪)")
-             (?竃 "83入替え(竈)")
-             (?噛 "83字体変更")
-             (?潅 "83入替え(灌)")
-             (?諌 "83入替え(諫)")
-             (?侠 "83字体変更")
-             (?尭 "83追加入替え(堯)")
-             (?躯 "83字体変更")
-             (?頚 "83入替え(頸)")
-             (?鹸 "83字体変更")
-             (?砿 "83入替え(礦)")
-             (?麹 "83字体変更")
-             (?屡 "83字体変更")
-             (?蕊 "83入替え(蘂)")
-             (?繍 "83字体変更")
-             (?蒋 "83字体変更")
-             (?醤 "83字体変更")
-             (?靭 "83入替え(靱)")
-             (?蝉 "83字体変更")
-             (?賎 "83入替え(賤)")
-             (?掻 "83字体変更")
-             (?騨 "83字体変更")
-             (?箪 "83字体変更")
-             (?掴 "83字体変更")
-             (?壷 "83入替え(壺)。壺(つぼ)の略字。壼(コン)は別字")
-             (?填 "83字体変更")
-             (?顛 "83字体変更")
-             (?砺 "83入替え(礪)")
-             (?梼 "83入替え(檮)")
-             (?涛 "83入替え(濤)")
-             (?祷 "83字体変更")
-             (?涜 "83字体変更")
-             (?迩 "83入替え(邇)")
-             (?祢 "禰(ネ)の略字。袮(典拠不詳)は別字")
-             (?嚢 "83字体変更")
-             (?蝿 "83入替え(蠅)")
-             (?溌 "83字体変更")
-             (?醗 "83字体変更")
-             (?桧 "83入替え(檜)")
-             (?戊 "つちのえ。戉(まさかり)は別字")
-             (?頬 "83字体変更")
-             (?槙 "83追加入替え(槇)")
-             (?侭 "83入替え(儘)")
-             (?麺 "83字体変更")
-             (?薮 "83入替え(藪)")
-             (?遥 "83追加入替え(遙)")
-             (?莱 "83字体変更")
-             (?梁 "やな。粱(あわ)は別字")
-             (?篭 "83入替え(籠)")
-             (?蝋 "83字体変更")
-             (?佛 "仏(ほとけ)の旧字。彿(フツ)は別字")
-             (?儘 "83入替え(侭)")
-             (?冑 "かぶと。胄(チュウ)は別字")
-             (?匚 "はこがまえ。匸(かくしがまえ)は別字")
-             (?匸 "かくしがまえ。匚(はこがまえ)は別字")
-             (?墸 "典拠不明")
-             (?壥 "典拠不明")
-             (?壺 "83入替え(壷)。つぼ。壼(コン)は別字")
-             (?壼 "コン。壺(つぼ)は別字")
-             (?夂 "チ。夊(スイ)は別字だが混同される")
-             (?夊 "スイ。夂(チ)は別字だが混同される")
-             (?妛 "典拠不詳。あけびの誤字か")
-             (?彁 "同定不能")
-             (?彿 "フツ。佛(ほとけ)は別字")
-             (?戉 "まさかり。戊(つちのえ)は別字")
-             (?戍 "まもる。戌(いぬ)は別字")
-             (?戌 "いぬ。戍(まもる)は別字")
-             (?挧 "典拠不詳")
-             (?攪 "83入替え(攪)")
-             (?攅 "83字体変更")
-             (?敞 "ショウ。敝(ヘイ)は別字")
-             (?敝 "ヘイ。敞(ショウ)は別字")
-             (?晝 "昼(ひる)の旧字。畫(カク)は別字")
-             (?暃 "典拠不詳")
-             (?朸 "おうご。朷(トウ)は別字")
-             (?朷 "トウ。朸(おうご)は別字")
-             (?檜 "83入替え(桧)")
-             (?檮 "83入替え(梼)")
-             (?椦 "典拠不詳。ぬで島のぬでの誤字か")
-             (?槞 "典拠不詳")
-             (?濤 "83入替え(涛)")
-             (?灌 "83入替え(潅)")
-             (?瑶 "83追加入替え(瑤)")
-             (?畫 "画(カク)の旧字。晝(ひる)は別字")
-             (?痲 "マ。痳(リン)は別字")
-             (?痳 "リン。痲(マ)は別字")
-             (?礦 "83入替え(砿)")
-             (?礪 "83入替え(砺)")
-             (?竈 "83入替え(竃)")
-             (?籠 "83入替え(篭)")
-             (?粱 "あわ。梁(やな)は別字")
-             (?胄 "チュウ。冑(かぶと)は別字")
-             (?蘂 "83入替え(蕊)")
-             (?藪 "83入替え(薮)")
-             (?蠣 "83入替え(蛎)")
-             (?蜴 "とかげ。蝪(トウ)は別字")
-             (?蝪 "トウ。蜴(とかげ)は別字")
-             (?蠅 "83入替え(蝿)")
-             (?蟐 "典拠不詳")
-             (?袮 "典拠不詳。祢(ネ)は別字")
-             (?諫 "83入替え(諌)")
-             (?賤 "83入替え(賎)")
-             (?邇 "83入替え(迩)")
-             (?迺 "すなわち。逎(シュウ)は別字")
-             (?逎 "遒(シュウ)の異体字。迺(すなわち)は別字")
-             (?釖 "かたな。釛(コク)は別字")
-             (?釛 "コク。釖(かたな)は別字")
-             (?鑢 "やすり。鑪(ロ)は別字")
-             (?鑪 "ロ。鑢(やすり)は別字")
-             (?閠 "典拠不詳。閏(うるう)は別字")
-             (?陜 "キョウ。陝(セン)は別字")
-             (?陝 "セン。陜(キョウ)は別字")
-             (?靱 "83入替え(靭)")
-             (?頸 "83入替え(頚)")
-             (?駲 "典拠不詳")
-             (?鰺 "83入替え(鯵)")
-             (?鶯 "83入替え(鴬)。うぐいす。鷽(うそ)は別字")
-             (?鷽 "うそ。鶯(うぐいす)は別字")
-             (?堯 "83追加入替え(尭)")
-             (?槇 "83追加入替え(槙)")
-             (?遙 "83追加入替え(遥)")
-             (?瑤 "83追加入替え(瑶)")
-             (?凜 "90追加")
-             (?熙 "90追加"))))
+             (?$B!!(B "$BOB;z4V3V(B,IDEOGRAPHIC SPACE")
+             (?$B!"(B "$BFIE@(B,IDEOGRAPHIC COMMA")
+             (?$B!#(B "$B6gE@(B,IDEOGRAPHIC FULL STOP")
+             (?$B!$(B "$B%3%s%^(B,COMMA")
+             (?$B!%(B "$B%T%j%*%I(B,FULL STOP")
+             (?$B!&(B "$BCfE@(B,KATAKANA MIDDLE DOT")
+             (?$B!'(B "$B%3%m%s(B,COLON")
+             (?$B!((B "$B%;%_%3%m%s(B,SEMICOLON")
+             (?$B!)(B "$B5?LdId(B,QUESTION MARK")
+             (?$B!*(B "$B46C2Id(B,EXCLAMATION MARK")
+             (?$B!+(B "$BByE@(B,KATAKANA-HIRAGANA VOICED SOUND MARK")
+             (?$B!,(B "$BH>ByE@(B,KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK")
+             (?$B!-(B "$B%"%/%5%s%F%.%e(B,$B%"%-%e!<%H%"%/%;%s%H(B,$B%W%i%$%`5-9f(B,ACUTE ACCENT")
+             (?$B!.(B "$B%"%/%5%s%0%i!<%V(B,$B%0%l!<%V%"%/%;%s%H(B,GRAVE ACCENT")
+             (?$B!/(B "$B%&%`%i%&%H(B,$B%@%$%(%l%7%9(B,DIAERESIS")
+             (?$B!0(B "$B%"%/%5%s%7%k%3%s%U%l%C%/%9(B,$B%5!<%+%`%U%l%C%/%9%"%/%;%s%H(B,CIRCUMFLEX ACCENT")
+             (?$B!1(B "$B%*!<%P!<%i%$%s(B,$BO@M}H]Dj5-9f(B,OVERLINE")
+             (?$B!2(B "$B%"%s%@!<%i%$%s(B,LOW LINE")
+             (?$B!3(B "$BJR2>L>7+JV$75-9f(B,KATAKANA ITERATION MARK")
+             (?$B!4(B "$BJR2>L>7+JV$75-9f(B($BByE@(B),KATAKANA VOICED ITERATION MARK")
+             (?$B!5(B "$BJ?2>L>7+JV$75-9f(B,HIRAGANA ITERATION MARK")
+             (?$B!6(B "$BJ?2>L>7+JV$75-9f(B($BByE@(B),HIRAGANA VOICED ITERATION MARK")
+             (?$B!7(B "$BF1$8$/5-9f(B,DITTO MARK")
+             (?$B!8(B "$BF1>e5-9f(B,CJK UNIFIED IDEOGRAPH-4EDD")
+             (?$B!9(B "$B7+JV$75-9f(B,IDEOGRAPHIC ITERATION MARK")
+             (?$B!:(B "$B$7$a(B,IDEOGRAPHIC CLOSING MARK")
+             (?$B!;(B "$B4A?t;z%<%m(B,IDEOGRAPHIC NUMBER ZERO")
+             (?$B!<(B "$BD92;5-9f(B,KATAKANA-HIRAGANA PROLONGED SOUND MARK")
+             (?$B!=(B "$B%@%C%7%e(B($BA43Q(B),EM DASH")
+             (?$B!>(B "$B%O%$%U%s(B($B;MJ,(B),HYPHEN")
+             (?$B!?(B "$B<P@~(B,SOLIDUS")
+             (?$B!@(B "$B5U<P@~(B,REVERSE SOLIDUS")
+             (?$B!A(B "$BGH%@%C%7%e(B,WAVE DASH")
+             (?$B!B(B "$BAPCl(B,DOUBLE VERTICAL LINE")
+             (?$B!C(B "$B=D@~(B,VERTICAL LINE")
+             (?$B!D(B "$B;0E@%j!<%@(B,HORIZONTAL ELLIPSIS")
+             (?$B!E(B "$BFsE@%j!<%@(B,TWO DOT LEADER")
+             (?$B!F(B "$B:8%7%s%0%k0zMQId(B,$B:8%7%s%0%k%/%)!<%F!<%7%g%s%^!<%/(B,LEFT SINGLE QUOTATION MARK")
+             (?$B!G(B "$B1&%7%s%0%k0zMQId(B,$B1&%7%s%0%k%/%)!<%F!<%7%g%s%^!<%/(B,RIGHT SINGLE QUOTATION MARK")
+             (?$B!H(B "$B:8%@%V%k0zMQId(B,$B:8%@%V%k%/%)!<%F!<%7%g%s%^!<%/(B,LEFT DOUBLE QUOTATION MARK")
+             (?$B!I(B "$B1&%@%V%k0zMQId(B,$B1&%@%V%k%/%)!<%F!<%7%g%s%^!<%/(B,RIGHT DOUBLE QUOTATION MARK")
+             (?$B!J(B "$B;O$a>.3g8L(B,$B;O$a4]3g8L(B,LEFT PARENTHESIS")
+               (?$B!K(B "$B=*$o$j>.3g8L(B,$B=*$o$j4]3g8L(B,RIGHT PARENTHESIS")
+             (?$B!L(B "$B;O$a$-$C$3$&(B($B559C(B)$B3g8L(B,LEFT TORTOISE SHELL BRACKET")
+               (?$B!M(B "$B=*$o$j$-$C$3$&(B($B559C(B)$B3g8L(B,RIGHT TORTOISE SHELL BRACKET")
+             (?$B!N(B "$B;O$aBg3g8L(B,$B;O$a3Q3g8L(B,LEFT SQUARE BRACKET")
+               (?$B!O(B "$B=*$o$jBg3g8L(B,$B=*$o$j3Q3g8L(B,RIGHT SQUARE BRACKET")
+             (?$B!P(B "$B;O$aCf3g8L(B,$B;O$aGH3g8L(B,LEFT CURLY BRACKET")
+               (?$B!Q(B "$B=*$o$jCf3g8L(B,$B=*$o$jGH3g8L(B,RIGHT CURLY BRACKET")
+             (?$B!R(B "$B;O$a;33g8L(B,LEFT ANGLE BRACKET")
+               (?$B!S(B "$B=*$o$j;33g8L(B,RIGHT ANGLE BRACKET")
+             (?$B!T(B "$B;O$aFs=E;33g8L(B,LEFT DOUBLE ANGLE BRACKET")
+               (?$B!U(B "$B=*$o$jFs=E;33g8L(B,RIGHT DOUBLE ANGLE BRACKET")
+             (?$B!V(B "$B;O$a$+$.3g8L(B,LEFT CORNER BRACKET")
+               (?$B!W(B "$B=*$o$j$+$.3g8L(B,RIGHT CORNER BRACKET")
+             (?$B!X(B "$B;O$aFs=E$+$.3g8L(B,LEFT WHITE CORNER BRACKET")
+               (?$B!Y(B "$B=*$o$jFs=E$+$.3g8L(B,RIGHT WHITE CORNER BRACKET")
+             (?$B!Z(B "$B;O$a$9$_IU$-3g8L(B,LEFT BLACK LENTICULAR BRACKET")
+               (?$B![(B "$B=*$o$j$9$_IU$-3g8L(B,RIGHT BLACK LENTICULAR BRACKET")
+             (?$B!\(B "$B@5Id9f(B,$B2C;;5-9f(B,PLUS SIGN")
+             (?$B!](B "$BIiId9f(B,$B8:;;5-9f(B,MINUS SIGN")
+             (?$B!^(B "$B@5Kt$OIiId9f(B,PLUS-MINUS SIGN")
+             (?$B!_(B "$B>h;;5-9f(B,MULTIPLICATION SIGN")
+             (?$B!`(B "$B=|;;5-9f(B,DIVISION SIGN")
+             (?$B!a(B "$BEy9f(B,EQUALS SIGN")
+             (?$B!b(B "$BEy9fH]Dj(B,NOT EQUAL TO")
+             (?$B!c(B "$BITEy9f(B($B$h$j>.(B),LESS-THAN SIGN")
+             (?$B!d(B "$BITEy9f(B($B$h$jBg(B),GREATER-THAN SIGN")
+             (?$B!e(B "$B$h$j>.$5$$$+Kt$OEy$7$$(B,LESS-THAN OVER EQUAL TO")
+             (?$B!f(B "$B$h$jBg$-$$$+Kt$OEy$7$$(B,GREATER-THAN OVER EQUAL TO")
+             (?$B!g(B "$BL58BBg(B,INFINITY")
+             (?$B!h(B "$B$f$($K(B,THEREFORE")
+             (?$B!i(B "$BM:5-9f(B,MALE SIGN")
+             (?$B!j(B "$B;s5-9f(B,FEMALE SIGN")
+             (?$B!k(B "$BEY(B,DEGREE SIGN")
+             (?$B!l(B "$BJ,(B,PRIME")
+             (?$B!m(B "$BIC(B,DOUBLE PRIME")
+             (?$B!n(B "$B%;;aEY5-9f(B,DEGREE CELSIUS")
+             (?$B!o(B "$B1_5-9f(B,YEN SIGN")
+             (?$B!p(B "$B%I%k5-9f(B,DOLLAR SIGN")
+             (?$B!q(B "$B%;%s%H5-9f(B,CENT SIGN")
+             (?$B!r(B "$B%]%s%I5-9f(B,POUND SIGN")
+             (?$B!s(B "$B%Q!<%;%s%H5-9f(B,PERCENT SIGN")
+             (?$B!t(B "$BHV9f5-9f(B,$B0f$2$?(B,NUMBER SIGN")
+             (?$B!u(B "$B%"%s%Q%5%s%I(B,AMPERSAND")
+             (?$B!v(B "$B@10u(B,$B%"%9%F%j%9%/(B,ASTERISK")
+             (?$B!w(B "$BC12A5-9f(B,COMMERCIAL AT")
+             (?$B!x(B "$B@a5-9f(B,SECTION SIGN")
+             (?$B!y(B "$BGr@1(B,WHITE STAR")
+             (?$B!z(B "$B9u@1(B,BLACK STAR")
+             (?$B!{(B "$B4]0u(B,$BGr4](B,WHITE CIRCLE")
+             (?$B!|(B "$B9u4](B,BLACK CIRCLE")
+             (?$B!}(B "$BFs=E4](B,BULLSEYE")
+             (?$B!~(B "$B$R$77A(B,WHITE DIAMOND")
+             (?$B"!(B "$B9u$R$77A(B,BLACK DIAMOND")
+             (?$B""(B "$B;M3Q(B,WHITE SQUARE")
+             (?$B"#(B "$B9u;M3Q(B,BLACK SQUARE")
+             (?$B"$(B "$B;03Q(B,WHITE UP-POINTING TRIANGLE")
+             (?$B"%(B "$B9u;03Q(B,BLACK UP-POINTING TRIANGLE")
+             (?$B"&(B "$B5U;03Q(B,WHITE DOWN-POINTING TRIANGLE")
+             (?$B"'(B "$B5U9u;03Q(B,BLACK DOWN-POINTING TRIANGLE")
+             (?$B"((B "$BJF0u(B,REFERENCE MARK")
+             (?$B")(B "$BM9JX5-9f(B,POSTAL MARK")
+             (?$B"*(B "$B1&Lp0u(B,RIGHTWARDS ARROW")
+             (?$B"+(B "$B:8Lp0u(B,LEFTWARDS ARROW")
+             (?$B",(B "$B>eLp0u(B,UPWARDS ARROW")
+             (?$B"-(B "$B2<Lp0u(B,DOWNWARDS ARROW")
+             (?$B".(B "$B$2$?5-9f(B,GETA MARK")
+             (?$B":(B "$BB0$9$k(B,ELEMENT OF")
+             (?$B";(B "$B85$H$7$F4^$`(B,CONTAINS AS MEMBER")
+             (?$B"<(B "$BItJ,=89g(B,SUBSET OF OR EQUAL TO")
+             (?$B"=(B "$BItJ,=89g(B($B5UJ}8~(B),SUPERSET OF OR EQUAL TO")
+             (?$B">(B "$B??ItJ,=89g(B,SUBSET OF")
+             (?$B"?(B "$B??ItJ,=89g(B($B5UJ}8~(B),SUPERSET OF")
+             (?$B"@(B "$B9gJ;=89g(B,UNION")
+             (?$B"A(B "$B6&DL=89g(B,INTERSECTION")
+             (?$B"J(B "$B5Z$S(B($B9g@\(B),LOGICAL AND")
+             (?$B"K(B "$BKt$O(B($BN%@\(B),LOGICAL OR")
+             (?$B"L(B "$BH]Dj(B,NOT SIGN")
+             (?$B"M(B "$B$J$i$P(B($B4^0U(B),RIGHTWARDS DOUBLE ARROW")
+             (?$B"N(B "$BF1CM(B,LEFT RIGHT DOUBLE ARROW")
+             (?$B"O(B "$B$9$Y$F$N(B($BIaDL8BDj;R(B),FOR ALL")
+             (?$B"P(B "$BB8:_$9$k(B($BB8:_8BDj;R(B),THERE EXISTS")
+             (?$B"\(B "$B3Q(B,ANGLE")
+             (?$B"](B "$B?bD>(B,UP TACK")
+             (?$B"^(B "$B8L(B,ARC")
+             (?$B"_(B "$B%G%k(B,$B%i%&%s%I%G%#!<(B,PARTIAL DIFFERENTIAL")
+             (?$B"`(B "$B%J%V%i(B,NABLA")
+             (?$B"a(B "$B>o$KEy$7$$(B,$B9gF1(B,IDENTICAL TO")
+             (?$B"b(B "$B$[$H$s$IEy$7$$(B,APPROXIMATELY EQUAL TO OR THE IMAGE OF")
+             (?$B"c(B "$BHs>o$K>.$5$$(B,MUCH LESS-THAN")
+             (?$B"d(B "$BHs>o$KBg$-$$(B,MUCH GREATER-THAN")
+             (?$B"e(B "$B:,9f(B,SQUARE ROOT")
+             (?$B"f(B "$BAj;w(B,REVERSED TILDE")
+             (?$B"g(B "$BHfNc(B,PROPORTIONAL TO")
+             (?$B"h(B "$B$J$<$J$i$P(B,BECAUSE")
+             (?$B"i(B "$B@QJ,5-9f(B,INTEGRAL")
+             (?$B"j(B "2$B=E@QJ,5-9f(B,DOUBLE INTEGRAL")
+             (?$B"r(B "$B%*%s%0%9%H%m!<%`(B,ANGSTROM SIGN")
+             (?$B"s(B "$B%Q!<%_%k(B,PER MILLE SIGN")
+             (?$B"t(B "$B%7%c!<%W(B,MUSIC SHARP SIGN")
+             (?$B"u(B "$B%U%i%C%H(B,MUSIC FLAT SIGN")
+             (?$B"v(B "$B2;Id(B,EIGHTH NOTE")
+             (?$B"w(B "$B%@%,!<(B,DAGGER")
+             (?$B"x(B "$B%@%V%k%@%,!<(B,DOUBLE DAGGER")
+             (?$B"y(B "$BCJMn5-9f(B,PILCROW SIGN")
+             (?$B"~(B "$BBg$-$J4](B,LARGE CIRCLE")
+             (?$B#0(B "0,DIGIT ZERO")
+             (?$B#1(B "1,DIGIT ONE")
+             (?$B#2(B "2,DIGIT TWO")
+             (?$B#3(B "3,DIGIT THREE")
+             (?$B#4(B "4,DIGIT FOUR")
+             (?$B#5(B "5,DIGIT FIVE")
+             (?$B#6(B "6,DIGIT SIX")
+             (?$B#7(B "7,DIGIT SEVEN")
+             (?$B#8(B "8,DIGIT EIGHT")
+             (?$B#9(B "9,DIGIT NINE")
+             (?$B#A(B "$B%i%F%sBgJ8;z(BA,LATIN CAPITAL LETTER A")
+             (?$B#B(B "$B%i%F%sBgJ8;z(BB,LATIN CAPITAL LETTER B")
+             (?$B#C(B "$B%i%F%sBgJ8;z(BC,LATIN CAPITAL LETTER C")
+             (?$B#D(B "$B%i%F%sBgJ8;z(BD,LATIN CAPITAL LETTER D")
+             (?$B#E(B "$B%i%F%sBgJ8;z(BE,LATIN CAPITAL LETTER E")
+             (?$B#F(B "$B%i%F%sBgJ8;z(BF,LATIN CAPITAL LETTER F")
+             (?$B#G(B "$B%i%F%sBgJ8;z(BG,LATIN CAPITAL LETTER G")
+             (?$B#H(B "$B%i%F%sBgJ8;z(BH,LATIN CAPITAL LETTER H")
+             (?$B#I(B "$B%i%F%sBgJ8;z(BI,LATIN CAPITAL LETTER I")
+             (?$B#J(B "$B%i%F%sBgJ8;z(BJ,LATIN CAPITAL LETTER J")
+             (?$B#K(B "$B%i%F%sBgJ8;z(BK,LATIN CAPITAL LETTER K")
+             (?$B#L(B "$B%i%F%sBgJ8;z(BL,LATIN CAPITAL LETTER L")
+             (?$B#M(B "$B%i%F%sBgJ8;z(BM,LATIN CAPITAL LETTER M")
+             (?$B#N(B "$B%i%F%sBgJ8;z(BN,LATIN CAPITAL LETTER N")
+             (?$B#O(B "$B%i%F%sBgJ8;z(BO,LATIN CAPITAL LETTER O")
+             (?$B#P(B "$B%i%F%sBgJ8;z(BP,LATIN CAPITAL LETTER P")
+             (?$B#Q(B "$B%i%F%sBgJ8;z(BQ,LATIN CAPITAL LETTER Q")
+             (?$B#R(B "$B%i%F%sBgJ8;z(BR,LATIN CAPITAL LETTER R")
+             (?$B#S(B "$B%i%F%sBgJ8;z(BS,LATIN CAPITAL LETTER S")
+             (?$B#T(B "$B%i%F%sBgJ8;z(BT,LATIN CAPITAL LETTER T")
+             (?$B#U(B "$B%i%F%sBgJ8;z(BU,LATIN CAPITAL LETTER U")
+             (?$B#V(B "$B%i%F%sBgJ8;z(BV,LATIN CAPITAL LETTER V")
+             (?$B#W(B "$B%i%F%sBgJ8;z(BW,LATIN CAPITAL LETTER W")
+             (?$B#X(B "$B%i%F%sBgJ8;z(BX,LATIN CAPITAL LETTER X")
+             (?$B#Y(B "$B%i%F%sBgJ8;z(BY,LATIN CAPITAL LETTER Y")
+             (?$B#Z(B "$B%i%F%sBgJ8;z(BZ,LATIN CAPITAL LETTER Z")
+             (?$B#a(B "$B%i%F%s>.J8;z(BA,LATIN SMALL LETTER A")
+             (?$B#b(B "$B%i%F%s>.J8;z(BB,LATIN SMALL LETTER B")
+             (?$B#c(B "$B%i%F%s>.J8;z(BC,LATIN SMALL LETTER C")
+             (?$B#d(B "$B%i%F%s>.J8;z(BD,LATIN SMALL LETTER D")
+             (?$B#e(B "$B%i%F%s>.J8;z(BE,LATIN SMALL LETTER E")
+             (?$B#f(B "$B%i%F%s>.J8;z(BF,LATIN SMALL LETTER F")
+             (?$B#g(B "$B%i%F%s>.J8;z(BG,LATIN SMALL LETTER G")
+             (?$B#h(B "$B%i%F%s>.J8;z(BH,LATIN SMALL LETTER H")
+             (?$B#i(B "$B%i%F%s>.J8;z(BI,LATIN SMALL LETTER I")
+             (?$B#j(B "$B%i%F%s>.J8;z(BJ,LATIN SMALL LETTER J")
+             (?$B#k(B "$B%i%F%s>.J8;z(BK,LATIN SMALL LETTER K")
+             (?$B#l(B "$B%i%F%s>.J8;z(BL,LATIN SMALL LETTER L")
+             (?$B#m(B "$B%i%F%s>.J8;z(BM,LATIN SMALL LETTER M")
+             (?$B#n(B "$B%i%F%s>.J8;z(BN,LATIN SMALL LETTER N")
+             (?$B#o(B "$B%i%F%s>.J8;z(BO,LATIN SMALL LETTER O")
+             (?$B#p(B "$B%i%F%s>.J8;z(BP,LATIN SMALL LETTER P")
+             (?$B#q(B "$B%i%F%s>.J8;z(BQ,LATIN SMALL LETTER Q")
+             (?$B#r(B "$B%i%F%s>.J8;z(BR,LATIN SMALL LETTER R")
+             (?$B#s(B "$B%i%F%s>.J8;z(BS,LATIN SMALL LETTER S")
+             (?$B#t(B "$B%i%F%s>.J8;z(BT,LATIN SMALL LETTER T")
+             (?$B#u(B "$B%i%F%s>.J8;z(BU,LATIN SMALL LETTER U")
+             (?$B#v(B "$B%i%F%s>.J8;z(BV,LATIN SMALL LETTER V")
+             (?$B#w(B "$B%i%F%s>.J8;z(BW,LATIN SMALL LETTER W")
+             (?$B#x(B "$B%i%F%s>.J8;z(BX,LATIN SMALL LETTER X")
+             (?$B#y(B "$B%i%F%s>.J8;z(BY,LATIN SMALL LETTER Y")
+             (?$B#z(B "$B%i%F%s>.J8;z(BZ,LATIN SMALL LETTER Z")
+             (?$B$!(B "$B>.=q$-J?2>L>$"(B,HIRAGANA LETTER SMALL A")
+             (?$B$"(B "$BJ?2>L>$"(B,HIRAGANA LETTER A")
+             (?$B$#(B "$B>.=q$-J?2>L>$$(B,HIRAGANA LETTER SMALL I")
+             (?$B$$(B "$BJ?2>L>$$(B,HIRAGANA LETTER I")
+             (?$B$%(B "$B>.=q$-J?2>L>$&(B,HIRAGANA LETTER SMALL U")
+             (?$B$&(B "$BJ?2>L>$&(B,HIRAGANA LETTER U")
+             (?$B$'(B "$B>.=q$-J?2>L>$((B,HIRAGANA LETTER SMALL E")
+             (?$B$((B "$BJ?2>L>$((B,HIRAGANA LETTER E")
+             (?$B$)(B "$B>.=q$-J?2>L>$*(B,HIRAGANA LETTER SMALL O")
+             (?$B$*(B "$BJ?2>L>$*(B,HIRAGANA LETTER O")
+             (?$B$+(B "$BJ?2>L>$+(B,HIRAGANA LETTER KA")
+             (?$B$,(B "$BByE@IU$-J?2>L>$+(B,HIRAGANA LETTER GA")
+             (?$B$-(B "$BJ?2>L>$-(B,HIRAGANA LETTER KI")
+             (?$B$.(B "$BByE@IU$-J?2>L>$-(B,HIRAGANA LETTER GI")
+             (?$B$/(B "$BJ?2>L>$/(B,HIRAGANA LETTER KU")
+             (?$B$0(B "$BByE@IU$-J?2>L>$/(B,HIRAGANA LETTER GU")
+             (?$B$1(B "$BJ?2>L>$1(B,HIRAGANA LETTER KE")
+             (?$B$2(B "$BByE@IU$-J?2>L>$1(B,HIRAGANA LETTER GE")
+             (?$B$3(B "$BJ?2>L>$3(B,HIRAGANA LETTER KO")
+             (?$B$4(B "$BByE@IU$-J?2>L>$3(B,HIRAGANA LETTER GO")
+             (?$B$5(B "$BJ?2>L>$5(B,HIRAGANA LETTER SA")
+             (?$B$6(B "$BByE@IU$-J?2>L>$5(B,HIRAGANA LETTER ZA")
+             (?$B$7(B "$BJ?2>L>$7(B,HIRAGANA LETTER SI")
+             (?$B$8(B "$BByE@IU$-J?2>L>$7(B,HIRAGANA LETTER ZI")
+             (?$B$9(B "$BJ?2>L>$9(B,HIRAGANA LETTER SU")
+             (?$B$:(B "$BByE@IU$-J?2>L>$9(B,HIRAGANA LETTER ZU")
+             (?$B$;(B "$BJ?2>L>$;(B,HIRAGANA LETTER SE")
+             (?$B$<(B "$BByE@IU$-J?2>L>$;(B,HIRAGANA LETTER ZE")
+             (?$B$=(B "$BJ?2>L>$=(B,HIRAGANA LETTER SO")
+             (?$B$>(B "$BByE@IU$-J?2>L>$=(B,HIRAGANA LETTER ZO")
+             (?$B$?(B "$BJ?2>L>$?(B,HIRAGANA LETTER TA")
+             (?$B$@(B "$BByE@IU$-J?2>L>$?(B,HIRAGANA LETTER DA")
+             (?$B$A(B "$BJ?2>L>$A(B,HIRAGANA LETTER TI")
+             (?$B$B(B "$BByE@IU$-J?2>L>$A(B,HIRAGANA LETTER DI")
+             (?$B$C(B "$B>.=q$-J?2>L>$D(B,HIRAGANA LETTER SMALL TU")
+             (?$B$D(B "$BJ?2>L>$D(B,HIRAGANA LETTER TU")
+             (?$B$E(B "$BByE@IU$-J?2>L>$D(B,HIRAGANA LETTER DU")
+             (?$B$F(B "$BJ?2>L>$F(B,HIRAGANA LETTER TE")
+             (?$B$G(B "$BByE@IU$-J?2>L>$F(B,HIRAGANA LETTER DE")
+             (?$B$H(B "$BJ?2>L>$H(B,HIRAGANA LETTER TO")
+             (?$B$I(B "$BByE@IU$-J?2>L>$H(B,HIRAGANA LETTER DO")
+             (?$B$J(B "$BJ?2>L>$J(B,HIRAGANA LETTER NA")
+             (?$B$K(B "$BJ?2>L>$K(B,HIRAGANA LETTER NI")
+             (?$B$L(B "$BJ?2>L>$L(B,HIRAGANA LETTER NU")
+             (?$B$M(B "$BJ?2>L>$M(B,HIRAGANA LETTER NE")
+             (?$B$N(B "$BJ?2>L>$N(B,HIRAGANA LETTER NO")
+             (?$B$O(B "$BJ?2>L>$O(B,HIRAGANA LETTER HA")
+             (?$B$P(B "$BByE@IU$-J?2>L>$O(B,HIRAGANA LETTER BA")
+             (?$B$Q(B "$BH>ByE@IU$-J?2>L>$O(B,HIRAGANA LETTER PA")
+             (?$B$R(B "$BJ?2>L>$R(B,HIRAGANA LETTER HI")
+             (?$B$S(B "$BByE@IU$-J?2>L>$R(B,HIRAGANA LETTER BI")
+             (?$B$T(B "$BH>ByE@IU$-J?2>L>$R(B,HIRAGANA LETTER PI")
+             (?$B$U(B "$BJ?2>L>$U(B,HIRAGANA LETTER HU")
+             (?$B$V(B "$BByE@IU$-J?2>L>$U(B,HIRAGANA LETTER BU")
+             (?$B$W(B "$BH>ByE@IU$-J?2>L>$U(B,HIRAGANA LETTER PU")
+             (?$B$X(B "$BJ?2>L>$X(B,HIRAGANA LETTER HE")
+             (?$B$Y(B "$BByE@IU$-J?2>L>$X(B,HIRAGANA LETTER BE")
+             (?$B$Z(B "$BH>ByE@IU$-J?2>L>$X(B,HIRAGANA LETTER PE")
+             (?$B$[(B "$BJ?2>L>$[(B,HIRAGANA LETTER HO")
+             (?$B$\(B "$BByE@IU$-J?2>L>$[(B,HIRAGANA LETTER BO")
+             (?$B$](B "$BH>ByE@IU$-J?2>L>$[(B,HIRAGANA LETTER PO")
+             (?$B$^(B "$BJ?2>L>$^(B,HIRAGANA LETTER MA")
+             (?$B$_(B "$BJ?2>L>$_(B,HIRAGANA LETTER MI")
+             (?$B$`(B "$BJ?2>L>$`(B,HIRAGANA LETTER MU")
+             (?$B$a(B "$BJ?2>L>$a(B,HIRAGANA LETTER ME")
+             (?$B$b(B "$BJ?2>L>$b(B,HIRAGANA LETTER MO")
+             (?$B$c(B "$B>.=q$-J?2>L>$d(B,HIRAGANA LETTER SMALL YA")
+             (?$B$d(B "$BJ?2>L>$d(B,HIRAGANA LETTER YA")
+             (?$B$e(B "$B>.=q$-J?2>L>$f(B,HIRAGANA LETTER SMALL YU")
+             (?$B$f(B "$BJ?2>L>$f(B,HIRAGANA LETTER YU")
+             (?$B$g(B "$B>.=q$-J?2>L>$h(B,HIRAGANA LETTER SMALL YO")
+             (?$B$h(B "$BJ?2>L>$h(B,HIRAGANA LETTER YO")
+             (?$B$i(B "$BJ?2>L>$i(B,HIRAGANA LETTER RA")
+             (?$B$j(B "$BJ?2>L>$j(B,HIRAGANA LETTER RI")
+             (?$B$k(B "$BJ?2>L>$k(B,HIRAGANA LETTER RU")
+             (?$B$l(B "$BJ?2>L>$l(B,HIRAGANA LETTER RE")
+             (?$B$m(B "$BJ?2>L>$m(B,HIRAGANA LETTER RO")
+             (?$B$n(B "$B>.=q$-J?2>L>$o(B,HIRAGANA LETTER SMALL WA")
+             (?$B$o(B "$BJ?2>L>$o(B,HIRAGANA LETTER WA")
+             (?$B$p(B "$BJ?2>L>$p(B,HIRAGANA LETTER WI")
+             (?$B$q(B "$BJ?2>L>$q(B,HIRAGANA LETTER WE")
+             (?$B$r(B "$BJ?2>L>$r(B,HIRAGANA LETTER WO")
+             (?$B$s(B "$BJ?2>L>$s(B,HIRAGANA LETTER N")
+             (?$B%!(B "$B>.=q$-JR2>L>%"(B,KATAKANA LETTER SMALL A")
+             (?$B%"(B "$BJR2>L>%"(B,KATAKANA LETTER A")
+             (?$B%#(B "$B>.=q$-JR2>L>%$(B,KATAKANA LETTER SMALL I")
+             (?$B%$(B "$BJR2>L>%$(B,KATAKANA LETTER I")
+             (?$B%%(B "$B>.=q$-JR2>L>%&(B,KATAKANA LETTER SMALL U")
+             (?$B%&(B "$BJR2>L>%&(B,KATAKANA LETTER U")
+             (?$B%'(B "$B>.=q$-JR2>L>%((B,KATAKANA LETTER SMALL E")
+             (?$B%((B "$BJR2>L>%((B,KATAKANA LETTER E")
+             (?$B%)(B "$B>.=q$-JR2>L>%*(B,KATAKANA LETTER SMALL O")
+             (?$B%*(B "$BJR2>L>%*(B,KATAKANA LETTER O")
+             (?$B%+(B "$BJR2>L>%+(B,KATAKANA LETTER KA")
+             (?$B%,(B "$BByE@IU$-JR2>L>%+(B,KATAKANA LETTER GA")
+             (?$B%-(B "$BJR2>L>%-(B,KATAKANA LETTER KI")
+             (?$B%.(B "$BByE@IU$-JR2>L>%-(B,KATAKANA LETTER GI")
+             (?$B%/(B "$BJR2>L>%/(B,KATAKANA LETTER KU")
+             (?$B%0(B "$BByE@IU$-JR2>L>%/(B,KATAKANA LETTER GU")
+             (?$B%1(B "$BJR2>L>%1(B,KATAKANA LETTER KE")
+             (?$B%2(B "$BByE@IU$-JR2>L>%1(B,KATAKANA LETTER GE")
+             (?$B%3(B "$BJR2>L>%3(B,KATAKANA LETTER KO")
+             (?$B%4(B "$BByE@IU$-JR2>L>%3(B,KATAKANA LETTER GO")
+             (?$B%5(B "$BJR2>L>%5(B,KATAKANA LETTER SA")
+             (?$B%6(B "$BByE@IU$-JR2>L>%5(B,KATAKANA LETTER ZA")
+             (?$B%7(B "$BJR2>L>%7(B,KATAKANA LETTER SI")
+             (?$B%8(B "$BByE@IU$-JR2>L>%7(B,KATAKANA LETTER ZI")
+             (?$B%9(B "$BJR2>L>%9(B,KATAKANA LETTER SU")
+             (?$B%:(B "$BByE@IU$-JR2>L>%9(B,KATAKANA LETTER ZU")
+             (?$B%;(B "$BJR2>L>%;(B,KATAKANA LETTER SE")
+             (?$B%<(B "$BByE@IU$-JR2>L>%;(B,KATAKANA LETTER ZE")
+             (?$B%=(B "$BJR2>L>%=(B,KATAKANA LETTER SO")
+             (?$B%>(B "$BByE@IU$-JR2>L>%=(B,KATAKANA LETTER ZO")
+             (?$B%?(B "$BJR2>L>%?(B,KATAKANA LETTER TA")
+             (?$B%@(B "$BByE@IU$-JR2>L>%?(B,KATAKANA LETTER DA")
+             (?$B%A(B "$BJR2>L>%A(B,KATAKANA LETTER TI")
+             (?$B%B(B "$BByE@IU$-JR2>L>%A(B,KATAKANA LETTER DI")
+             (?$B%C(B "$B>.=q$-JR2>L>%D(B,KATAKANA LETTER SMALL TU")
+             (?$B%D(B "$BJR2>L>%D(B,KATAKANA LETTER TU")
+             (?$B%E(B "$BByE@IU$-JR2>L>%D(B,KATAKANA LETTER DU")
+             (?$B%F(B "$BJR2>L>%F(B,KATAKANA LETTER TE")
+             (?$B%G(B "$BByE@IU$-JR2>L>%F(B,KATAKANA LETTER DE")
+             (?$B%H(B "$BJR2>L>%H(B,KATAKANA LETTER TO")
+             (?$B%I(B "$BByE@IU$-JR2>L>%H(B,KATAKANA LETTER DO")
+             (?$B%J(B "$BJR2>L>%J(B,KATAKANA LETTER NA")
+             (?$B%K(B "$BJR2>L>%K(B,KATAKANA LETTER NI")
+             (?$B%L(B "$BJR2>L>%L(B,KATAKANA LETTER NU")
+             (?$B%M(B "$BJR2>L>%M(B,KATAKANA LETTER NE")
+             (?$B%N(B "$BJR2>L>%N(B,KATAKANA LETTER NO")
+             (?$B%O(B "$BJR2>L>%O(B,KATAKANA LETTER HA")
+             (?$B%P(B "$BByE@IU$-JR2>L>%O(B,KATAKANA LETTER BA")
+             (?$B%Q(B "$BH>ByE@IU$-JR2>L>%O(B,KATAKANA LETTER PA")
+             (?$B%R(B "$BJR2>L>%R(B,KATAKANA LETTER HI")
+             (?$B%S(B "$BByE@IU$-JR2>L>%R(B,KATAKANA LETTER BI")
+             (?$B%T(B "$BH>ByE@IU$-JR2>L>%R(B,KATAKANA LETTER PI")
+             (?$B%U(B "$BJR2>L>%U(B,KATAKANA LETTER HU")
+             (?$B%V(B "$BByE@IU$-JR2>L>%U(B,KATAKANA LETTER BU")
+             (?$B%W(B "$BH>ByE@IU$-JR2>L>%U(B,KATAKANA LETTER PU")
+             (?$B%X(B "$BJR2>L>%X(B,KATAKANA LETTER HE")
+             (?$B%Y(B "$BByE@IU$-JR2>L>%X(B,KATAKANA LETTER BE")
+             (?$B%Z(B "$BH>ByE@IU$-JR2>L>%X(B,KATAKANA LETTER PE")
+             (?$B%[(B "$BJR2>L>%[(B,KATAKANA LETTER HO")
+             (?$B%\(B "$BByE@IU$-JR2>L>%[(B,KATAKANA LETTER BO")
+             (?$B%](B "$BH>ByE@IU$-JR2>L>%[(B,KATAKANA LETTER PO")
+             (?$B%^(B "$BJR2>L>%^(B,KATAKANA LETTER MA")
+             (?$B%_(B "$BJR2>L>%_(B,KATAKANA LETTER MI")
+             (?$B%`(B "$BJR2>L>%`(B,KATAKANA LETTER MU")
+             (?$B%a(B "$BJR2>L>%a(B,KATAKANA LETTER ME")
+             (?$B%b(B "$BJR2>L>%b(B,KATAKANA LETTER MO")
+             (?$B%c(B "$B>.=q$-JR2>L>%d(B,KATAKANA LETTER SMALL YA")
+             (?$B%d(B "$BJR2>L>%d(B,KATAKANA LETTER YA")
+             (?$B%e(B "$B>.=q$-JR2>L>%f(B,KATAKANA LETTER SMALL YU")
+             (?$B%f(B "$BJR2>L>%f(B,KATAKANA LETTER YU")
+             (?$B%g(B "$B>.=q$-JR2>L>%h(B,KATAKANA LETTER SMALL YO")
+             (?$B%h(B "$BJR2>L>%h(B,KATAKANA LETTER YO")
+             (?$B%i(B "$BJR2>L>%i(B,KATAKANA LETTER RA")
+             (?$B%j(B "$BJR2>L>%j(B,KATAKANA LETTER RI")
+             (?$B%k(B "$BJR2>L>%k(B,KATAKANA LETTER RU")
+             (?$B%l(B "$BJR2>L>%l(B,KATAKANA LETTER RE")
+             (?$B%m(B "$BJR2>L>%m(B,KATAKANA LETTER RO")
+             (?$B%n(B "$B>.=q$-JR2>L>%o(B,KATAKANA LETTER SMALL WA")
+             (?$B%o(B "$BJR2>L>%o(B,KATAKANA LETTER WA")
+             (?$B%p(B "$BJR2>L>%p(B,KATAKANA LETTER WI")
+             (?$B%q(B "$BJR2>L>%q(B,KATAKANA LETTER WE")
+             (?$B%r(B "$BJR2>L>%r(B,KATAKANA LETTER WO")
+             (?$B%s(B "$BJR2>L>%s(B,KATAKANA LETTER N")
+             (?$B%t(B "$BByE@IU$-JR2>L>%&(B,KATAKANA LETTER VU")
+             (?$B%u(B "$B>.=q$-JR2>L>%+(B,KATAKANA LETTER SMALL KA")
+             (?$B%v(B "$B>.=q$-JR2>L>%1(B,KATAKANA LETTER SMALL KE")
+             (?$B&!(B "$B%.%j%7%"BgJ8;z(BALPHA,GREEK CAPITAL LETTER ALPHA")
+             (?$B&"(B "$B%.%j%7%"BgJ8;z(BBETA,GREEK CAPITAL LETTER BETA")
+             (?$B&#(B "$B%.%j%7%"BgJ8;z(BGAMMA,GREEK CAPITAL LETTER GAMMA")
+             (?$B&$(B "$B%.%j%7%"BgJ8;z(BDELTA,GREEK CAPITAL LETTER DELTA")
+             (?$B&%(B "$B%.%j%7%"BgJ8;z(BEPSILON,GREEK CAPITAL LETTER EPSILON")
+             (?$B&&(B "$B%.%j%7%"BgJ8;z(BZETA,GREEK CAPITAL LETTER ZETA")
+             (?$B&'(B "$B%.%j%7%"BgJ8;z(BETA,GREEK CAPITAL LETTER ETA")
+             (?$B&((B "$B%.%j%7%"BgJ8;z(BTHETA,GREEK CAPITAL LETTER THETA")
+             (?$B&)(B "$B%.%j%7%"BgJ8;z(BIOTA,GREEK CAPITAL LETTER IOTA")
+             (?$B&*(B "$B%.%j%7%"BgJ8;z(BKAPPA,GREEK CAPITAL LETTER KAPPA")
+             (?$B&+(B "$B%.%j%7%"BgJ8;z(BLAMBDA,GREEK CAPITAL LETTER LAMBDA")
+             (?$B&,(B "$B%.%j%7%"BgJ8;z(BMU,GREEK CAPITAL LETTER MU")
+             (?$B&-(B "$B%.%j%7%"BgJ8;z(BNU,GREEK CAPITAL LETTER NU")
+             (?$B&.(B "$B%.%j%7%"BgJ8;z(BXI,GREEK CAPITAL LETTER XI")
+             (?$B&/(B "$B%.%j%7%"BgJ8;z(BOMICRON,GREEK CAPITAL LETTER OMICRON")
+             (?$B&0(B "$B%.%j%7%"BgJ8;z(BPI,GREEK CAPITAL LETTER PI")
+             (?$B&1(B "$B%.%j%7%"BgJ8;z(BRHO,GREEK CAPITAL LETTER RHO")
+             (?$B&2(B "$B%.%j%7%"BgJ8;z(BSIGMA,GREEK CAPITAL LETTER SIGMA")
+             (?$B&3(B "$B%.%j%7%"BgJ8;z(BTAU,GREEK CAPITAL LETTER TAU")
+             (?$B&4(B "$B%.%j%7%"BgJ8;z(BUPSILON,GREEK CAPITAL LETTER UPSILON")
+             (?$B&5(B "$B%.%j%7%"BgJ8;z(BPHI,GREEK CAPITAL LETTER PHI")
+             (?$B&6(B "$B%.%j%7%"BgJ8;z(BCHI,GREEK CAPITAL LETTER CHI")
+             (?$B&7(B "$B%.%j%7%"BgJ8;z(BPSI,GREEK CAPITAL LETTER PSI")
+             (?$B&8(B "$B%.%j%7%"BgJ8;z(BOMEGA,GREEK CAPITAL LETTER OMEGA")
+             (?$B&A(B "$B%.%j%7%">.J8;z(BALPHA,GREEK SMALL LETTER ALPHA")
+             (?$B&B(B "$B%.%j%7%">.J8;z(BBETA,GREEK SMALL LETTER BETA")
+             (?$B&C(B "$B%.%j%7%">.J8;z(BGAMMA,GREEK SMALL LETTER GAMMA")
+             (?$B&D(B "$B%.%j%7%">.J8;z(BDELTA,GREEK SMALL LETTER DELTA")
+             (?$B&E(B "$B%.%j%7%">.J8;z(BEPSILON,GREEK SMALL LETTER EPSILON")
+             (?$B&F(B "$B%.%j%7%">.J8;z(BZETA,GREEK SMALL LETTER ZETA")
+             (?$B&G(B "$B%.%j%7%">.J8;z(BETA,GREEK SMALL LETTER ETA")
+             (?$B&H(B "$B%.%j%7%">.J8;z(BTHETA,GREEK SMALL LETTER THETA")
+             (?$B&I(B "$B%.%j%7%">.J8;z(BIOTA,GREEK SMALL LETTER IOTA")
+             (?$B&J(B "$B%.%j%7%">.J8;z(BKAPPA,GREEK SMALL LETTER KAPPA")
+             (?$B&K(B "$B%.%j%7%">.J8;z(BLAMBDA,GREEK SMALL LETTER LAMBDA")
+             (?$B&L(B "$B%.%j%7%">.J8;z(BMU,GREEK SMALL LETTER MU")
+             (?$B&M(B "$B%.%j%7%">.J8;z(BNU,GREEK SMALL LETTER NU")
+             (?$B&N(B "$B%.%j%7%">.J8;z(BXI,GREEK SMALL LETTER XI")
+             (?$B&O(B "$B%.%j%7%">.J8;z(BOMICRON,GREEK SMALL LETTER OMICRON")
+             (?$B&P(B "$B%.%j%7%">.J8;z(BPI,GREEK SMALL LETTER PI")
+             (?$B&Q(B "$B%.%j%7%">.J8;z(BRHO,GREEK SMALL LETTER RHO")
+             (?$B&R(B "$B%.%j%7%">.J8;z(BSIGMA,GREEK SMALL LETTER SIGMA")
+             (?$B&S(B "$B%.%j%7%">.J8;z(BTAU,GREEK SMALL LETTER TAU")
+             (?$B&T(B "$B%.%j%7%">.J8;z(BUPSILON,GREEK SMALL LETTER UPSILON")
+             (?$B&U(B "$B%.%j%7%">.J8;z(BPHI,GREEK SMALL LETTER PHI")
+             (?$B&V(B "$B%.%j%7%">.J8;z(BCHI,GREEK SMALL LETTER CHI")
+             (?$B&W(B "$B%.%j%7%">.J8;z(BPSI,GREEK SMALL LETTER PSI")
+             (?$B&X(B "$B%.%j%7%">.J8;z(BOMEGA,GREEK SMALL LETTER OMEGA")
+             (?$B'!(B "$B%-%j!<%kBgJ8;z(BA,CYRILLIC CAPITAL LETTER A")
+             (?$B'"(B "$B%-%j!<%kBgJ8;z(BBE,CYRILLIC CAPITAL LETTER BE")
+             (?$B'#(B "$B%-%j!<%kBgJ8;z(BVE,CYRILLIC CAPITAL LETTER VE")
+             (?$B'$(B "$B%-%j!<%kBgJ8;z(BGHE,CYRILLIC CAPITAL LETTER GHE")
+             (?$B'%(B "$B%-%j!<%kBgJ8;z(BDE,CYRILLIC CAPITAL LETTER DE")
+             (?$B'&(B "$B%-%j!<%kBgJ8;z(BIE,CYRILLIC CAPITAL LETTER IE")
+             (?$B''(B "$B%-%j!<%kBgJ8;z(BIO,CYRILLIC CAPITAL LETTER IO")
+             (?$B'((B "$B%-%j!<%kBgJ8;z(BZHE,CYRILLIC CAPITAL LETTER ZHE")
+             (?$B')(B "$B%-%j!<%kBgJ8;z(BZE,CYRILLIC CAPITAL LETTER ZE")
+             (?$B'*(B "$B%-%j!<%kBgJ8;z(BI,CYRILLIC CAPITAL LETTER I")
+             (?$B'+(B "$B%-%j!<%kBgJ8;z(BSHORT I,CYRILLIC CAPITAL LETTER SHORT I")
+             (?$B',(B "$B%-%j!<%kBgJ8;z(BKA,CYRILLIC CAPITAL LETTER KA")
+             (?$B'-(B "$B%-%j!<%kBgJ8;z(BEL,CYRILLIC CAPITAL LETTER EL")
+             (?$B'.(B "$B%-%j!<%kBgJ8;z(BEM,CYRILLIC CAPITAL LETTER EM")
+             (?$B'/(B "$B%-%j!<%kBgJ8;z(BEN,CYRILLIC CAPITAL LETTER EN")
+             (?$B'0(B "$B%-%j!<%kBgJ8;z(BO,CYRILLIC CAPITAL LETTER O")
+             (?$B'1(B "$B%-%j!<%kBgJ8;z(BPE,CYRILLIC CAPITAL LETTER PE")
+             (?$B'2(B "$B%-%j!<%kBgJ8;z(BER,CYRILLIC CAPITAL LETTER ER")
+             (?$B'3(B "$B%-%j!<%kBgJ8;z(BES,CYRILLIC CAPITAL LETTER ES")
+             (?$B'4(B "$B%-%j!<%kBgJ8;z(BTE,CYRILLIC CAPITAL LETTER TE")
+             (?$B'5(B "$B%-%j!<%kBgJ8;z(BU,CYRILLIC CAPITAL LETTER U")
+             (?$B'6(B "$B%-%j!<%kBgJ8;z(BEF,CYRILLIC CAPITAL LETTER EF")
+             (?$B'7(B "$B%-%j!<%kBgJ8;z(BHA,CYRILLIC CAPITAL LETTER HA")
+             (?$B'8(B "$B%-%j!<%kBgJ8;z(BTSE,CYRILLIC CAPITAL LETTER TSE")
+             (?$B'9(B "$B%-%j!<%kBgJ8;z(BCHE,CYRILLIC CAPITAL LETTER CHE")
+             (?$B':(B "$B%-%j!<%kBgJ8;z(BSHA,CYRILLIC CAPITAL LETTER SHA")
+             (?$B';(B "$B%-%j!<%kBgJ8;z(BSHCHA,CYRILLIC CAPITAL LETTER SHCHA")
+             (?$B'<(B "$B%-%j!<%kBgJ8;z(BHARD SIGN,CYRILLIC CAPITAL LETTER HARD SIGN")
+             (?$B'=(B "$B%-%j!<%kBgJ8;z(BYERU,CYRILLIC CAPITAL LETTER YERU")
+             (?$B'>(B "$B%-%j!<%kBgJ8;z(BSOFT SIGN,CYRILLIC CAPITAL LETTER SOFT SIGN")
+             (?$B'?(B "$B%-%j!<%kBgJ8;z(BE,CYRILLIC CAPITAL LETTER E")
+             (?$B'@(B "$B%-%j!<%kBgJ8;z(BYU,CYRILLIC CAPITAL LETTER YU")
+             (?$B'A(B "$B%-%j!<%kBgJ8;z(BYA,CYRILLIC CAPITAL LETTER YA")
+             (?$B'Q(B "$B%-%j!<%k>.J8;z(BA,CYRILLIC SMALL LETTER A")
+             (?$B'R(B "$B%-%j!<%k>.J8;z(BBE,CYRILLIC SMALL LETTER BE")
+             (?$B'S(B "$B%-%j!<%k>.J8;z(BVE,CYRILLIC SMALL LETTER VE")
+             (?$B'T(B "$B%-%j!<%k>.J8;z(BGHE,CYRILLIC SMALL LETTER GHE")
+             (?$B'U(B "$B%-%j!<%k>.J8;z(BDE,CYRILLIC SMALL LETTER DE")
+             (?$B'V(B "$B%-%j!<%k>.J8;z(BIE,CYRILLIC SMALL LETTER IE")
+             (?$B'W(B "$B%-%j!<%k>.J8;z(BIO,CYRILLIC SMALL LETTER IO")
+             (?$B'X(B "$B%-%j!<%k>.J8;z(BZHE,CYRILLIC SMALL LETTER ZHE")
+             (?$B'Y(B "$B%-%j!<%k>.J8;z(BZE,CYRILLIC SMALL LETTER ZE")
+             (?$B'Z(B "$B%-%j!<%k>.J8;z(BI,CYRILLIC SMALL LETTER I")
+             (?$B'[(B "$B%-%j!<%k>.J8;z(BSHORT I,CYRILLIC SMALL LETTER SHORT I")
+             (?$B'\(B "$B%-%j!<%k>.J8;z(BKA,CYRILLIC SMALL LETTER KA")
+             (?$B'](B "$B%-%j!<%k>.J8;z(BEL,CYRILLIC SMALL LETTER EL")
+             (?$B'^(B "$B%-%j!<%k>.J8;z(BEM,CYRILLIC SMALL LETTER EM")
+             (?$B'_(B "$B%-%j!<%k>.J8;z(BEN,CYRILLIC SMALL LETTER EN")
+             (?$B'`(B "$B%-%j!<%k>.J8;z(BO,CYRILLIC SMALL LETTER O")
+             (?$B'a(B "$B%-%j!<%k>.J8;z(BPE,CYRILLIC SMALL LETTER PE")
+             (?$B'b(B "$B%-%j!<%k>.J8;z(BER,CYRILLIC SMALL LETTER ER")
+             (?$B'c(B "$B%-%j!<%k>.J8;z(BES,CYRILLIC SMALL LETTER ES")
+             (?$B'd(B "$B%-%j!<%k>.J8;z(BTE,CYRILLIC SMALL LETTER TE")
+             (?$B'e(B "$B%-%j!<%k>.J8;z(BU,CYRILLIC SMALL LETTER U")
+             (?$B'f(B "$B%-%j!<%k>.J8;z(BEF,CYRILLIC SMALL LETTER EF")
+             (?$B'g(B "$B%-%j!<%k>.J8;z(BHA,CYRILLIC SMALL LETTER HA")
+             (?$B'h(B "$B%-%j!<%k>.J8;z(BTSE,CYRILLIC SMALL LETTER TSE")
+             (?$B'i(B "$B%-%j!<%k>.J8;z(BCHE,CYRILLIC SMALL LETTER CHE")
+             (?$B'j(B "$B%-%j!<%k>.J8;z(BSHA,CYRILLIC SMALL LETTER SHA")
+             (?$B'k(B "$B%-%j!<%k>.J8;z(BSHCHA,CYRILLIC SMALL LETTER SHCHA")
+             (?$B'l(B "$B%-%j!<%k>.J8;z(BHARD SIGN,CYRILLIC SMALL LETTER HARD SIGN")
+             (?$B'm(B "$B%-%j!<%k>.J8;z(BYERU,CYRILLIC SMALL LETTER YERU")
+             (?$B'n(B "$B%-%j!<%k>.J8;z(BSOFT SIGN,CYRILLIC SMALL LETTER SOFT SIGN")
+             (?$B'o(B "$B%-%j!<%k>.J8;z(BE,CYRILLIC SMALL LETTER E")
+             (?$B'p(B "$B%-%j!<%k>.J8;z(BYU,CYRILLIC SMALL LETTER YU")
+             (?$B'q(B "$B%-%j!<%k>.J8;z(BYA,CYRILLIC SMALL LETTER YA")
+             (?$B(!(B "$B2#:Y@~AGJR(B,BOX DRAWINGS LIGHT HORIZONTAL")
+             (?$B("(B "$B=D:Y@~AGJR(B,BOX DRAWINGS LIGHT VERTICAL")
+             (?$B(#(B "$B:Y@~AGJR:8>e(B,BOX DRAWINGS LIGHT DOWN AND RIGHT")
+             (?$B($(B "$B:Y@~AGJR1&>e(B,BOX DRAWINGS LIGHT DOWN AND LEFT")
+             (?$B(%(B "$B:Y@~AGJR1&2<(B,BOX DRAWINGS LIGHT UP AND LEFT")
+             (?$B(&(B "$B:Y@~AGJR:82<(B,BOX DRAWINGS LIGHT UP AND RIGHT")
+             (?$B('(B "$B:Y@~AGJR:8(B,BOX DRAWINGS LIGHT VERTICAL AND RIGHT")
+             (?$B(((B "$B:Y@~AGJR>e(B,BOX DRAWINGS LIGHT DOWN AND HORIZONTAL")
+             (?$B()(B "$B:Y@~AGJR1&(B,BOX DRAWINGS LIGHT VERTICAL AND LEFT")
+             (?$B(*(B "$B:Y@~AGJR2<(B,BOX DRAWINGS LIGHT UP AND HORIZONTAL")
+             (?$B(+(B "$B:Y@~AGJRCf1{(B,BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL")
+             (?$B(,(B "$B2#B@@~AGJR(B,BOX DRAWINGS HEAVY HORIZONTAL")
+             (?$B(-(B "$B=DB@@~AGJR(B,BOX DRAWINGS HEAVY VERTICAL")
+             (?$B(.(B "$BB@@~AGJR:8>e(B,BOX DRAWINGS HEAVY DOWN AND RIGHT")
+             (?$B(/(B "$BB@@~AGJR1&>e(B,BOX DRAWINGS HEAVY DOWN AND LEFT")
+             (?$B(0(B "$BB@@~AGJR1&2<(B,BOX DRAWINGS HEAVY UP AND LEFT")
+             (?$B(1(B "$BB@@~AGJR:82<(B,BOX DRAWINGS HEAVY UP AND RIGHT")
+             (?$B(2(B "$BB@@~AGJR:8(B,BOX DRAWINGS HEAVY VERTICAL AND RIGHT")
+             (?$B(3(B "$BB@@~AGJR>e(B,BOX DRAWINGS HEAVY DOWN AND HORIZONTAL")
+             (?$B(4(B "$BB@@~AGJR1&(B,BOX DRAWINGS HEAVY VERTICAL AND LEFT")
+             (?$B(5(B "$BB@@~AGJR2<(B,BOX DRAWINGS HEAVY UP AND HORIZONTAL")
+             (?$B(6(B "$BB@@~AGJRCf1{(B,BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL")
+             (?$B(7(B "$B=DB@@~2#:Y@~AGJR:8(B,BOX DRAWINGS VERTICAL HEAVY AND RIGHT LIGHT")
+             (?$B(8(B "$B2#B@@~=D:Y@~AGJR>e(B,BOX DRAWINGS DOWN LIGHT AND HORIZONTAL HEAVY")
+             (?$B(9(B "$B=DB@@~2#:Y@~AGJR1&(B,BOX DRAWINGS VERTICAL HEAVY AND LEFT LIGHT")
+             (?$B(:(B "$B2#B@@~=D:Y@~AGJR2<(B,BOX DRAWINGS UP LIGHT AND HORIZONTAL HEAVY")
+             (?$B(;(B "$B=D:Y@~2#B@@~AGJRCf1{(B,BOX DRAWINGS VERTICAL LIGHT AND HORIZONTAL HEAVY")
+             (?$B(<(B "$B=D:Y@~2#B@@~AGJR:8(B,BOX DRAWINGS VERTICAL LIGHT AND RIGHT HEAVY")
+             (?$B(=(B "$B2#:Y@~=DB@@~AGJR>e(B,BOX DRAWINGS DOWN HEAVY AND HORIZONTAL LIGHT")
+             (?$B(>(B "$B=D:Y@~2#B@@~AGJR1&(B,BOX DRAWINGS VERTICAL LIGHT AND LEFT HEAVY")
+             (?$B(?(B "$B2#:Y@~=DB@@~AGJR2<(B,BOX DRAWINGS UP HEAVY AND HORIZONTAL LIGHT")
+             (?$B(@(B "$B2#:Y@~=DB@@~AGJRCf1{(B,BOX DRAWINGS VERTICAL HEAVY AND HORIZONTAL LIGHT")
+             (?$B0"(B "83$B;zBNJQ99(B")
+             (?$B03(B "83$BF~BX$((B($BrM(B)")
+             (?$B1<(B "$B$&$k$&!#o`(B($BE55rIT>\(B)$B$OJL;z(B")
+             (?$B1k(B "83$B;zBNJQ99(B")
+             (?$B2)(B "83$BF~BX$((B($Brt(B)$B!#rt(B($B$&$0$$$9(B)$B$NN,;z!#s?(B($B$&$=(B)$B$OJL;z(B")
+             (?$B2*(B "83$B;zBNJQ99(B")
+             (?$B3>(B "$BG[Ns$NMp$l!#(B19$B6h(B 29$B3=(B($B$+$$$j(B) 30$B3>(B($B$+$*$k(B) 31$B3?(B($B$+$($k(B)")
+             (?$B3B(B "83$BF~BX$((B($BiZ(B)")
+             (?$B3I(B "83$BF~BX$((B($BYx(B)")
+             (?$B3v(B "83$BF~BX$((B($Bc^(B)")
+             (?$B3z(B "83$B;zBNJQ99(B")
+             (?$B4C(B "83$BF~BX$((B($B^u(B)")
+             (?$B4R(B "83$BF~BX$((B($Bk](B)")
+             (?$B6"(B "83$B;zBNJQ99(B")
+             (?$B6F(B "83$BDI2CF~BX$((B($Bt!(B)")
+             (?$B6m(B "83$B;zBNJQ99(B")
+             (?$B7[(B "83$BF~BX$((B($Bpt(B)")
+             (?$B84(B "83$B;zBNJQ99(B")
+             (?$B9\(B "83$BF~BX$((B($Bbh(B)")
+             (?$B9m(B "83$B;zBNJQ99(B")
+             (?$B<H(B "83$B;zBNJQ99(B")
+             (?$B<I(B "83$BF~BX$((B($Bi"(B)")
+             (?$B=+(B "83$B;zBNJQ99(B")
+             (?$B>U(B "83$B;zBNJQ99(B")
+             (?$B>_(B "83$B;zBNJQ99(B")
+             (?$B?Y(B "83$BF~BX$((B($BpW(B)")
+             (?$B@f(B "83$B;zBNJQ99(B")
+             (?$BA((B "83$BF~BX$((B($BlM(B)")
+             (?$BA_(B "83$B;zBNJQ99(B")
+             (?$BBM(B "83$B;zBNJQ99(B")
+             (?$BC=(B "83$B;zBNJQ99(B")
+             (?$BDO(B "83$B;zBNJQ99(B")
+             (?$BD[(B "83$BF~BX$((B($BTd(B)$B!#Td(B($B$D$\(B)$B$NN,;z!#Tg(B($B%3%s(B)$B$OJL;z(B")
+             (?$BE6(B "83$B;zBNJQ99(B")
+             (?$BE?(B "83$B;zBNJQ99(B")
+             (?$BEW(B "83$BF~BX$((B($Bbj(B)")
+             (?$BEn(B "83$BF~BX$((B($B[m(B)")
+             (?$BEs(B "83$BF~BX$((B($B^9(B)")
+             (?$BEx(B "83$B;zBNJQ99(B")
+             (?$BFB(B "83$B;zBNJQ99(B")
+             (?$BFv(B "83$BF~BX$((B($Bmn(B)")
+             (?$BG*(B "$BG)(B($B%M(B)$B$NN,;z!#jY(B($BE55rIT>\(B)$B$OJL;z(B")
+             (?$BG9(B "83$B;zBNJQ99(B")
+             (?$BGh(B "83$BF~BX$((B($Bj$(B)")
+             (?$BH.(B "83$B;zBNJQ99(B")
+             (?$BH0(B "83$B;zBNJQ99(B")
+             (?$BI0(B "83$BF~BX$((B($B[X(B)")
+             (?$BJj(B "$B$D$A$N$(!#Xz(B($B$^$5$+$j(B)$B$OJL;z(B")
+             (?$BKK(B "83$B;zBNJQ99(B")
+             (?$BKj(B "83$BDI2CF~BX$((B($Bt"(B)")
+             (?$BKy(B "83$BF~BX$((B($BPV(B)")
+             (?$BLM(B "83$B;zBNJQ99(B")
+             (?$BLy(B "83$BF~BX$((B($Bi.(B)")
+             (?$BMZ(B "83$BDI2CF~BX$((B($Bt#(B)")
+             (?$BMi(B "83$B;zBNJQ99(B")
+             (?$BNB(B "$B$d$J!#dm(B($B$"$o(B)$B$OJL;z(B")
+             (?$BO6(B "83$BF~BX$((B($BdF(B)")
+             (?$BO9(B "83$B;zBNJQ99(B")
+             (?$BPG(B "$BJ)(B($B$[$H$1(B)$B$N5l;z!#WJ(B($B%U%D(B)$B$OJL;z(B")
+             (?$BPV(B "83$BF~BX$((B($BKy(B)")
+             (?$BQI(B "$B$+$V$H!#ft(B($B%A%e%&(B)$B$OJL;z(B")
+             (?$BR9(B "$B$O$3$,$^$(!#R>(B($B$+$/$7$,$^$((B)$B$OJL;z(B")
+             (?$BR>(B "$B$+$/$7$,$^$(!#R9(B($B$O$3$,$^$((B)$B$OJL;z(B")
+             (?$BTW(B "$BE55rITL@(B")
+             (?$BT_(B "$BE55rITL@(B")
+             (?$BTd(B "83$BF~BX$((B($BD[(B)$B!#$D$\!#Tg(B($B%3%s(B)$B$OJL;z(B")
+             (?$BTg(B "$B%3%s!#Td(B($B$D$\(B)$B$OJL;z(B")
+             (?$BTi(B "$B%A!#Tj(B($B%9%$(B)$B$OJL;z$@$,:.F1$5$l$k(B")
+             (?$BTj(B "$B%9%$!#Ti(B($B%A(B)$B$OJL;z$@$,:.F1$5$l$k(B")
+             (?$BV,(B "$BE55rIT>\!#$"$1$S$N8m;z$+(B")
+             (?$BW;(B "$BF1DjITG=(B")
+             (?$BWJ(B "$B%U%D!#PG(B($B$[$H$1(B)$B$OJL;z(B")
+             (?$BXz(B "$B$^$5$+$j!#Jj(B($B$D$A$N$((B)$B$OJL;z(B")
+             (?$BX{(B "$B$^$b$k!#X|(B($B$$$L(B)$B$OJL;z(B")
+             (?$BX|(B "$B$$$L!#X{(B($B$^$b$k(B)$B$OJL;z(B")
+             (?$BYK(B "$BE55rIT>\(B")
+             (?$BYx(B "83$BF~BX$((B($BYx(B)")
+             (?$BZ9(B "83$B;zBNJQ99(B")
+             (?$BZH(B "$B%7%g%&!#ZI(B($B%X%$(B)$B$OJL;z(B")
+             (?$BZI(B "$B%X%$!#ZH(B($B%7%g%&(B)$B$OJL;z(B")
+             (?$BZl(B "$BCk(B($B$R$k(B)$B$N5l;z!#aA(B($B%+%/(B)$B$OJL;z(B")
+             (?$BZs(B "$BE55rIT>\(B")
+             (?$B[6(B "$B$*$&$4!#[7(B($B%H%&(B)$B$OJL;z(B")
+             (?$B[7(B "$B%H%&!#[6(B($B$*$&$4(B)$B$OJL;z(B")
+             (?$B[X(B "83$BF~BX$((B($BI0(B)")
+             (?$B[m(B "83$BF~BX$((B($BEn(B)")
+             (?$B[{(B "$BE55rIT>\!#$L$GEg$N$L$G$N8m;z$+(B")
+             (?$B\Y(B "$BE55rIT>\(B")
+             (?$B^9(B "83$BF~BX$((B($BEs(B)")
+             (?$B^u(B "83$BF~BX$((B($B4C(B)")
+             (?$B`v(B "83$BDI2CF~BX$((B($Bt$(B)")
+             (?$BaA(B "$B2h(B($B%+%/(B)$B$N5l;z!#Zl(B($B$R$k(B)$B$OJL;z(B")
+             (?$Bad(B "$B%^!#ae(B($B%j%s(B)$B$OJL;z(B")
+             (?$Bae(B "$B%j%s!#ad(B($B%^(B)$B$OJL;z(B")
+             (?$Bbh(B "83$BF~BX$((B($B9\(B)")
+             (?$Bbj(B "83$BF~BX$((B($BEW(B)")
+             (?$Bc^(B "83$BF~BX$((B($B3v(B)")
+             (?$BdF(B "83$BF~BX$((B($BO6(B)")
+             (?$Bdm(B "$B$"$o!#NB(B($B$d$J(B)$B$OJL;z(B")
+             (?$Bft(B "$B%A%e%&!#QI(B($B$+$V$H(B)$B$OJL;z(B")
+             (?$Bi"(B "83$BF~BX$((B($B<I(B)")
+             (?$Bi.(B "83$BF~BX$((B($BLy(B)")
+             (?$BiZ(B "83$BF~BX$((B($B3B(B)")
+             (?$Bin(B "$B$H$+$2!#j#(B($B%H%&(B)$B$OJL;z(B")
+             (?$Bj#(B "$B%H%&!#in(B($B$H$+$2(B)$B$OJL;z(B")
+             (?$Bj$(B "83$BF~BX$((B($BGh(B)")
+             (?$Bj,(B "$BE55rIT>\(B")
+             (?$BjY(B "$BE55rIT>\!#G*(B($B%M(B)$B$OJL;z(B")
+             (?$Bk](B "83$BF~BX$((B($B4R(B)")
+             (?$BlM(B "83$BF~BX$((B($BA((B)")
+             (?$Bmn(B "83$BF~BX$((B($BFv(B)")
+             (?$Bmr(B "$B$9$J$o$A!#n%(B($B%7%e%&(B)$B$OJL;z(B")
+             (?$Bn%(B "$Bn$(B($B%7%e%&(B)$B$N0[BN;z!#mr(B($B$9$J$o$A(B)$B$OJL;z(B")
+             (?$Bn[(B "$B$+$?$J!#n^(B($B%3%/(B)$B$OJL;z(B")
+             (?$Bn^(B "$B%3%/!#n[(B($B$+$?$J(B)$B$OJL;z(B")
+             (?$BoL(B "$B$d$9$j!#oN(B($B%m(B)$B$OJL;z(B")
+             (?$BoN(B "$B%m!#oL(B($B$d$9$j(B)$B$OJL;z(B")
+             (?$Bo`(B "$BE55rIT>\!#1<(B($B$&$k$&(B)$B$OJL;z(B")
+             (?$Bo}(B "$B%-%g%&!#p!(B($B%;%s(B)$B$OJL;z(B")
+             (?$Bp!(B "$B%;%s!#o}(B($B%-%g%&(B)$B$OJL;z(B")
+             (?$BpW(B "83$BF~BX$((B($B?Y(B)")
+             (?$Bpt(B "83$BF~BX$((B($B7[(B)")
+             (?$BqR(B "$BE55rIT>\(B")
+             (?$BrM(B "83$BF~BX$((B($B03(B)")
+             (?$Brt(B "83$BF~BX$((B($B2)(B)$B!#$&$0$$$9!#s?(B($B$&$=(B)$B$OJL;z(B")
+             (?$Bs?(B "$B$&$=!#rt(B($B$&$0$$$9(B)$B$OJL;z(B")
+             (?$Bt!(B "83$BDI2CF~BX$((B($B6F(B)")
+             (?$Bt"(B "83$BDI2CF~BX$((B($BKj(B)")
+             (?$Bt#(B "83$BDI2CF~BX$((B($BMZ(B)")
+             (?$Bt$(B "83$BDI2CF~BX$((B($B`v(B)")
+             (?$Bt%(B "90$BDI2C(B")
+             (?$Bt&(B "90$BDI2C(B"))))
     (dolist (x l)
       (aset skk-tankan-annotation-table (car x) (nth 1 x)))))
 
@@ -2699,676 +2700,676 @@ METHOD が 2 であれば数値 NUM は総画数として検索を実行する�
            (charsetp 'japanese-jisx0213-1))
   (let ((l '(
 
-             (2 15 "アポストロフィ,APOSTROPHE")
-             (2 16 "引用符,クォーテーションマーク,QUOTATION MARK")
-             (2 17 "ハイフンマイナス,HYPHEN-MINUS")
-             (2 18 "チルド,TILDE")
-             (2 19 "くの字点上,VERTICAL KANA REPEAT MARK UPPER HALF")
-             (2 20 "くの字点上(濁点),VERTICAL KANA REPEAT WITH VOICED SOUND MARK UPPER HALF")
-             (2 21 "くの字点下,VERTICAL KANA REPEAT MARK LOWER HALF")
-             (2 22 "二の字点,ゆすり点,VERTICAL IDEOGRAPHIC ITERATION MARK")
-             (2 23 "ます記号,MASU MARK")
-             (2 24 "コト,KATAKANA DIGRAPH KOTO")
-             (2 25 "より,HIRAGANA DIGRAPH YORI")
-             (2 34 "部分集合の否定,NOT A SUBSET OF")
-             (2 35 "部分集合の否定(逆方向),NOT A SUPERSET OF")
-             (2 36 "真部分集合2,SUBSET OF WITH NOT EQUAL TO")
-             (2 37 "真部分集合2(逆方向),SUPERSET OF WITH NOT EQUAL TO")
-             (2 38 "要素の否定,元の否定,NOT AN ELEMENT OF")
-             (2 39 "空集合,EMPTY SET")
-             (2 40 "射影的関係,PROJECTIVE")
-             (2 41 "背景的関係,PERSPECTIVE")
-             (2 49 "直和,CIRCLED PLUS")
-             (2 50 "丸付きマイナス,CIRCLED MINUS")
-             (2 51 "テンソル積,CIRCLED TIMES")
-             (2 52 "平行,PARALLEL TO")
-             (2 53 "平行の否定,NOT PARALLEL TO")
-             (2 54 "始め二重パーレン,始め二重括弧,FULLWIDTH LEFT WHITE PARENTHESIS")
-             (2 55 "終わり二重パーレン,終わり二重括弧,FULLWIDTH RIGHT WHITE PARENTHESIS")
-             (2 56 "始め二重きっこう(亀甲)括弧,LEFT WHITE TORTOISE SHELL BRACKET")
-             (2 57 "終わり二重きっこう(亀甲)括弧,RIGHT WHITE TORTOISE SHELL BRACKET")
-             (2 58 "始めすみ付き括弧(白),LEFT WHITE LENTICULAR BRACKET")
-             (2 59 "終わりすみ付き括弧(白),RIGHT WHITE LENTICULAR BRACKET")
-             (2 75 "合同否定,NOT IDENTICAL TO")
-             (2 76 "漸進的に等しい,ホモトープ,ASYMPTOTICALLY EQUAL TO")
-             (2 77 "同形,APPROXIMATELY EQUAL TO")
-             (2 78 "近似的に等しい,同相,ALMOST EQUAL TO")
-             (2 79 "小さいか大きい,LESS-THAN OR GREATER-THAN")
-             (2 80 "大きいか小さい,GREATER-THAN OR LESS-THAN")
-             (2 81 "同等,LEFT RIGHT ARROW")
-             (2 90 "ナチュラル,MUSIC NATURAL SIGN")
-             (2 91 "連こう(桁)付き八分音符,BEAMED EIGHTH NOTES")
-             (2 92 "連こう(桁)付き十六分音符,BEAMED SIXTEENTH NOTES")
-             (2 93 "四分音符,QUARTER NOTE")
-             (3 1 "右向三角,WHITE RIGHT-POINTING TRIANGLE")
-             (3 2 "右向黒三角,BLACK RIGHT-POINTING TRIANGLE")
-             (3 3 "左向三角,WHITE LEFT-POINTING TRIANGLE")
-             (3 4 "左向黒三角,BLACK LEFT-POINTING TRIANGLE")
-             (3 5 "右上向矢印,NORTH EAST ARROW")
-             (3 6 "右下向矢印,SOUTH EAST ARROW")
-             (3 7 "左上向矢印,NORTH WEST ARROW")
-             (3 8 "左下向矢印,SOUTH WEST ARROW")
-             (3 9 "右矢印左矢印,RIGHTWARDS ARROW OVER LEFTWARDS ARROW")
-             (3 10 "右向白矢印,RIGHTWARDS WHITE ARROW")
-             (3 11 "左向白矢印,LEFTWARDS WHITE ARROW")
-             (3 12 "上向白矢印,UPWARDS WHITE ARROW")
-             (3 13 "下向白矢印,DOWNWARDS WHITE ARROW")
-             (3 14 "曲がり矢印上がる,ARROW POINTING RIGHTWARDS THEN CURVING UPWARDS")
-             (3 15 "曲がり矢印下がる,ARROW POINTING RIGHTWARDS THEN CURVING DOWNWARDS")
-             (3 26 "丸中黒,CIRCLED BULLET")
-             (3 27 "蛇の目,FISHEYE")
-             (3 28 "歌記号,いおり(庵)点,PART ALTERNATION MARK")
-             (3 29 "白ゴマ,WHITE SESAME DOT")
-             (3 30 "ゴマ,SESAME DOT")
-             (3 31 "白ビュレット,WHITE BULLET")
-             (3 32 "ビュレット,BULLET")
-             (3 59 "負又は正符号,MINUS-OR-PLUS SIGN")
-             (3 60 "アレフ,ALEF SYMBOL")
-             (3 61 "エイチバー,PLANCK CONSTANT OVER TWO PI")
-             (3 62 "HP,ホースパワー(馬力),SQUARE HP")
-             (3 63 "リットル,SCRIPT SMALL L")
-             (3 64 "モー,INVERTED OHM SIGN")
-             (3 91 "二重ハイフン,二分二重ダッシュ,KATAKANA-HIRAGANA DOUBLE HYPHEN")
-             (3 92 "二分ダーシ,ダッシュ(二分),EN DASH")
-             (3 93 "2プラス,DOUBLE PLUS")
-             (3 94 "3プラス,TRIPLE PLUS")
-             (4 84 "濁点付き平仮名う,HIRAGANA LETTER VU")
-             (4 85 "小書き平仮名か,HIRAGANA LETTER SMALL KA")
-             (4 86 "小書き平仮名け,HIRAGANA LETTER SMALL KE")
-             (4 87 "半濁点付き平仮名か,[HIRAGANA LETTER BIDAKUON NGA]")
-             (4 88 "半濁点付き平仮名き,[HIRAGANA LETTER BIDAKUON NGI]")
-             (4 89 "半濁点付き平仮名く,[HIRAGANA LETTER BIDAKUON NGU]")
-             (4 90 "半濁点付き平仮名け,[HIRAGANA LETTER BIDAKUON NGE]")
-             (4 91 "半濁点付き平仮名こ,[HIRAGANA LETTER BIDAKUON NGO]")
-             (5 87 "半濁点付き片仮名カ,[KATAKANA LETTER BIDAKUON NGA]")
-             (5 88 "半濁点付き片仮名キ,[KATAKANA LETTER BIDAKUON NGI]")
-             (5 89 "半濁点付き片仮名ク,[KATAKANA LETTER BIDAKUON NGU]")
-             (5 90 "半濁点付き片仮名ケ,[KATAKANA LETTER BIDAKUON NGE]")
-             (5 91 "半濁点付き片仮名コ,[KATAKANA LETTER BIDAKUON NGO]")
-             (5 92 "半濁点付き片仮名セ,[KATAKANA LETTER AINU CE]")
-             (5 93 "半濁点付き片仮名ツ,[KATAKANA LETTER AINU TU]")
-             (5 94 "半濁点付き片仮名ト,[KATAKANA LETTER AINU TO]")
-             (6 25 "スペード(白),WHITE SPADE SUIT")
-             (6 26 "スペード,BLACK SPADE SUIT")
-             (6 27 "ダイヤ(白),WHITE DIAMOND SUIT")
-             (6 28 "ダイヤ,BLACK DIAMOND SUIT")
-             (6 29 "ハート(白),WHITE HEART SUIT")
-             (6 30 "ハート,BLACK HEART SUIT")
-             (6 31 "クラブ(白),WHITE CLUB SUIT")
-             (6 32 "クラブ,BLACK CLUB SUIT")
-             (6 57 "ギリシア小文字ファイナルSIGMA,GREEK SMALL LETTER FINAL SIGMA")
-             (6 58 "二重丸1,DOUBLE CIRCLED DIGIT ONE")
-             (6 59 "二重丸2,DOUBLE CIRCLED DIGIT TWO")
-             (6 60 "二重丸3,DOUBLE CIRCLED DIGIT THREE")
-             (6 61 "二重丸4,DOUBLE CIRCLED DIGIT FOUR")
-             (6 62 "二重丸5,DOUBLE CIRCLED DIGIT FIVE")
-             (6 63 "二重丸6,DOUBLE CIRCLED DIGIT SIX")
-             (6 64 "二重丸7,DOUBLE CIRCLED DIGIT SEVEN")
-             (6 65 "二重丸8,DOUBLE CIRCLED DIGIT EIGHT")
-             (6 66 "二重丸9,DOUBLE CIRCLED DIGIT NINE")
-             (6 67 "二重丸10,DOUBLE CIRCLED NUMBER TEN")
-             (6 68 "白将棋駒,WHITE SHOGI PIECE")
-             (6 69 "黒将棋駒,BLACK SHOGI PIECE")
-             (6 70 "郵便マーク,POSTAL MARK FACE")
-             (6 71 "電話マーク,BLACK TELEPHONE")
-             (6 72 "晴マーク,BLACK SUN WITH RAYS")
-             (6 73 "曇マーク,CLOUD")
-             (6 74 "雨マーク,UMBRELLA")
-             (6 75 "雪マーク,SNOWMAN")
-             (6 76 "温泉マーク,HOT SPRINGS")
-             (6 77 "平行四辺形,WHITE PARALLELOGRAM")
-             (6 78 "小書き片仮名ク,KATAKANA LETTER SMALL KU")
-             (6 79 "小書き片仮名シ,KATAKANA LETTER SMALL SI")
-             (6 80 "小書き片仮名ス,KATAKANA LETTER SMALL SU")
-             (6 81 "小書き片仮名ト,KATAKANA LETTER SMALL TO")
-             (6 82 "小書き片仮名ヌ,KATAKANA LETTER SMALL NU")
-             (6 83 "小書き片仮名ハ,KATAKANA LETTER SMALL HA")
-             (6 84 "小書き片仮名ヒ,KATAKANA LETTER SMALL HI")
-             (6 85 "小書き片仮名フ,KATAKANA LETTER SMALL HU")
-             (6 86 "小書き片仮名ヘ,KATAKANA LETTER SMALL HE")
-             (6 87 "小書き片仮名ホ,KATAKANA LETTER SMALL HO")
-             (6 88 "小書き半濁点付き片仮名フ,[KATAKANA LETTER AINU P]")
-             (6 89 "小書き片仮名ム,KATAKANA LETTER SMALL MU")
-             (6 90 "小書き片仮名ラ,KATAKANA LETTER SMALL RA")
-             (6 91 "小書き片仮名リ,KATAKANA LETTER SMALL RI")
-             (6 92 "小書き片仮名ル,KATAKANA LETTER SMALL RU")
-             (6 93 "小書き片仮名レ,KATAKANA LETTER SMALL RE")
-             (6 94 "小書き片仮名ロ,KATAKANA LETTER SMALL RO")
-             (7 34 "左上角素片,DENTISTRY SYMBOL LIGHT VERTICAL AND TOP RIGHT")
-             (7 35 "左下角素片,DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM RIGHT")
-             (7 36 "丸付き縦線素片,DENTISTRY SYMBOL LIGHT VERTICAL WITH CIRCLE")
-             (7 37 "丸付き上横縦線素片,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH CIRCLE")
-             (7 38 "丸付き下横縦線素片,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH CIRCLE")
-             (7 39 "三角付き縦線素片,DENTISTRY SYMBOL LIGHT VERTICAL WITH TRIANGLE")
-             (7 40 "三角付き上横縦線素片,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH TRIANGLE")
-             (7 41 "三角付き下横縦線素片,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH TRIANGLE")
-             (7 42 "波付き縦線素片,DENTISTRY SYMBOL LIGHT VERTICAL WITH WAVE")
-             (7 43 "波付き上横縦線素片,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH WAVE")
-             (7 44 "波付き下横縦線素片,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH WAVE")
-             (7 45 "上横縦線素片,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL")
-             (7 46 "下横縦線素片,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL")
-             (7 47 "右上角素片,DENTISTRY SYMBOL LIGHT VERTICAL AND TOP LEFT")
-             (7 48 "右下角素片,DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM LEFT")
-             (7 82 "濁点付き片仮名ワ,KATAKANA LETTER VA")
-             (7 83 "濁点付き片仮名ヰ,KATAKANA LETTER VI")
-             (7 84 "濁点付き片仮名ヱ,KATAKANA LETTER VE")
-             (7 85 "濁点付き片仮名ヲ,KATAKANA LETTER VO")
-             (7 86 "小さいか等しいか大きい,LESS-THAN EQUAL TO OR GREATER-THAN")
-             (7 87 "大きいか等しいか小さい,GREATER-THAN EQUAL TO OR LESS-THAN")
-             (7 88 "3分の1,VULGAR FRACTION ONE THIRD")
-             (7 89 "3分の2,VULGAR FRACTION TWO THIRDS")
-             (7 90 "5分の1,VULGAR FRACTION ONE FIFTH")
-             (7 91 "チェックマーク,CHECK MARK")
-             (7 92 "コマンド記号,PLACE OF INTEREST SIGN")
-             (7 93 "空白記号,OPEN BOX")
-             (7 94 "リターン記号,RETURN SYMBOL")
-             (8 33 "丸21,CIRCLED NUMBER TWENTY ONE")
-             (8 34 "丸22,CIRCLED NUMBER TWENTY TWO")
-             (8 35 "丸23,CIRCLED NUMBER TWENTY THREE")
-             (8 36 "丸24,CIRCLED NUMBER TWENTY FOUR")
-             (8 37 "丸25,CIRCLED NUMBER TWENTY FIVE")
-             (8 38 "丸26,CIRCLED NUMBER TWENTY SIX")
-             (8 39 "丸27,CIRCLED NUMBER TWENTY SEVEN")
-             (8 40 "丸28,CIRCLED NUMBER TWENTY EIGHT")
-             (8 41 "丸29,CIRCLED NUMBER TWENTY NINE")
-             (8 42 "丸30,CIRCLED NUMBER THIRTY")
-             (8 43 "丸31,CIRCLED NUMBER THIRTY ONE")
-             (8 44 "丸32,CIRCLED NUMBER THIRTY TWO")
-             (8 45 "丸33,CIRCLED NUMBER THIRTY THREE")
-             (8 46 "丸34,CIRCLED NUMBER THIRTY FOUR")
-             (8 47 "丸35,CIRCLED NUMBER THIRTY FIVE")
-             (8 48 "丸36,CIRCLED NUMBER THIRTY SIX")
-             (8 49 "丸37,CIRCLED NUMBER THIRTY SEVEN")
-             (8 50 "丸38,CIRCLED NUMBER THIRTY EIGHT")
-             (8 51 "丸39,CIRCLED NUMBER THIRTY NINE")
-             (8 52 "丸40,CIRCLED NUMBER FORTY")
-             (8 53 "丸41,CIRCLED NUMBER FORTY ONE")
-             (8 54 "丸42,CIRCLED NUMBER FORTY TWO")
-             (8 55 "丸43,CIRCLED NUMBER FORTY THREE")
-             (8 56 "丸44,CIRCLED NUMBER FORTY FOUR")
-             (8 57 "丸45,CIRCLED NUMBER FORTY FIVE")
-             (8 58 "丸46,CIRCLED NUMBER FORTY SIX")
-             (8 59 "丸47,CIRCLED NUMBER FORTY SEVEN")
-             (8 60 "丸48,CIRCLED NUMBER FORTY EIGHT")
-             (8 61 "丸49,CIRCLED NUMBER FORTY NINE")
-             (8 62 "丸50,CIRCLED NUMBER FIFTY")
-             (8 71 "左半黒丸,CIRCLE WITH LEFT HALF BLACK")
-             (8 72 "右半黒丸,CIRCLE WITH RIGHT HALF BLACK")
-             (8 73 "下半黒丸,CIRCLE WITH LOWER HALF BLACK")
-             (8 74 "上半黒丸,CIRCLE WITH UPPER HALF BLACK")
-             (8 75 "感嘆符二つ,DOUBLE EXCLAMATION MARK")
-             (8 76 "疑問符二つ,DOUBLE QUESTION MARK")
-             (8 77 "疑問符感嘆符,QUESTION EXCLAMATION MARK")
-             (8 78 "感嘆符疑問符,EXCLAMATION QUESTION MARK")
-             (8 79 "キャロン付きA,LATIN CAPITAL LETTER A WITH CARON")
-             (8 80 "キャロン付きA小文字,LATIN SMALL LETTER A WITH CARON")
-             (8 81 "キャロン付きI小文字,LATIN SMALL LETTER I WITH CARON")
-             (8 82 "アキュートアクセント付きM,LATIN CAPITAL LETTER M WITH ACUTE")
-             (8 83 "アキュートアクセント付きM小文字,LATIN SMALL LETTER M WITH ACUTE")
-             (8 84 "グレーブアクセント付きN,LATIN CAPITAL LETTER N WITH GRAVE")
-             (8 85 "グレーブアクセント付きN小文字,LATIN SMALL LETTER N WITH GRAVE")
-             (8 86 "キャロン付きO,LATIN CAPITAL LETTER O WITH CARON")
-             (8 87 "キャロン付きO小文字,LATIN SMALL LETTER O WITH CARON")
-             (8 88 "キャロン付きU小文字,LATIN SMALL LETTER U WITH CARON")
-             (8 89 "マクロンとダイエレシス付きU小文字,LATIN SMALL LETTER U WITH DIAERESIS AND MACRON")
-             (8 90 "アキュートアクセントとダイエレシス付きU小文字,LATIN SMALL LETTER U WITH DIAERESIS AND ACUTE")
-             (8 91 "キャロンとダイエレシス付きU小文字,LATIN SMALL LETTER U WITH DIAERESIS AND CARON")
-             (8 92 "グレーブアクセントとダイエレシス付きU小文字,LATIN SMALL LETTER U WITH DIAERESIS AND GRAVE")
-             (9 1 "ユーロ記号,EURO SIGN")
-             (9 2 "ノーブレークスペース,NO-BREAK SPACE")
-             (9 3 "逆感嘆符,INVERTED EXCLAMATION MARK")
-             (9 4 "不特定通貨記号,CURRENCY SIGN")
-             (9 5 "破断線,BROKEN BAR")
-             (9 6 "著作権表示記号,COPYRIGHT SIGN")
-             (9 7 "女性序数標識,FEMININE ORDINAL INDICATOR")
-             (9 8 "始め二重山括弧引用記号,始めギュメ,LEFT-POINTING DOUBLE ANGLE QUOTATION MARK")
-             (9 9 "ソフトハイフン,SOFT HYPHEN")
-             (9 10 "登録商標記号,REGISTERED SIGN")
-             (9 11 "マクロン,MACRON")
-             (9 12 "上付き2,SUPERSCRIPT TWO")
-             (9 13 "上付き3,SUPERSCRIPT THREE")
-             (9 14 "中点(ラテン),MIDDLE DOT")
-             (9 15 "セディラ,CEDILLA")
-             (9 16 "上付き1,SUPERSCRIPT ONE")
-             (9 17 "男性序数標識,MASCULINE ORDINAL INDICATOR")
-             (9 18 "終わり二重山括弧引用記号,終わりギュメ,RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK")
-             (9 19 "4分の1,VULGAR FRACTION ONE QUARTER")
-             (9 20 "2分の1,VULGAR FRACTION ONE HALF")
-             (9 21 "4分の3,VULGAR FRACTION THREE QUARTERS")
-             (9 22 "逆疑問符,INVERTED QUESTION MARK")
-             (9 23 "グレーブアクセント付きA,LATIN CAPITAL LETTER A WITH GRAVE")
-             (9 24 "アキュートアクセント付きA,LATIN CAPITAL LETTER A WITH ACUTE")
-             (9 25 "サーカムフレックスアクセント付きA,LATIN CAPITAL LETTER A WITH CIRCUMFLEX")
-             (9 26 "チルド付きA,LATIN CAPITAL LETTER A WITH TILDE")
-             (9 27 "ダイエレシス付きA,LATIN CAPITAL LETTER A WITH DIAERESIS")
-             (9 28 "上リング付きA,LATIN CAPITAL LETTER A WITH RING ABOVE")
+             (2 15 "$B%"%]%9%H%m%U%#(B,APOSTROPHE")
+             (2 16 "$B0zMQId(B,$B%/%)!<%F!<%7%g%s%^!<%/(B,QUOTATION MARK")
+             (2 17 "$B%O%$%U%s%^%$%J%9(B,HYPHEN-MINUS")
+             (2 18 "$B%A%k%I(B,TILDE")
+             (2 19 "$B$/$N;zE@>e(B,VERTICAL KANA REPEAT MARK UPPER HALF")
+             (2 20 "$B$/$N;zE@>e(B($BByE@(B),VERTICAL KANA REPEAT WITH VOICED SOUND MARK UPPER HALF")
+             (2 21 "$B$/$N;zE@2<(B,VERTICAL KANA REPEAT MARK LOWER HALF")
+             (2 22 "$BFs$N;zE@(B,$B$f$9$jE@(B,VERTICAL IDEOGRAPHIC ITERATION MARK")
+             (2 23 "$B$^$95-9f(B,MASU MARK")
+             (2 24 "$B%3%H(B,KATAKANA DIGRAPH KOTO")
+             (2 25 "$B$h$j(B,HIRAGANA DIGRAPH YORI")
+             (2 34 "$BItJ,=89g$NH]Dj(B,NOT A SUBSET OF")
+             (2 35 "$BItJ,=89g$NH]Dj(B($B5UJ}8~(B),NOT A SUPERSET OF")
+             (2 36 "$B??ItJ,=89g(B2,SUBSET OF WITH NOT EQUAL TO")
+             (2 37 "$B??ItJ,=89g(B2($B5UJ}8~(B),SUPERSET OF WITH NOT EQUAL TO")
+             (2 38 "$BMWAG$NH]Dj(B,$B85$NH]Dj(B,NOT AN ELEMENT OF")
+             (2 39 "$B6u=89g(B,EMPTY SET")
+             (2 40 "$B<M1FE*4X78(B,PROJECTIVE")
+             (2 41 "$BGX7JE*4X78(B,PERSPECTIVE")
+             (2 49 "$BD>OB(B,CIRCLED PLUS")
+             (2 50 "$B4]IU$-%^%$%J%9(B,CIRCLED MINUS")
+             (2 51 "$B%F%s%=%k@Q(B,CIRCLED TIMES")
+             (2 52 "$BJ?9T(B,PARALLEL TO")
+             (2 53 "$BJ?9T$NH]Dj(B,NOT PARALLEL TO")
+             (2 54 "$B;O$aFs=E%Q!<%l%s(B,$B;O$aFs=E3g8L(B,FULLWIDTH LEFT WHITE PARENTHESIS")
+             (2 55 "$B=*$o$jFs=E%Q!<%l%s(B,$B=*$o$jFs=E3g8L(B,FULLWIDTH RIGHT WHITE PARENTHESIS")
+             (2 56 "$B;O$aFs=E$-$C$3$&(B($B559C(B)$B3g8L(B,LEFT WHITE TORTOISE SHELL BRACKET")
+             (2 57 "$B=*$o$jFs=E$-$C$3$&(B($B559C(B)$B3g8L(B,RIGHT WHITE TORTOISE SHELL BRACKET")
+             (2 58 "$B;O$a$9$_IU$-3g8L(B($BGr(B),LEFT WHITE LENTICULAR BRACKET")
+             (2 59 "$B=*$o$j$9$_IU$-3g8L(B($BGr(B),RIGHT WHITE LENTICULAR BRACKET")
+             (2 75 "$B9gF1H]Dj(B,NOT IDENTICAL TO")
+             (2 76 "$BA2?JE*$KEy$7$$(B,$B%[%b%H!<%W(B,ASYMPTOTICALLY EQUAL TO")
+             (2 77 "$BF17A(B,APPROXIMATELY EQUAL TO")
+             (2 78 "$B6a;wE*$KEy$7$$(B,$BF1Aj(B,ALMOST EQUAL TO")
+             (2 79 "$B>.$5$$$+Bg$-$$(B,LESS-THAN OR GREATER-THAN")
+             (2 80 "$BBg$-$$$+>.$5$$(B,GREATER-THAN OR LESS-THAN")
+             (2 81 "$BF1Ey(B,LEFT RIGHT ARROW")
+             (2 90 "$B%J%A%e%i%k(B,MUSIC NATURAL SIGN")
+             (2 91 "$BO"$3$&(B($B7e(B)$BIU$-H,J,2;Id(B,BEAMED EIGHTH NOTES")
+             (2 92 "$BO"$3$&(B($B7e(B)$BIU$-==O;J,2;Id(B,BEAMED SIXTEENTH NOTES")
+             (2 93 "$B;MJ,2;Id(B,QUARTER NOTE")
+             (3 1 "$B1&8~;03Q(B,WHITE RIGHT-POINTING TRIANGLE")
+             (3 2 "$B1&8~9u;03Q(B,BLACK RIGHT-POINTING TRIANGLE")
+             (3 3 "$B:88~;03Q(B,WHITE LEFT-POINTING TRIANGLE")
+             (3 4 "$B:88~9u;03Q(B,BLACK LEFT-POINTING TRIANGLE")
+             (3 5 "$B1&>e8~Lp0u(B,NORTH EAST ARROW")
+             (3 6 "$B1&2<8~Lp0u(B,SOUTH EAST ARROW")
+             (3 7 "$B:8>e8~Lp0u(B,NORTH WEST ARROW")
+             (3 8 "$B:82<8~Lp0u(B,SOUTH WEST ARROW")
+             (3 9 "$B1&Lp0u:8Lp0u(B,RIGHTWARDS ARROW OVER LEFTWARDS ARROW")
+             (3 10 "$B1&8~GrLp0u(B,RIGHTWARDS WHITE ARROW")
+             (3 11 "$B:88~GrLp0u(B,LEFTWARDS WHITE ARROW")
+             (3 12 "$B>e8~GrLp0u(B,UPWARDS WHITE ARROW")
+             (3 13 "$B2<8~GrLp0u(B,DOWNWARDS WHITE ARROW")
+             (3 14 "$B6J$,$jLp0u>e$,$k(B,ARROW POINTING RIGHTWARDS THEN CURVING UPWARDS")
+             (3 15 "$B6J$,$jLp0u2<$,$k(B,ARROW POINTING RIGHTWARDS THEN CURVING DOWNWARDS")
+             (3 26 "$B4]Cf9u(B,CIRCLED BULLET")
+             (3 27 "$B<X$NL\(B,FISHEYE")
+             (3 28 "$B2N5-9f(B,$B$$$*$j(B($B0C(B)$BE@(B,PART ALTERNATION MARK")
+             (3 29 "$BGr%4%^(B,WHITE SESAME DOT")
+             (3 30 "$B%4%^(B,SESAME DOT")
+             (3 31 "$BGr%S%e%l%C%H(B,WHITE BULLET")
+             (3 32 "$B%S%e%l%C%H(B,BULLET")
+             (3 59 "$BIiKt$O@5Id9f(B,MINUS-OR-PLUS SIGN")
+             (3 60 "$B%"%l%U(B,ALEF SYMBOL")
+             (3 61 "$B%(%$%A%P!<(B,PLANCK CONSTANT OVER TWO PI")
+             (3 62 "HP,$B%[!<%9%Q%o!<(B($BGONO(B),SQUARE HP")
+             (3 63 "$B%j%C%H%k(B,SCRIPT SMALL L")
+             (3 64 "$B%b!<(B,INVERTED OHM SIGN")
+             (3 91 "$BFs=E%O%$%U%s(B,$BFsJ,Fs=E%@%C%7%e(B,KATAKANA-HIRAGANA DOUBLE HYPHEN")
+             (3 92 "$BFsJ,%@!<%7(B,$B%@%C%7%e(B($BFsJ,(B),EN DASH")
+             (3 93 "2$B%W%i%9(B,DOUBLE PLUS")
+             (3 94 "3$B%W%i%9(B,TRIPLE PLUS")
+             (4 84 "$BByE@IU$-J?2>L>$&(B,HIRAGANA LETTER VU")
+             (4 85 "$B>.=q$-J?2>L>$+(B,HIRAGANA LETTER SMALL KA")
+             (4 86 "$B>.=q$-J?2>L>$1(B,HIRAGANA LETTER SMALL KE")
+             (4 87 "$BH>ByE@IU$-J?2>L>$+(B,[HIRAGANA LETTER BIDAKUON NGA]")
+             (4 88 "$BH>ByE@IU$-J?2>L>$-(B,[HIRAGANA LETTER BIDAKUON NGI]")
+             (4 89 "$BH>ByE@IU$-J?2>L>$/(B,[HIRAGANA LETTER BIDAKUON NGU]")
+             (4 90 "$BH>ByE@IU$-J?2>L>$1(B,[HIRAGANA LETTER BIDAKUON NGE]")
+             (4 91 "$BH>ByE@IU$-J?2>L>$3(B,[HIRAGANA LETTER BIDAKUON NGO]")
+             (5 87 "$BH>ByE@IU$-JR2>L>%+(B,[KATAKANA LETTER BIDAKUON NGA]")
+             (5 88 "$BH>ByE@IU$-JR2>L>%-(B,[KATAKANA LETTER BIDAKUON NGI]")
+             (5 89 "$BH>ByE@IU$-JR2>L>%/(B,[KATAKANA LETTER BIDAKUON NGU]")
+             (5 90 "$BH>ByE@IU$-JR2>L>%1(B,[KATAKANA LETTER BIDAKUON NGE]")
+             (5 91 "$BH>ByE@IU$-JR2>L>%3(B,[KATAKANA LETTER BIDAKUON NGO]")
+             (5 92 "$BH>ByE@IU$-JR2>L>%;(B,[KATAKANA LETTER AINU CE]")
+             (5 93 "$BH>ByE@IU$-JR2>L>%D(B,[KATAKANA LETTER AINU TU]")
+             (5 94 "$BH>ByE@IU$-JR2>L>%H(B,[KATAKANA LETTER AINU TO]")
+             (6 25 "$B%9%Z!<%I(B($BGr(B),WHITE SPADE SUIT")
+             (6 26 "$B%9%Z!<%I(B,BLACK SPADE SUIT")
+             (6 27 "$B%@%$%d(B($BGr(B),WHITE DIAMOND SUIT")
+             (6 28 "$B%@%$%d(B,BLACK DIAMOND SUIT")
+             (6 29 "$B%O!<%H(B($BGr(B),WHITE HEART SUIT")
+             (6 30 "$B%O!<%H(B,BLACK HEART SUIT")
+             (6 31 "$B%/%i%V(B($BGr(B),WHITE CLUB SUIT")
+             (6 32 "$B%/%i%V(B,BLACK CLUB SUIT")
+             (6 57 "$B%.%j%7%">.J8;z%U%!%$%J%k(BSIGMA,GREEK SMALL LETTER FINAL SIGMA")
+             (6 58 "$BFs=E4](B1,DOUBLE CIRCLED DIGIT ONE")
+             (6 59 "$BFs=E4](B2,DOUBLE CIRCLED DIGIT TWO")
+             (6 60 "$BFs=E4](B3,DOUBLE CIRCLED DIGIT THREE")
+             (6 61 "$BFs=E4](B4,DOUBLE CIRCLED DIGIT FOUR")
+             (6 62 "$BFs=E4](B5,DOUBLE CIRCLED DIGIT FIVE")
+             (6 63 "$BFs=E4](B6,DOUBLE CIRCLED DIGIT SIX")
+             (6 64 "$BFs=E4](B7,DOUBLE CIRCLED DIGIT SEVEN")
+             (6 65 "$BFs=E4](B8,DOUBLE CIRCLED DIGIT EIGHT")
+             (6 66 "$BFs=E4](B9,DOUBLE CIRCLED DIGIT NINE")
+             (6 67 "$BFs=E4](B10,DOUBLE CIRCLED NUMBER TEN")
+             (6 68 "$BGr>-4}6p(B,WHITE SHOGI PIECE")
+             (6 69 "$B9u>-4}6p(B,BLACK SHOGI PIECE")
+             (6 70 "$BM9JX%^!<%/(B,POSTAL MARK FACE")
+             (6 71 "$BEEOC%^!<%/(B,BLACK TELEPHONE")
+             (6 72 "$B@2%^!<%/(B,BLACK SUN WITH RAYS")
+             (6 73 "$BF^%^!<%/(B,CLOUD")
+             (6 74 "$B1+%^!<%/(B,UMBRELLA")
+             (6 75 "$B@c%^!<%/(B,SNOWMAN")
+             (6 76 "$B29@t%^!<%/(B,HOT SPRINGS")
+             (6 77 "$BJ?9T;MJU7A(B,WHITE PARALLELOGRAM")
+             (6 78 "$B>.=q$-JR2>L>%/(B,KATAKANA LETTER SMALL KU")
+             (6 79 "$B>.=q$-JR2>L>%7(B,KATAKANA LETTER SMALL SI")
+             (6 80 "$B>.=q$-JR2>L>%9(B,KATAKANA LETTER SMALL SU")
+             (6 81 "$B>.=q$-JR2>L>%H(B,KATAKANA LETTER SMALL TO")
+             (6 82 "$B>.=q$-JR2>L>%L(B,KATAKANA LETTER SMALL NU")
+             (6 83 "$B>.=q$-JR2>L>%O(B,KATAKANA LETTER SMALL HA")
+             (6 84 "$B>.=q$-JR2>L>%R(B,KATAKANA LETTER SMALL HI")
+             (6 85 "$B>.=q$-JR2>L>%U(B,KATAKANA LETTER SMALL HU")
+             (6 86 "$B>.=q$-JR2>L>%X(B,KATAKANA LETTER SMALL HE")
+             (6 87 "$B>.=q$-JR2>L>%[(B,KATAKANA LETTER SMALL HO")
+             (6 88 "$B>.=q$-H>ByE@IU$-JR2>L>%U(B,[KATAKANA LETTER AINU P]")
+             (6 89 "$B>.=q$-JR2>L>%`(B,KATAKANA LETTER SMALL MU")
+             (6 90 "$B>.=q$-JR2>L>%i(B,KATAKANA LETTER SMALL RA")
+             (6 91 "$B>.=q$-JR2>L>%j(B,KATAKANA LETTER SMALL RI")
+             (6 92 "$B>.=q$-JR2>L>%k(B,KATAKANA LETTER SMALL RU")
+             (6 93 "$B>.=q$-JR2>L>%l(B,KATAKANA LETTER SMALL RE")
+             (6 94 "$B>.=q$-JR2>L>%m(B,KATAKANA LETTER SMALL RO")
+             (7 34 "$B:8>e3QAGJR(B,DENTISTRY SYMBOL LIGHT VERTICAL AND TOP RIGHT")
+             (7 35 "$B:82<3QAGJR(B,DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM RIGHT")
+             (7 36 "$B4]IU$-=D@~AGJR(B,DENTISTRY SYMBOL LIGHT VERTICAL WITH CIRCLE")
+             (7 37 "$B4]IU$->e2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH CIRCLE")
+             (7 38 "$B4]IU$-2<2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH CIRCLE")
+             (7 39 "$B;03QIU$-=D@~AGJR(B,DENTISTRY SYMBOL LIGHT VERTICAL WITH TRIANGLE")
+             (7 40 "$B;03QIU$->e2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH TRIANGLE")
+             (7 41 "$B;03QIU$-2<2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH TRIANGLE")
+             (7 42 "$BGHIU$-=D@~AGJR(B,DENTISTRY SYMBOL LIGHT VERTICAL WITH WAVE")
+             (7 43 "$BGHIU$->e2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL WITH WAVE")
+             (7 44 "$BGHIU$-2<2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL WITH WAVE")
+             (7 45 "$B>e2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT DOWN AND HORIZONTAL")
+             (7 46 "$B2<2#=D@~AGJR(B,DENTISTRY SYMBOL LIGHT UP AND HORIZONTAL")
+             (7 47 "$B1&>e3QAGJR(B,DENTISTRY SYMBOL LIGHT VERTICAL AND TOP LEFT")
+             (7 48 "$B1&2<3QAGJR(B,DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM LEFT")
+             (7 82 "$BByE@IU$-JR2>L>%o(B,KATAKANA LETTER VA")
+             (7 83 "$BByE@IU$-JR2>L>%p(B,KATAKANA LETTER VI")
+             (7 84 "$BByE@IU$-JR2>L>%q(B,KATAKANA LETTER VE")
+             (7 85 "$BByE@IU$-JR2>L>%r(B,KATAKANA LETTER VO")
+             (7 86 "$B>.$5$$$+Ey$7$$$+Bg$-$$(B,LESS-THAN EQUAL TO OR GREATER-THAN")
+             (7 87 "$BBg$-$$$+Ey$7$$$+>.$5$$(B,GREATER-THAN EQUAL TO OR LESS-THAN")
+             (7 88 "3$BJ,$N(B1,VULGAR FRACTION ONE THIRD")
+             (7 89 "3$BJ,$N(B2,VULGAR FRACTION TWO THIRDS")
+             (7 90 "5$BJ,$N(B1,VULGAR FRACTION ONE FIFTH")
+             (7 91 "$B%A%'%C%/%^!<%/(B,CHECK MARK")
+             (7 92 "$B%3%^%s%I5-9f(B,PLACE OF INTEREST SIGN")
+             (7 93 "$B6uGr5-9f(B,OPEN BOX")
+             (7 94 "$B%j%?!<%s5-9f(B,RETURN SYMBOL")
+             (8 33 "$B4](B21,CIRCLED NUMBER TWENTY ONE")
+             (8 34 "$B4](B22,CIRCLED NUMBER TWENTY TWO")
+             (8 35 "$B4](B23,CIRCLED NUMBER TWENTY THREE")
+             (8 36 "$B4](B24,CIRCLED NUMBER TWENTY FOUR")
+             (8 37 "$B4](B25,CIRCLED NUMBER TWENTY FIVE")
+             (8 38 "$B4](B26,CIRCLED NUMBER TWENTY SIX")
+             (8 39 "$B4](B27,CIRCLED NUMBER TWENTY SEVEN")
+             (8 40 "$B4](B28,CIRCLED NUMBER TWENTY EIGHT")
+             (8 41 "$B4](B29,CIRCLED NUMBER TWENTY NINE")
+             (8 42 "$B4](B30,CIRCLED NUMBER THIRTY")
+             (8 43 "$B4](B31,CIRCLED NUMBER THIRTY ONE")
+             (8 44 "$B4](B32,CIRCLED NUMBER THIRTY TWO")
+             (8 45 "$B4](B33,CIRCLED NUMBER THIRTY THREE")
+             (8 46 "$B4](B34,CIRCLED NUMBER THIRTY FOUR")
+             (8 47 "$B4](B35,CIRCLED NUMBER THIRTY FIVE")
+             (8 48 "$B4](B36,CIRCLED NUMBER THIRTY SIX")
+             (8 49 "$B4](B37,CIRCLED NUMBER THIRTY SEVEN")
+             (8 50 "$B4](B38,CIRCLED NUMBER THIRTY EIGHT")
+             (8 51 "$B4](B39,CIRCLED NUMBER THIRTY NINE")
+             (8 52 "$B4](B40,CIRCLED NUMBER FORTY")
+             (8 53 "$B4](B41,CIRCLED NUMBER FORTY ONE")
+             (8 54 "$B4](B42,CIRCLED NUMBER FORTY TWO")
+             (8 55 "$B4](B43,CIRCLED NUMBER FORTY THREE")
+             (8 56 "$B4](B44,CIRCLED NUMBER FORTY FOUR")
+             (8 57 "$B4](B45,CIRCLED NUMBER FORTY FIVE")
+             (8 58 "$B4](B46,CIRCLED NUMBER FORTY SIX")
+             (8 59 "$B4](B47,CIRCLED NUMBER FORTY SEVEN")
+             (8 60 "$B4](B48,CIRCLED NUMBER FORTY EIGHT")
+             (8 61 "$B4](B49,CIRCLED NUMBER FORTY NINE")
+             (8 62 "$B4](B50,CIRCLED NUMBER FIFTY")
+             (8 71 "$B:8H>9u4](B,CIRCLE WITH LEFT HALF BLACK")
+             (8 72 "$B1&H>9u4](B,CIRCLE WITH RIGHT HALF BLACK")
+             (8 73 "$B2<H>9u4](B,CIRCLE WITH LOWER HALF BLACK")
+             (8 74 "$B>eH>9u4](B,CIRCLE WITH UPPER HALF BLACK")
+             (8 75 "$B46C2IdFs$D(B,DOUBLE EXCLAMATION MARK")
+             (8 76 "$B5?LdIdFs$D(B,DOUBLE QUESTION MARK")
+             (8 77 "$B5?LdId46C2Id(B,QUESTION EXCLAMATION MARK")
+             (8 78 "$B46C2Id5?LdId(B,EXCLAMATION QUESTION MARK")
+             (8 79 "$B%-%c%m%sIU$-(BA,LATIN CAPITAL LETTER A WITH CARON")
+             (8 80 "$B%-%c%m%sIU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH CARON")
+             (8 81 "$B%-%c%m%sIU$-(BI$B>.J8;z(B,LATIN SMALL LETTER I WITH CARON")
+             (8 82 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BM,LATIN CAPITAL LETTER M WITH ACUTE")
+             (8 83 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BM$B>.J8;z(B,LATIN SMALL LETTER M WITH ACUTE")
+             (8 84 "$B%0%l!<%V%"%/%;%s%HIU$-(BN,LATIN CAPITAL LETTER N WITH GRAVE")
+             (8 85 "$B%0%l!<%V%"%/%;%s%HIU$-(BN$B>.J8;z(B,LATIN SMALL LETTER N WITH GRAVE")
+             (8 86 "$B%-%c%m%sIU$-(BO,LATIN CAPITAL LETTER O WITH CARON")
+             (8 87 "$B%-%c%m%sIU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH CARON")
+             (8 88 "$B%-%c%m%sIU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH CARON")
+             (8 89 "$B%^%/%m%s$H%@%$%(%l%7%9IU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH DIAERESIS AND MACRON")
+             (8 90 "$B%"%-%e!<%H%"%/%;%s%H$H%@%$%(%l%7%9IU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH DIAERESIS AND ACUTE")
+             (8 91 "$B%-%c%m%s$H%@%$%(%l%7%9IU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH DIAERESIS AND CARON")
+             (8 92 "$B%0%l!<%V%"%/%;%s%H$H%@%$%(%l%7%9IU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH DIAERESIS AND GRAVE")
+             (9 1 "$B%f!<%m5-9f(B,EURO SIGN")
+             (9 2 "$B%N!<%V%l!<%/%9%Z!<%9(B,NO-BREAK SPACE")
+             (9 3 "$B5U46C2Id(B,INVERTED EXCLAMATION MARK")
+             (9 4 "$BITFCDjDL2_5-9f(B,CURRENCY SIGN")
+             (9 5 "$BGKCG@~(B,BROKEN BAR")
+             (9 6 "$BCx:n8"I=<(5-9f(B,COPYRIGHT SIGN")
+             (9 7 "$B=w@-=x?tI8<1(B,FEMININE ORDINAL INDICATOR")
+             (9 8 "$B;O$aFs=E;33g8L0zMQ5-9f(B,$B;O$a%.%e%a(B,LEFT-POINTING DOUBLE ANGLE QUOTATION MARK")
+             (9 9 "$B%=%U%H%O%$%U%s(B,SOFT HYPHEN")
+             (9 10 "$BEPO?>&I85-9f(B,REGISTERED SIGN")
+             (9 11 "$B%^%/%m%s(B,MACRON")
+             (9 12 "$B>eIU$-(B2,SUPERSCRIPT TWO")
+             (9 13 "$B>eIU$-(B3,SUPERSCRIPT THREE")
+             (9 14 "$BCfE@(B($B%i%F%s(B),MIDDLE DOT")
+             (9 15 "$B%;%G%#%i(B,CEDILLA")
+             (9 16 "$B>eIU$-(B1,SUPERSCRIPT ONE")
+             (9 17 "$BCK@-=x?tI8<1(B,MASCULINE ORDINAL INDICATOR")
+             (9 18 "$B=*$o$jFs=E;33g8L0zMQ5-9f(B,$B=*$o$j%.%e%a(B,RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK")
+             (9 19 "4$BJ,$N(B1,VULGAR FRACTION ONE QUARTER")
+             (9 20 "2$BJ,$N(B1,VULGAR FRACTION ONE HALF")
+             (9 21 "4$BJ,$N(B3,VULGAR FRACTION THREE QUARTERS")
+             (9 22 "$B5U5?LdId(B,INVERTED QUESTION MARK")
+             (9 23 "$B%0%l!<%V%"%/%;%s%HIU$-(BA,LATIN CAPITAL LETTER A WITH GRAVE")
+             (9 24 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BA,LATIN CAPITAL LETTER A WITH ACUTE")
+             (9 25 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BA,LATIN CAPITAL LETTER A WITH CIRCUMFLEX")
+             (9 26 "$B%A%k%IIU$-(BA,LATIN CAPITAL LETTER A WITH TILDE")
+             (9 27 "$B%@%$%(%l%7%9IU$-(BA,LATIN CAPITAL LETTER A WITH DIAERESIS")
+             (9 28 "$B>e%j%s%0IU$-(BA,LATIN CAPITAL LETTER A WITH RING ABOVE")
              (9 29 "AE,LATIN CAPITAL LETTER AE")
-             (9 30 "セディラ付きC,LATIN CAPITAL LETTER C WITH CEDILLA")
-             (9 31 "グレーブアクセント付きE,LATIN CAPITAL LETTER E WITH GRAVE")
-             (9 32 "アキュートアクセント付きE,LATIN CAPITAL LETTER E WITH ACUTE")
-             (9 33 "サーカムフレックスアクセント付きE,LATIN CAPITAL LETTER E WITH CIRCUMFLEX")
-             (9 34 "ダイエレシス付きE,LATIN CAPITAL LETTER E WITH DIAERESIS")
-             (9 35 "グレーブアクセント付きI,LATIN CAPITAL LETTER I WITH GRAVE")
-             (9 36 "アキュートアクセント付きI,LATIN CAPITAL LETTER I WITH ACUTE")
-             (9 37 "サーカムフレックスアクセント付きI,LATIN CAPITAL LETTER I WITH CIRCUMFLEX")
-             (9 38 "ダイエレシス付きI,LATIN CAPITAL LETTER I WITH DIAERESIS")
-             (9 39 "アイスランド語ETH,LATIN CAPITAL LETTER ETH(Icelandic)")
-             (9 40 "チルド付きN,LATIN CAPITAL LETTER N WITH TILDE")
-             (9 41 "グレーブアクセント付きO,LATIN CAPITAL LETTER O WITH GRAVE")
-             (9 42 "アキュートアクセント付きO,LATIN CAPITAL LETTER O WITH ACUTE")
-             (9 43 "サーカムフレックスアクセント付きO,LATIN CAPITAL LETTER O WITH CIRCUMFLEX")
-             (9 44 "チルド付きO,LATIN CAPITAL LETTER O WITH TILDE")
-             (9 45 "ダイエレシス付きO,LATIN CAPITAL LETTER O WITH DIAERESIS")
-             (9 46 "ストローク付きO,LATIN CAPITAL LETTER O WITH STROKE")
-             (9 47 "グレーブアクセント付きU,LATIN CAPITAL LETTER U WITH GRAVE")
-             (9 48 "アキュートアクセント付きU,LATIN CAPITAL LETTER U WITH ACUTE")
-             (9 49 "サーカムフレックスアクセント付きU,LATIN CAPITAL LETTER U WITH CIRCUMFLEX")
-             (9 50 "ダイエレシス付きU,LATIN CAPITAL LETTER U WITH DIAERESIS")
-             (9 51 "アキュートアクセント付きY,LATIN CAPITAL LETTER Y WITH ACUTE")
-             (9 52 "アイスランド語THORN,LATIN CAPITAL LETTER THORN(Icelandic)")
-             (9 53 "ドイツ語エスツェット,LATIN SMALL LETTER SHARP S(German)")
-             (9 54 "グレーブアクセント付きA小文字,LATIN SMALL LETTER A WITH GRAVE")
-             (9 55 "アキュートアクセント付きA小文字,LATIN SMALL LETTER A WITH ACUTE")
-             (9 56 "サーカムフレックスアクセント付きA小文字,LATIN SMALL LETTER A WITH CIRCUMFLEX")
-             (9 57 "チルド付きA小文字,LATIN SMALL LETTER A WITH TILDE")
-             (9 58 "ダイエレシス付きA小文字,LATIN SMALL LETTER A WITH DIAERESIS")
-             (9 59 "上リング付きA小文字,LATIN SMALL LETTER A WITH RING ABOVE")
-             (9 60 "AE小文字,LATIN SMALL LETTER AE")
-             (9 61 "セディラ付きC小文字,LATIN SMALL LETTER C WITH CEDILLA")
-             (9 62 "グレーブアクセント付きE小文字,LATIN SMALL LETTER E WITH GRAVE")
-             (9 63 "アキュートアクセント付きE小文字,LATIN SMALL LETTER E WITH ACUTE")
-             (9 64 "サーカムフレックスアクセント付きE小文字,LATIN SMALL LETTER E WITH CIRCUMFLEX")
-             (9 65 "ダイエレシス付きE小文字,LATIN SMALL LETTER E WITH DIAERESIS")
-             (9 66 "グレーブアクセント付きI小文字,LATIN SMALL LETTER I WITH GRAVE")
-             (9 67 "アキュートアクセント付きI小文字,LATIN SMALL LETTER I WITH ACUTE")
-             (9 68 "サーカムフレックスアクセント付きI小文字,LATIN SMALL LETTER I WITH CIRCUMFLEX")
-             (9 69 "ダイエレシス付きI小文字,LATIN SMALL LETTER I WITH DIAERESIS")
-             (9 70 "アイスランド語ETH小文字,LATIN SMALL LETTER ETH(Icelandic)")
-             (9 71 "チルド付きN小文字,LATIN SMALL LETTER N WITH TILDE")
-             (9 72 "グレーブアクセント付きO小文字,LATIN SMALL LETTER O WITH GRAVE")
-             (9 73 "アキュートアクセント付きO小文字,LATIN SMALL LETTER O WITH ACUTE")
-             (9 74 "サーカムフレックスアクセント付きO小文字,LATIN SMALL LETTER O WITH CIRCUMFLEX")
-             (9 75 "チルド付きO小文字,LATIN SMALL LETTER O WITH TILDE")
-             (9 76 "ダイエレシス付きO小文字,LATIN SMALL LETTER O WITH DIAERESIS")
-             (9 77 "ストローク付きO小文字,LATIN SMALL LETTER O WITH STROKE")
-             (9 78 "グレーブアクセント付きU小文字,LATIN SMALL LETTER U WITH GRAVE")
-             (9 79 "アキュートアクセント付きU小文字,LATIN SMALL LETTER U WITH ACUTE")
-             (9 80 "サーカムフレックスアクセント付きU小文字,LATIN SMALL LETTER U WITH CIRCUMFLEX")
-             (9 81 "ダイエレシス付きU小文字,LATIN SMALL LETTER U WITH DIAERESIS")
-             (9 82 "アキュートアクセント付きY小文字,LATIN SMALL LETTER Y WITH ACUTE")
-             (9 83 "アイスランド語THORN小文字,LATIN SMALL LETTER THORN(Icelandic)")
-             (9 84 "ダイエレシス付きY小文字,LATIN SMALL LETTER Y WITH DIAERESIS")
-             (9 85 "マクロン付きA,LATIN CAPITAL LETTER A WITH MACRON")
-             (9 86 "マクロン付きI,LATIN CAPITAL LETTER I WITH MACRON")
-             (9 87 "マクロン付きU,LATIN CAPITAL LETTER U WITH MACRON")
-             (9 88 "マクロン付きE,LATIN CAPITAL LETTER E WITH MACRON")
-             (9 89 "マクロン付きO,LATIN CAPITAL LETTER O WITH MACRON")
-             (9 90 "マクロン付きA小文字,LATIN SMALL LETTER A WITH MACRON")
-             (9 91 "マクロン付きI小文字,LATIN SMALL LETTER I WITH MACRON")
-             (9 92 "マクロン付きU小文字,LATIN SMALL LETTER U WITH MACRON")
-             (9 93 "マクロン付きE小文字,LATIN SMALL LETTER E WITH MACRON")
-             (9 94 "マクロン付きO小文字,LATIN SMALL LETTER O WITH MACRON")
-             (10 1 "オゴネク付きA,LATIN CAPITAL LETTER A WITH OGONEK")
-             (10 2 "ブリーブ,BREVE")
-             (10 3 "ストローク付きL,LATIN CAPITAL LETTER L WITH STROKE")
-             (10 4 "キャロン付きL,LATIN CAPITAL LETTER L WITH CARON")
-             (10 5 "アキュートアクセント付きS,LATIN CAPITAL LETTER S WITH ACUTE")
-             (10 6 "キャロン付きS,LATIN CAPITAL LETTER S WITH CARON")
-             (10 7 "セディラ付きS,LATIN CAPITAL LETTER S WITH CEDILLA")
-             (10 8 "キャロン付きT,LATIN CAPITAL LETTER T WITH CARON")
-             (10 9 "アキュートアクセント付きZ,LATIN CAPITAL LETTER Z WITH ACUTE")
-             (10 10 "キャロン付きZ,LATIN CAPITAL LETTER Z WITH CARON")
-             (10 11 "上ドット付きZ,LATIN CAPITAL LETTER Z WITH DOT ABOVE")
-             (10 12 "オゴネク付きA小文字,LATIN SMALL LETTER A WITH OGONEK")
-             (10 13 "オゴネク,OGONEK")
-             (10 14 "ストローク付きL小文字,LATIN SMALL LETTER L WITH STROKE")
-             (10 15 "キャロン付きL小文字,LATIN SMALL LETTER L WITH CARON")
-             (10 16 "アキュートアクセント付きS小文字,LATIN SMALL LETTER S WITH ACUTE")
-             (10 17 "キャロン,CARON(Mandarin Chinese third tone)")
-             (10 18 "キャロン付きS小文字,LATIN SMALL LETTER S WITH CARON")
-             (10 19 "セディラ付きS小文字,LATIN SMALL LETTER S WITH CEDILLA")
-             (10 20 "キャロン付きT小文字,LATIN SMALL LETTER T WITH CARON")
-             (10 21 "アキュートアクセント付きZ小文字,LATIN SMALL LETTER Z WITH ACUTE")
-             (10 22 "ダブルアキュートアクセント,DOUBLE ACUTE ACCENT")
-             (10 23 "キャロン付きZ小文字,LATIN SMALL LETTER Z WITH CARON")
-             (10 24 "上ドット付きZ小文字,LATIN SMALL LETTER Z WITH DOT ABOVE")
-             (10 25 "アキュートアクセント付きR,LATIN CAPITAL LETTER R WITH ACUTE")
-             (10 26 "ブリーブ付きA,LATIN CAPITAL LETTER A WITH BREVE")
-             (10 27 "アキュートアクセント付きL,LATIN CAPITAL LETTER L WITH ACUTE")
-             (10 28 "アキュートアクセント付きC,LATIN CAPITAL LETTER C WITH ACUTE")
-             (10 29 "キャロン付きC,LATIN CAPITAL LETTER C WITH CARON")
-             (10 30 "オゴネク付きE,LATIN CAPITAL LETTER E WITH OGONEK")
-             (10 31 "キャロン付きE,LATIN CAPITAL LETTER E WITH CARON")
-             (10 32 "キャロン付きD,LATIN CAPITAL LETTER D WITH CARON")
-             (10 33 "アキュートアクセント付きN,LATIN CAPITAL LETTER N WITH ACUTE")
-             (10 34 "キャロン付きN,LATIN CAPITAL LETTER N WITH CARON")
-             (10 35 "ダブルアキュートアクセント付きO,LATIN CAPITAL LETTER O WITH DOUBLE ACUTE")
-             (10 36 "キャロン付きR,LATIN CAPITAL LETTER R WITH CARON")
-             (10 37 "上リング付きU,LATIN CAPITAL LETTER U WITH RING ABOVE")
-             (10 38 "ダブルアキュートアクセント付きU,LATIN CAPITAL LETTER U WITH DOUBLE ACUTE")
-             (10 39 "セディラ付きT,LATIN CAPITAL LETTER T WITH CEDILLA")
-             (10 40 "アキュートアクセント付きR小文字,LATIN SMALL LETTER R WITH ACUTE")
-             (10 41 "ブリーブ付きA小文字,LATIN SMALL LETTER A WITH BREVE")
-             (10 42 "アキュートアクセント付きL小文字,LATIN SMALL LETTER L WITH ACUTE")
-             (10 43 "アキュートアクセント付きC小文字,LATIN SMALL LETTER C WITH ACUTE")
-             (10 44 "キャロン付きC小文字,LATIN SMALL LETTER C WITH CARON")
-             (10 45 "オゴネク付きE小文字,LATIN SMALL LETTER E WITH OGONEK")
-             (10 46 "キャロン付きE小文字,LATIN SMALL LETTER E WITH CARON")
-             (10 47 "キャロン付きD小文字,LATIN SMALL LETTER D WITH CARON")
-             (10 48 "ストローク付きD小文字,LATIN SMALL LETTER D WITH STROKE")
-             (10 49 "アキュートアクセント付きN小文字,LATIN SMALL LETTER N WITH ACUTE")
-             (10 50 "キャロン付きN小文字,LATIN SMALL LETTER N WITH CARON")
-             (10 51 "ダブルアキュートアクセント付きO小文字,LATIN SMALL LETTER O WITH DOUBLE ACUTE")
-             (10 52 "キャロン付きR小文字,LATIN SMALL LETTER R WITH CARON")
-             (10 53 "上リング付きU小文字,LATIN SMALL LETTER U WITH RING ABOVE")
-             (10 54 "ダブルアキュートアクセント付きU小文字,LATIN SMALL LETTER U WITH DOUBLE ACUTE")
-             (10 55 "セディラ付きT小文字,LATIN SMALL LETTER T WITH CEDILLA")
-             (10 56 "上ドット,DOT ABOVE(Mandarin Chinese light tone)")
-             (10 57 "サーカムフレックスアクセント付きC,LATIN CAPITAL LETTER C WITH CIRCUMFLEX")
-             (10 58 "サーカムフレックスアクセント付きG,LATIN CAPITAL LETTER G WITH CIRCUMFLEX")
-             (10 59 "サーカムフレックスアクセント付きH,LATIN CAPITAL LETTER H WITH CIRCUMFLEX")
-             (10 60 "サーカムフレックスアクセント付きJ,LATIN CAPITAL LETTER J WITH CIRCUMFLEX")
-             (10 61 "サーカムフレックスアクセント付きS,LATIN CAPITAL LETTER S WITH CIRCUMFLEX")
-             (10 62 "ブリーブ付きU,LATIN CAPITAL LETTER U WITH BREVE")
-             (10 63 "サーカムフレックスアクセント付きC小文字,LATIN SMALL LETTER C WITH CIRCUMFLEX")
-             (10 64 "サーカムフレックスアクセント付きG小文字,LATIN SMALL LETTER G WITH CIRCUMFLEX")
-             (10 65 "サーカムフレックスアクセント付きH小文字,LATIN SMALL LETTER H WITH CIRCUMFLEX")
-             (10 66 "サーカムフレックスアクセント付きJ小文字,LATIN SMALL LETTER J WITH CIRCUMFLEX")
-             (10 67 "サーカムフレックスアクセント付きS小文字,LATIN SMALL LETTER S WITH CIRCUMFLEX")
-             (10 68 "ブリーブ付きU小文字,LATIN SMALL LETTER U WITH BREVE")
-             (10 69 "フック付きM小文字,有声唇歯鼻音,LATIN SMALL LETTER M WITH HOOK")
-             (10 70 "フック付きV小文字,有声唇歯接近音,LATIN SMALL LETTER V WITH HOOK")
-             (10 71 "フィッシュフック付きR小文字,有声歯茎弾き音,LATIN SMALL LETTER R WITH FISHHOOK")
-             (10 72 "ESH小文字,無声後部歯茎摩擦音,LATIN SMALL LETTER ESH")
-             (10 73 "EZH小文字,有声後部歯茎摩擦音,LATIN SMALL LETTER EZH")
-             (10 74 "ベルト付きL小文字,無声歯茎側面摩擦音,LATIN SMALL LETTER L WITH BELT")
-             (10 75 "LEZH小文字,有声歯茎側面摩擦音,LATIN SMALL LETTER LEZH")
-             (10 76 "ターンドR小文字,無声歯茎接近音,LATIN SMALL LETTER TURNED R")
-             (10 77 "レトロフレックスフック付きT小文字,無声そり舌破裂音,LATIN SMALL LETTER T WITH RETROFLEX HOOK")
-             (10 78 "テール付きD小文字,有声そり舌破裂音,LATIN SMALL LETTER D WITH TAIL")
-             (10 79 "レトロフレックスフック付きN小文字,有声そり舌鼻音,LATIN SMALL LETTER N WITH RETROFLEX HOOK")
-             (10 80 "テール付きR小文字,有声そり舌弾き音,LATIN SMALL LETTER R WITH TAIL")
-             (10 81 "フック付きS小文字,無声そり舌摩擦音,LATIN SMALL LETTER S WITH HOOK")
-             (10 82 "レトロフレックスフック付きZ小文字,有声そり舌摩擦音,LATIN SMALL LETTER Z WITH RETROFLEX HOOK")
-             (10 83 "フック付きターンドR小文字,有声そり舌接近音,LATIN SMALL LETTER TURNED R WITH HOOK")
-             (10 84 "レトロフレックスフック付きL小文字,有声そり舌側面接近音,LATIN SMALL LETTER L WITH RETROFLEX HOOK")
-             (10 85 "ストローク付きドットなしJ小文字,有声硬口蓋破裂音,LATIN SMALL LETTER DOTLESS J WITH STROKE")
-             (10 86 "左フック付きN小文字,有声硬口蓋鼻音,LATIN SMALL LETTER N WITH LEFT HOOK")
-             (10 87 "クロスドテール付きJ小文字,有声硬口蓋摩擦音,LATIN SMALL LETTER J WITH CROSSED-TAIL")
-             (10 88 "ターンドY小文字,有声硬口蓋側面接近音,LATIN SMALL LETTER TURNED Y")
-             (10 89 "スクリプトG小文字,有声軟口蓋破裂音,LATIN SMALL LETTER SCRIPT G")
-             (10 90 "ENG小文字,有声軟口蓋鼻音,LATIN SMALL LETTER ENG(Sami)")
-             (10 91 "ロングレッグ付きターンドM小文字,有声軟口蓋接近音,LATIN SMALL LETTER TURNED M WITH LONG LEG")
-             (10 92 "インバーテッドRスモールキャピタル,有声口蓋垂摩擦音,LATIN LETTER SMALL CAPITAL INVERTED R")
-             (10 93 "ストローク付きH小文字,無声咽頭摩擦音,LATIN SMALL LETTER H WITH STROKE")
-             (10 94 "リバースドグロッタルストップ,有声咽頭摩擦音,LATIN LETTER PHARYNGEAL VOICED FRICATIVE")
-             (11 1 "グロッタルストップ,無声声門破裂音,LATIN LETTER GLOTTAL STOP")
-             (11 2 "フック付きH小文字,有声声門摩擦音,LATIN SMALL LETTER H WITH HOOK")
-             (11 3 "両唇吸着音,LATIN LETTER BILABIAL CLICK")
-             (11 4 "硬口蓋歯茎吸着音,LATIN LETTER ALVEOLAR CLICK")
-             (11 5 "フック付きB小文字,有声両唇内破音,LATIN SMALL LETTER B WITH HOOK")
-             (11 6 "フック付きD小文字,有声歯茎内破音,LATIN SMALL LETTER D WITH HOOK")
-             (11 7 "フックとストローク付きドットなしJ小文字,有声硬口蓋内破音,LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK")
-             (11 8 "フック付きG小文字,有声軟口蓋内破音,LATIN SMALL LETTER G WITH HOOK")
-             (11 9 "フック付きG大文字,有声口蓋垂内破音,LATIN CAPITAL LETTER G WITH HOOK")
-             (11 10 "リガチャOE小文字,円唇前舌広・中段母音,LATIN SMALL LIGATURE OE")
-             (11 11 "リガチャOE大文字,円唇前舌広母音,LATIN CAPITAL LIGATURE OE")
-             (11 12 "ストローク付きI小文字,非円唇中舌狭母音,LATIN SMALL LETTER I WITH STROKE")
-             (11 13 "バー付きU小文字,円唇中舌狭母音,LATIN SMALL LETTER U BAR")
-             (11 14 "リバースドE小文字,非円唇中舌狭・中段母音,LATIN SMALL LETTER REVERSED E")
-             (11 15 "バー付きO小文字,円唇中舌狭・中段母音,LATIN SMALL LETTER BARRED O")
-             (11 16 "SCHWA小文字,非円唇中舌中央母音,LATIN SMALL LETTER SCHWA")
-             (11 17 "リバースドオープンE小文字,非円唇中舌広・中段母音,LATIN SMALL LETTER REVERSED OPEN E")
-             (11 18 "クローズドリバースドオープンE小文字,円唇中舌広・中段母音,LATIN SMALL LETTER CLOSED REVERSED OPEN E")
-             (11 19 "ターンドA小文字,非円唇中舌狭めの広母音,LATIN SMALL LETTER TURNED A")
-             (11 20 "ターンドM小文字,非円唇後舌狭母音,LATIN SMALL LETTER TURNED M")
-             (11 21 "UPSILON小文字,円唇後舌広めの狭母音,LATIN SMALL LETTER UPSILON")
-             (11 22 "ベビーガンマ,非円唇後舌狭中段母音,LATIN SMALL LETTER RAMS HORN")
-             (11 23 "ターンドV小文字,非円唇後舌広・中段母音,LATIN SMALL LETTER TURNED V")
-             (11 24 "オープンO小文字,円唇後舌広・中段母音,LATIN SMALL LETTER OPEN O")
-             (11 25 "スクリプトA小文字,非円唇後舌広母音,LATIN SMALL LETTER ALPHA")
-             (11 26 "ターンドALPHA小文字,円唇後舌広母音,LATIN SMALL LETTER TURNED ALPHA")
-             (11 27 "ターンドW小文字,無声両唇・軟口蓋摩擦音,LATIN SMALL LETTER TURNED W")
-             (11 28 "ターンドH小文字,有声両唇・硬口蓋接近音,LATIN SMALL LETTER TURNED H")
-             (11 29 "ストローク付きリバースドグロッタルストップ,有声咽頭蓋摩擦音,LATIN LETTER REVERSED GLOTTAL STOP WITH STROKE")
-             (11 30 "ストローク付きグロッタルストップ,咽頭蓋破裂音,LATIN LETTER GLOTTAL STOP WITH STROKE")
-             (11 31 "カール付きC小文字,歯茎・硬口蓋摩擦音,LATIN SMALL LETTER C WITH CURL")
-             (11 32 "カール付きZ小文字,歯茎・硬口蓋摩擦音,LATIN SMALL LETTER Z WITH CURL")
-             (11 33 "ロングレッグ付きターンドR小文字,歯茎側面弾き音,LATIN SMALL LETTER TURNED R WITH LONG LEG")
-             (11 34 "フック付きHENG小文字,無声後部歯茎軟口蓋摩擦音,LATIN SMALL LETTER HENG WITH HOOK")
-             (11 35 "フック付きSCHWA,LATIN SMALL LETTER SCHWA WITH HOOK")
-             (11 36 "グレーブアクセント付きAE小文字,[LATIN SMALL LETTER AE WITH GRAVE]")
-             (11 37 "アキュートアクセント付きAE小文字,LATIN SMALL LETTER AE WITH ACUTE")
-             (11 38 "グレーブアクセント付きスクリプトA小文字,GREEK SMALL LETTER ALPHA WITH VARIA")
-             (11 39 "アキュートアクセント付きスクリプトA小文字,GREEK SMALL LETTER ALPHA WITH OXIA")
-             (11 40 "グレーブアクセント付きオープンO小文字,[LATIN SMALL LETTER OPEN O WITH GRAVE]")
-             (11 41 "アキュートアクセント付きオープンO小文字,[LATIN SMALL LETTER OPEN O WITH ACUTE]")
-             (11 42 "グレーブアクセント付きターンドV小文字,[LATIN SMALL LETTER TURNED V WITH GRAVE]")
-             (11 43 "アキュートアクセント付きターンドV小文字,[LATIN SMALL LETTER TURNED V WITH ACUTE]")
-             (11 44 "グレーブアクセント付きSCHWA小文字,[LATIN SMALL LETTER SCHWA WITH GRAVE]")
-             (11 45 "アキュートアクセント付きSCHWA小文字,[LATIN SMALL LETTER SCHWA WITH ACUTE]")
-             (11 46 "グレーブアクセントとフック付きSCHWA小文字,[LATIN SMALL LETTER HOOKED SCHWA WITH GRAVE]")
-             (11 47 "アキュートアクセントとフック付きSCHWA小文字,[LATIN SMALL LETTER HOOKED SCHWA WITH ACUTE]")
-             (11 48 "グレーブアクセント付きEPSILON小文字,GREEK SMALL LETTER EPSILON WITH VARIA")
-             (11 49 "アキュートアクセント付きEPSILON小文字,GREEK SMALL LETTER EPSILON WITH OXIA")
-             (11 50 "ダブルインバーテッドブリーブ(合成可能),破擦音又は二重調音記号,COMBINING DOUBLE INVERTED BREVE")
-             (11 51 "小縦線,第一強勢,MODIFIER LETTER VERTICAL LINE")
-             (11 52 "下小縦線,第二強勢,MODIFIER LETTER LOW VERTICAL LINE")
-             (11 53 "長,MODIFIER LETTER TRIANGULAR COLON")
-             (11 54 "半長,MODIFIER LETTER HALF TRIANGULAR COLON")
-             (11 55 "ブリーブ(合成可能),超短,COMBINING BREVE(Vrachy)")
-             (11 56 "連結している,UNDERTIE(Enotikon)")
-             (11 57 "ダブルアキュートアクセント(合成可能),声調超高,COMBINING DOUBLE ACUTE ACCENT")
-             (11 58 "アキュートアクセント(合成可能),声調高,COMBINING ACUTE ACCENT(Oxia)")
-             (11 59 "マクロン(合成可能),声調中,COMBINING MACRON")
-             (11 60 "グレーブアクセント(合成可能),声調低,COMBINING GRAVE ACCENT(Varia)")
-             (11 61 "ダブルグレーブアクセント(合成可能),声調超低,COMBINING DOUBLE GRAVE ACCENT")
-             (11 62 "キャロン(合成可能),声調上昇調,COMBINING CARON")
-             (11 63 "サーカムフレックスアクセント(合成可能),声調下降調,COMBINING CIRCUMFLEX ACCENT")
-             (11 64 "声調記号超高,MODIFIER LETTER EXTRA-HIGH TONE BAR")
-             (11 65 "声調記号高,MODIFIER LETTER HIGH TONE BAR")
-             (11 66 "声調記号中,MODIFIER LETTER MID TONE BAR")
-             (11 67 "声調記号低,MODIFIER LETTER LOW TONE BAR")
-             (11 68 "声調記号超低,MODIFIER LETTER EXTRA-LOW TONE BAR")
-             (11 69 "声調記号上昇調,[RISING SYMBOL]")
-             (11 70 "声調記号下降調,[FALLING SYMBOL]")
-             (11 71 "下リング(合成可能),無声,COMBINING RING BELOW")
-             (11 72 "下キャロン(合成可能),有声,COMBINING CARON BELOW")
-             (11 73 "下ライトハーフリング(合成可能),より円唇性の強い,COMBINING RIGHT HALF RING BELOW")
-             (11 74 "下レフトハーフリング(合成可能),より円唇性の弱い,COMBINING LEFT HALF RING BELOW")
-             (11 75 "下プラス(合成可能),前寄りの,COMBINING PLUS SIGN BELOW")
-             (11 76 "下マイナス(合成可能),後ろ寄りの,COMBINING MINUS SIGN BELOW")
-             (11 77 "ダイエレシス(合成可能),中舌母音化,COMBINING DIAERESIS(Dialytika)")
-             (11 78 "上X(合成可能),中段中舌母音化,COMBINING X ABOVE")
-             (11 79 "下縦線(合成可能),音節主音的,COMBINING VERTICAL LINE BELOW")
-             (11 80 "下インバーテッドブリーブ(合成可能),音節副音的,COMBINING INVERTED BREVE BELOW")
-             (11 81 "rの音色,MODIFIER LETTER RHOTIC HOOK")
-             (11 82 "下ダイエレシス(合成可能),かすれ音,COMBINING DIAERESIS BELOW")
-             (11 83 "下チルド(合成可能),きしみ音,COMBINING TILDE BELOW")
-             (11 84 "下シーガル(合成可能),舌先端唇音,COMBINING SEAGULL BELOW")
-             (11 85 "チルドオーバレイ(合成可能),軟口蓋化あるいは咽頭化,COMBINING TILDE OVERLAY")
-             (11 86 "下アップタック(合成可能),高舌の,COMBINING UP TACK BELOW")
-             (11 87 "下ダウンタック(合成可能),低舌の,COMBINING DOWN TACK BELOW")
-             (11 88 "下レフトタック(合成可能),前方舌根性,COMBINING LEFT TACK BELOW")
-             (11 89 "下ライトタック(合成可能),後方舌根性,COMBINING RIGHT TACK BELOW")
-             (11 90 "下ブリッジ(合成可能),歯,COMBINING BRIDGE BELOW")
-             (11 91 "下インバーテッドブリッジ(合成可能),舌先的,COMBINING INVERTED BRIDGE BELOW")
-             (11 92 "下スクエア(合成可能),舌端的,COMBINING SQUARE BELOW")
-             (11 93 "チルド(合成可能),鼻音化,COMBINING TILDE")
-             (11 94 "上レフトアングル(合成可能),開放が聞こえない,COMBINING LEFT ANGLE ABOVE")
-             (12 1 "黒丸1,DINGBAT NEGATIVE CIRCLED DIGIT ONE")
-             (12 2 "黒丸2,DINGBAT NEGATIVE CIRCLED DIGIT TWO")
-             (12 3 "黒丸3,DINGBAT NEGATIVE CIRCLED DIGIT THREE")
-             (12 4 "黒丸4,DINGBAT NEGATIVE CIRCLED DIGIT FOUR")
-             (12 5 "黒丸5,DINGBAT NEGATIVE CIRCLED DIGIT FIVE")
-             (12 6 "黒丸6,DINGBAT NEGATIVE CIRCLED DIGIT SIX")
-             (12 7 "黒丸7,DINGBAT NEGATIVE CIRCLED DIGIT SEVEN")
-             (12 8 "黒丸8,DINGBAT NEGATIVE CIRCLED DIGIT EIGHT")
-             (12 9 "黒丸9,DINGBAT NEGATIVE CIRCLED DIGIT NINE")
-             (12 10 "黒丸10,DINGBAT NEGATIVE CIRCLED NUMBER TEN")
-             (12 11 "黒丸11,NEGATIVE CIRCLED NUMBER ELEVEN")
-             (12 12 "黒丸12,NEGATIVE CIRCLED NUMBER TWELVE")
-             (12 13 "黒丸13,NEGATIVE CIRCLED NUMBER THIRTEEN")
-             (12 14 "黒丸14,NEGATIVE CIRCLED NUMBER FOURTEEN")
-             (12 15 "黒丸15,NEGATIVE CIRCLED NUMBER FIFTEEN")
-             (12 16 "黒丸16,NEGATIVE CIRCLED NUMBER SIXTEEN")
-             (12 17 "黒丸17,NEGATIVE CIRCLED NUMBER SEVENTEEN")
-             (12 18 "黒丸18,NEGATIVE CIRCLED NUMBER EIGHTEEN")
-             (12 19 "黒丸19,NEGATIVE CIRCLED NUMBER NINETEEN")
-             (12 20 "黒丸20,NEGATIVE CIRCLED NUMBER TWENTY")
-             (12 21 "ローマ数字1小文字,SMALL ROMAN NUMERAL ONE")
-             (12 22 "ローマ数字2小文字,SMALL ROMAN NUMERAL TWO")
-             (12 23 "ローマ数字3小文字,SMALL ROMAN NUMERAL THREE")
-             (12 24 "ローマ数字4小文字,SMALL ROMAN NUMERAL FOUR")
-             (12 25 "ローマ数字5小文字,SMALL ROMAN NUMERAL FIVE")
-             (12 26 "ローマ数字6小文字,SMALL ROMAN NUMERAL SIX")
-             (12 27 "ローマ数字7小文字,SMALL ROMAN NUMERAL SEVEN")
-             (12 28 "ローマ数字8小文字,SMALL ROMAN NUMERAL EIGHT")
-             (12 29 "ローマ数字9小文字,SMALL ROMAN NUMERAL NINE")
-             (12 30 "ローマ数字10小文字,SMALL ROMAN NUMERAL TEN")
-             (12 31 "ローマ数字11小文字,SMALL ROMAN NUMERAL ELEVEN")
-             (12 32 "ローマ数字12小文字,SMALL ROMAN NUMERAL TWELVE")
-             (12 33 "丸A小文字,CIRCLED LATIN SMALL LETTER A")
-             (12 34 "丸B小文字,CIRCLED LATIN SMALL LETTER B")
-             (12 35 "丸C小文字,CIRCLED LATIN SMALL LETTER C")
-             (12 36 "丸D小文字,CIRCLED LATIN SMALL LETTER D")
-             (12 37 "丸E小文字,CIRCLED LATIN SMALL LETTER E")
-             (12 38 "丸F小文字,CIRCLED LATIN SMALL LETTER F")
-             (12 39 "丸G小文字,CIRCLED LATIN SMALL LETTER G")
-             (12 40 "丸H小文字,CIRCLED LATIN SMALL LETTER H")
-             (12 41 "丸I小文字,CIRCLED LATIN SMALL LETTER I")
-             (12 42 "丸J小文字,CIRCLED LATIN SMALL LETTER J")
-             (12 43 "丸K小文字,CIRCLED LATIN SMALL LETTER K")
-             (12 44 "丸L小文字,CIRCLED LATIN SMALL LETTER L")
-             (12 45 "丸M小文字,CIRCLED LATIN SMALL LETTER M")
-             (12 46 "丸N小文字,CIRCLED LATIN SMALL LETTER N")
-             (12 47 "丸O小文字,CIRCLED LATIN SMALL LETTER O")
-             (12 48 "丸P小文字,CIRCLED LATIN SMALL LETTER P")
-             (12 49 "丸Q小文字,CIRCLED LATIN SMALL LETTER Q")
-             (12 50 "丸R小文字,CIRCLED LATIN SMALL LETTER R")
-             (12 51 "丸S小文字,CIRCLED LATIN SMALL LETTER S")
-             (12 52 "丸T小文字,CIRCLED LATIN SMALL LETTER T")
-             (12 53 "丸U小文字,CIRCLED LATIN SMALL LETTER U")
-             (12 54 "丸V小文字,CIRCLED LATIN SMALL LETTER V")
-             (12 55 "丸W小文字,CIRCLED LATIN SMALL LETTER W")
-             (12 56 "丸X小文字,CIRCLED LATIN SMALL LETTER X")
-             (12 57 "丸Y小文字,CIRCLED LATIN SMALL LETTER Y")
-             (12 58 "丸Z小文字,CIRCLED LATIN SMALL LETTER Z")
-             (12 59 "丸ア,CIRCLED KATAKANA A")
-             (12 60 "丸イ,CIRCLED KATAKANA I")
-             (12 61 "丸ウ,CIRCLED KATAKANA U")
-             (12 62 "丸エ,CIRCLED KATAKANA E")
-             (12 63 "丸オ,CIRCLED KATAKANA O")
-             (12 64 "丸カ,CIRCLED KATAKANA KA")
-             (12 65 "丸キ,CIRCLED KATAKANA KI")
-             (12 66 "丸ク,CIRCLED KATAKANA KU")
-             (12 67 "丸ケ,CIRCLED KATAKANA KE")
-             (12 68 "丸コ,CIRCLED KATAKANA KO")
-             (12 69 "丸サ,CIRCLED KATAKANA SA")
-             (12 70 "丸シ,CIRCLED KATAKANA SI")
-             (12 71 "丸ス,CIRCLED KATAKANA SU")
-             (12 72 "丸セ,CIRCLED KATAKANA SE")
-             (12 73 "丸ソ,CIRCLED KATAKANA SO")
-             (12 74 "丸タ,CIRCLED KATAKANA TA")
-             (12 75 "丸チ,CIRCLED KATAKANA TI")
-             (12 76 "丸ツ,CIRCLED KATAKANA TU")
-             (12 77 "丸テ,CIRCLED KATAKANA TE")
-             (12 78 "丸ト,CIRCLED KATAKANA TO")
-             (12 79 "丸ロ,CIRCLED KATAKANA RO")
-             (12 80 "丸ハ,CIRCLED KATAKANA HA")
-             (12 81 "丸ニ,CIRCLED KATAKANA NI")
-             (12 82 "丸ホ,CIRCLED KATAKANA HO")
-             (12 83 "丸ヘ,CIRCLED KATAKANA HE")
-             (12 93 "ダブルアステ,TWO ASTERISKS ALIGNED VERTICALLY")
-             (12 94 "アステリズム,ASTERISM")
-             (13 1 "丸1,CIRCLED DIGIT ONE")
-             (13 2 "丸2,CIRCLED DIGIT TWO")
-             (13 3 "丸3,CIRCLED DIGIT THREE")
-             (13 4 "丸4,CIRCLED DIGIT FOUR")
-             (13 5 "丸5,CIRCLED DIGIT FIVE")
-             (13 6 "丸6,CIRCLED DIGIT SIX")
-             (13 7 "丸7,CIRCLED DIGIT SEVEN")
-             (13 8 "丸8,CIRCLED DIGIT EIGHT")
-             (13 9 "丸9,CIRCLED DIGIT NINE")
-             (13 10 "丸10,CIRCLED NUMBER TEN")
-             (13 11 "丸11,CIRCLED NUMBER ELEVEN")
-             (13 12 "丸12,CIRCLED NUMBER TWELVE")
-             (13 13 "丸13,CIRCLED NUMBER THIRTEEN")
-             (13 14 "丸14,CIRCLED NUMBER FOURTEEN")
-             (13 15 "丸15,CIRCLED NUMBER FIFTEEN")
-             (13 16 "丸16,CIRCLED NUMBER SIXTEEN")
-             (13 17 "丸17,CIRCLED NUMBER SEVENTEEN")
-             (13 18 "丸18,CIRCLED NUMBER EIGHTEEN")
-             (13 19 "丸19,CIRCLED NUMBER NINETEEN")
-             (13 20 "丸20,CIRCLED NUMBER TWENTY")
-             (13 21 "ローマ数字1,ROMAN NUMERAL ONE")
-             (13 22 "ローマ数字2,ROMAN NUMERAL TWO")
-             (13 23 "ローマ数字3,ROMAN NUMERAL THREE")
-             (13 24 "ローマ数字4,ROMAN NUMERAL FOUR")
-             (13 25 "ローマ数字5,ROMAN NUMERAL FIVE")
-             (13 26 "ローマ数字6,ROMAN NUMERAL SIX")
-             (13 27 "ローマ数字7,ROMAN NUMERAL SEVEN")
-             (13 28 "ローマ数字8,ROMAN NUMERAL EIGHT")
-             (13 29 "ローマ数字9,ROMAN NUMERAL NINE")
-             (13 30 "ローマ数字10,ROMAN NUMERAL TEN")
-             (13 31 "ローマ数字11,ROMAN NUMERAL ELEVEN")
-             (13 32 "全角ミリ,SQUARE MIRI")
-             (13 33 "全角キロ,SQUARE KIRO")
-             (13 34 "全角センチ,SQUARE SENTI")
-             (13 35 "全角メートル,SQUARE MEETORU")
-             (13 36 "全角グラム,SQUARE GURAMU")
-             (13 37 "全角トン,SQUARE TON")
-             (13 38 "全角アール,SQUARE AARU")
-             (13 39 "全角ヘクタール,SQUARE HEKUTAARU")
-             (13 40 "全角リットル,SQUARE RITTORU")
-             (13 41 "全角ワット,SQUARE WATTO")
-             (13 42 "全角カロリー,SQUARE KARORII")
-             (13 43 "全角ドル,SQUARE DORU")
-             (13 44 "全角セント,SQUARE SENTO")
-             (13 45 "全角パーセント,SQUARE PAASENTO")
-             (13 46 "全角ミリバール,SQUARE MIRIBAARU")
-             (13 47 "全角ページ,SQUARE PEEZI")
-             (13 48 "全角MM,SQUARE MM")
-             (13 49 "全角CM,SQUARE CM")
-             (13 50 "全角KM,SQUARE KM")
-             (13 51 "全角MG,SQUARE MG")
-             (13 52 "全角KG,SQUARE KG")
-             (13 53 "全角CC,SQUARE CC")
-             (13 54 "全角M2,SQUARE M SQUARED")
-             (13 55 "ローマ数字12,ROMAN NUMERAL TWELVE")
-             (13 63 "全角元号平成,SQUARE ERA NAME HEISEI")
-             (13 64 "始めダブルミニュート,REVERSED DOUBLE PRIME QUOTATION MARK")
-             (13 65 "終わりダブルミニュート,LOW DOUBLE PRIME QUOTATION MARK")
-             (13 66 "全角NO,NUMERO SIGN")
-             (13 67 "全角KK,SQUARE KK")
-             (13 68 "全角TEL,TELEPHONE SIGN")
-             (13 69 "丸付き上,CIRCLED IDEOGRAPH HIGH")
-             (13 70 "丸付き中,CIRCLED IDEOGRAPH CENTRE")
-             (13 71 "丸付き下,CIRCLED IDEOGRAPH LOW")
-             (13 72 "丸付き左,CIRCLED IDEOGRAPH LEFT")
-             (13 73 "丸付き右,CIRCLED IDEOGRAPH RIGHT")
-             (13 74 "全角括弧付き株,PARENTHESIZED IDEOGRAPH STOCK")
-             (13 75 "全角括弧付き有,PARENTHESIZED IDEOGRAPH HAVE")
-             (13 76 "全角括弧付き代,PARENTHESIZED IDEOGRAPH REPRESENT")
-             (13 77 "全角元号明治,SQUARE ERA NAME MEIZI")
-             (13 78 "全角元号大正,SQUARE ERA NAME TAISYOU")
-             (13 79 "全角元号昭和,SQUARE ERA NAME SYOUWA")
-             (13 83 "経路積分記号,CONTOUR INTEGRAL")
-             (13 88 "ファクトリアル,直角,RIGHT ANGLE")
-             (13 89 "直角三角,RIGHT TRIANGLE")
-             (13 93 "四つ菱,BLACK DIAMOND MINUS WHITE X")
-             (13 94 "指示マーク,WHITE RIGHT POINTING INDEX")
+             (9 30 "$B%;%G%#%iIU$-(BC,LATIN CAPITAL LETTER C WITH CEDILLA")
+             (9 31 "$B%0%l!<%V%"%/%;%s%HIU$-(BE,LATIN CAPITAL LETTER E WITH GRAVE")
+             (9 32 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BE,LATIN CAPITAL LETTER E WITH ACUTE")
+             (9 33 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BE,LATIN CAPITAL LETTER E WITH CIRCUMFLEX")
+             (9 34 "$B%@%$%(%l%7%9IU$-(BE,LATIN CAPITAL LETTER E WITH DIAERESIS")
+             (9 35 "$B%0%l!<%V%"%/%;%s%HIU$-(BI,LATIN CAPITAL LETTER I WITH GRAVE")
+             (9 36 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BI,LATIN CAPITAL LETTER I WITH ACUTE")
+             (9 37 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BI,LATIN CAPITAL LETTER I WITH CIRCUMFLEX")
+             (9 38 "$B%@%$%(%l%7%9IU$-(BI,LATIN CAPITAL LETTER I WITH DIAERESIS")
+             (9 39 "$B%"%$%9%i%s%I8l(BETH,LATIN CAPITAL LETTER ETH(Icelandic)")
+             (9 40 "$B%A%k%IIU$-(BN,LATIN CAPITAL LETTER N WITH TILDE")
+             (9 41 "$B%0%l!<%V%"%/%;%s%HIU$-(BO,LATIN CAPITAL LETTER O WITH GRAVE")
+             (9 42 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BO,LATIN CAPITAL LETTER O WITH ACUTE")
+             (9 43 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BO,LATIN CAPITAL LETTER O WITH CIRCUMFLEX")
+             (9 44 "$B%A%k%IIU$-(BO,LATIN CAPITAL LETTER O WITH TILDE")
+             (9 45 "$B%@%$%(%l%7%9IU$-(BO,LATIN CAPITAL LETTER O WITH DIAERESIS")
+             (9 46 "$B%9%H%m!<%/IU$-(BO,LATIN CAPITAL LETTER O WITH STROKE")
+             (9 47 "$B%0%l!<%V%"%/%;%s%HIU$-(BU,LATIN CAPITAL LETTER U WITH GRAVE")
+             (9 48 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BU,LATIN CAPITAL LETTER U WITH ACUTE")
+             (9 49 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BU,LATIN CAPITAL LETTER U WITH CIRCUMFLEX")
+             (9 50 "$B%@%$%(%l%7%9IU$-(BU,LATIN CAPITAL LETTER U WITH DIAERESIS")
+             (9 51 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BY,LATIN CAPITAL LETTER Y WITH ACUTE")
+             (9 52 "$B%"%$%9%i%s%I8l(BTHORN,LATIN CAPITAL LETTER THORN(Icelandic)")
+             (9 53 "$B%I%$%D8l%(%9%D%'%C%H(B,LATIN SMALL LETTER SHARP S(German)")
+             (9 54 "$B%0%l!<%V%"%/%;%s%HIU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH GRAVE")
+             (9 55 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH ACUTE")
+             (9 56 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH CIRCUMFLEX")
+             (9 57 "$B%A%k%IIU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH TILDE")
+             (9 58 "$B%@%$%(%l%7%9IU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH DIAERESIS")
+             (9 59 "$B>e%j%s%0IU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH RING ABOVE")
+             (9 60 "AE$B>.J8;z(B,LATIN SMALL LETTER AE")
+             (9 61 "$B%;%G%#%iIU$-(BC$B>.J8;z(B,LATIN SMALL LETTER C WITH CEDILLA")
+             (9 62 "$B%0%l!<%V%"%/%;%s%HIU$-(BE$B>.J8;z(B,LATIN SMALL LETTER E WITH GRAVE")
+             (9 63 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BE$B>.J8;z(B,LATIN SMALL LETTER E WITH ACUTE")
+             (9 64 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BE$B>.J8;z(B,LATIN SMALL LETTER E WITH CIRCUMFLEX")
+             (9 65 "$B%@%$%(%l%7%9IU$-(BE$B>.J8;z(B,LATIN SMALL LETTER E WITH DIAERESIS")
+             (9 66 "$B%0%l!<%V%"%/%;%s%HIU$-(BI$B>.J8;z(B,LATIN SMALL LETTER I WITH GRAVE")
+             (9 67 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BI$B>.J8;z(B,LATIN SMALL LETTER I WITH ACUTE")
+             (9 68 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BI$B>.J8;z(B,LATIN SMALL LETTER I WITH CIRCUMFLEX")
+             (9 69 "$B%@%$%(%l%7%9IU$-(BI$B>.J8;z(B,LATIN SMALL LETTER I WITH DIAERESIS")
+             (9 70 "$B%"%$%9%i%s%I8l(BETH$B>.J8;z(B,LATIN SMALL LETTER ETH(Icelandic)")
+             (9 71 "$B%A%k%IIU$-(BN$B>.J8;z(B,LATIN SMALL LETTER N WITH TILDE")
+             (9 72 "$B%0%l!<%V%"%/%;%s%HIU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH GRAVE")
+             (9 73 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH ACUTE")
+             (9 74 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH CIRCUMFLEX")
+             (9 75 "$B%A%k%IIU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH TILDE")
+             (9 76 "$B%@%$%(%l%7%9IU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH DIAERESIS")
+             (9 77 "$B%9%H%m!<%/IU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH STROKE")
+             (9 78 "$B%0%l!<%V%"%/%;%s%HIU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH GRAVE")
+             (9 79 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH ACUTE")
+             (9 80 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH CIRCUMFLEX")
+             (9 81 "$B%@%$%(%l%7%9IU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH DIAERESIS")
+             (9 82 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BY$B>.J8;z(B,LATIN SMALL LETTER Y WITH ACUTE")
+             (9 83 "$B%"%$%9%i%s%I8l(BTHORN$B>.J8;z(B,LATIN SMALL LETTER THORN(Icelandic)")
+             (9 84 "$B%@%$%(%l%7%9IU$-(BY$B>.J8;z(B,LATIN SMALL LETTER Y WITH DIAERESIS")
+             (9 85 "$B%^%/%m%sIU$-(BA,LATIN CAPITAL LETTER A WITH MACRON")
+             (9 86 "$B%^%/%m%sIU$-(BI,LATIN CAPITAL LETTER I WITH MACRON")
+             (9 87 "$B%^%/%m%sIU$-(BU,LATIN CAPITAL LETTER U WITH MACRON")
+             (9 88 "$B%^%/%m%sIU$-(BE,LATIN CAPITAL LETTER E WITH MACRON")
+             (9 89 "$B%^%/%m%sIU$-(BO,LATIN CAPITAL LETTER O WITH MACRON")
+             (9 90 "$B%^%/%m%sIU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH MACRON")
+             (9 91 "$B%^%/%m%sIU$-(BI$B>.J8;z(B,LATIN SMALL LETTER I WITH MACRON")
+             (9 92 "$B%^%/%m%sIU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH MACRON")
+             (9 93 "$B%^%/%m%sIU$-(BE$B>.J8;z(B,LATIN SMALL LETTER E WITH MACRON")
+             (9 94 "$B%^%/%m%sIU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH MACRON")
+             (10 1 "$B%*%4%M%/IU$-(BA,LATIN CAPITAL LETTER A WITH OGONEK")
+             (10 2 "$B%V%j!<%V(B,BREVE")
+             (10 3 "$B%9%H%m!<%/IU$-(BL,LATIN CAPITAL LETTER L WITH STROKE")
+             (10 4 "$B%-%c%m%sIU$-(BL,LATIN CAPITAL LETTER L WITH CARON")
+             (10 5 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BS,LATIN CAPITAL LETTER S WITH ACUTE")
+             (10 6 "$B%-%c%m%sIU$-(BS,LATIN CAPITAL LETTER S WITH CARON")
+             (10 7 "$B%;%G%#%iIU$-(BS,LATIN CAPITAL LETTER S WITH CEDILLA")
+             (10 8 "$B%-%c%m%sIU$-(BT,LATIN CAPITAL LETTER T WITH CARON")
+             (10 9 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BZ,LATIN CAPITAL LETTER Z WITH ACUTE")
+             (10 10 "$B%-%c%m%sIU$-(BZ,LATIN CAPITAL LETTER Z WITH CARON")
+             (10 11 "$B>e%I%C%HIU$-(BZ,LATIN CAPITAL LETTER Z WITH DOT ABOVE")
+             (10 12 "$B%*%4%M%/IU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH OGONEK")
+             (10 13 "$B%*%4%M%/(B,OGONEK")
+             (10 14 "$B%9%H%m!<%/IU$-(BL$B>.J8;z(B,LATIN SMALL LETTER L WITH STROKE")
+             (10 15 "$B%-%c%m%sIU$-(BL$B>.J8;z(B,LATIN SMALL LETTER L WITH CARON")
+             (10 16 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BS$B>.J8;z(B,LATIN SMALL LETTER S WITH ACUTE")
+             (10 17 "$B%-%c%m%s(B,CARON(Mandarin Chinese third tone)")
+             (10 18 "$B%-%c%m%sIU$-(BS$B>.J8;z(B,LATIN SMALL LETTER S WITH CARON")
+             (10 19 "$B%;%G%#%iIU$-(BS$B>.J8;z(B,LATIN SMALL LETTER S WITH CEDILLA")
+             (10 20 "$B%-%c%m%sIU$-(BT$B>.J8;z(B,LATIN SMALL LETTER T WITH CARON")
+             (10 21 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BZ$B>.J8;z(B,LATIN SMALL LETTER Z WITH ACUTE")
+             (10 22 "$B%@%V%k%"%-%e!<%H%"%/%;%s%H(B,DOUBLE ACUTE ACCENT")
+             (10 23 "$B%-%c%m%sIU$-(BZ$B>.J8;z(B,LATIN SMALL LETTER Z WITH CARON")
+             (10 24 "$B>e%I%C%HIU$-(BZ$B>.J8;z(B,LATIN SMALL LETTER Z WITH DOT ABOVE")
+             (10 25 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BR,LATIN CAPITAL LETTER R WITH ACUTE")
+             (10 26 "$B%V%j!<%VIU$-(BA,LATIN CAPITAL LETTER A WITH BREVE")
+             (10 27 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BL,LATIN CAPITAL LETTER L WITH ACUTE")
+             (10 28 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BC,LATIN CAPITAL LETTER C WITH ACUTE")
+             (10 29 "$B%-%c%m%sIU$-(BC,LATIN CAPITAL LETTER C WITH CARON")
+             (10 30 "$B%*%4%M%/IU$-(BE,LATIN CAPITAL LETTER E WITH OGONEK")
+             (10 31 "$B%-%c%m%sIU$-(BE,LATIN CAPITAL LETTER E WITH CARON")
+             (10 32 "$B%-%c%m%sIU$-(BD,LATIN CAPITAL LETTER D WITH CARON")
+             (10 33 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BN,LATIN CAPITAL LETTER N WITH ACUTE")
+             (10 34 "$B%-%c%m%sIU$-(BN,LATIN CAPITAL LETTER N WITH CARON")
+             (10 35 "$B%@%V%k%"%-%e!<%H%"%/%;%s%HIU$-(BO,LATIN CAPITAL LETTER O WITH DOUBLE ACUTE")
+             (10 36 "$B%-%c%m%sIU$-(BR,LATIN CAPITAL LETTER R WITH CARON")
+             (10 37 "$B>e%j%s%0IU$-(BU,LATIN CAPITAL LETTER U WITH RING ABOVE")
+             (10 38 "$B%@%V%k%"%-%e!<%H%"%/%;%s%HIU$-(BU,LATIN CAPITAL LETTER U WITH DOUBLE ACUTE")
+             (10 39 "$B%;%G%#%iIU$-(BT,LATIN CAPITAL LETTER T WITH CEDILLA")
+             (10 40 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BR$B>.J8;z(B,LATIN SMALL LETTER R WITH ACUTE")
+             (10 41 "$B%V%j!<%VIU$-(BA$B>.J8;z(B,LATIN SMALL LETTER A WITH BREVE")
+             (10 42 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BL$B>.J8;z(B,LATIN SMALL LETTER L WITH ACUTE")
+             (10 43 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BC$B>.J8;z(B,LATIN SMALL LETTER C WITH ACUTE")
+             (10 44 "$B%-%c%m%sIU$-(BC$B>.J8;z(B,LATIN SMALL LETTER C WITH CARON")
+             (10 45 "$B%*%4%M%/IU$-(BE$B>.J8;z(B,LATIN SMALL LETTER E WITH OGONEK")
+             (10 46 "$B%-%c%m%sIU$-(BE$B>.J8;z(B,LATIN SMALL LETTER E WITH CARON")
+             (10 47 "$B%-%c%m%sIU$-(BD$B>.J8;z(B,LATIN SMALL LETTER D WITH CARON")
+             (10 48 "$B%9%H%m!<%/IU$-(BD$B>.J8;z(B,LATIN SMALL LETTER D WITH STROKE")
+             (10 49 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BN$B>.J8;z(B,LATIN SMALL LETTER N WITH ACUTE")
+             (10 50 "$B%-%c%m%sIU$-(BN$B>.J8;z(B,LATIN SMALL LETTER N WITH CARON")
+             (10 51 "$B%@%V%k%"%-%e!<%H%"%/%;%s%HIU$-(BO$B>.J8;z(B,LATIN SMALL LETTER O WITH DOUBLE ACUTE")
+             (10 52 "$B%-%c%m%sIU$-(BR$B>.J8;z(B,LATIN SMALL LETTER R WITH CARON")
+             (10 53 "$B>e%j%s%0IU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH RING ABOVE")
+             (10 54 "$B%@%V%k%"%-%e!<%H%"%/%;%s%HIU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH DOUBLE ACUTE")
+             (10 55 "$B%;%G%#%iIU$-(BT$B>.J8;z(B,LATIN SMALL LETTER T WITH CEDILLA")
+             (10 56 "$B>e%I%C%H(B,DOT ABOVE(Mandarin Chinese light tone)")
+             (10 57 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BC,LATIN CAPITAL LETTER C WITH CIRCUMFLEX")
+             (10 58 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BG,LATIN CAPITAL LETTER G WITH CIRCUMFLEX")
+             (10 59 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BH,LATIN CAPITAL LETTER H WITH CIRCUMFLEX")
+             (10 60 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BJ,LATIN CAPITAL LETTER J WITH CIRCUMFLEX")
+             (10 61 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BS,LATIN CAPITAL LETTER S WITH CIRCUMFLEX")
+             (10 62 "$B%V%j!<%VIU$-(BU,LATIN CAPITAL LETTER U WITH BREVE")
+             (10 63 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BC$B>.J8;z(B,LATIN SMALL LETTER C WITH CIRCUMFLEX")
+             (10 64 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BG$B>.J8;z(B,LATIN SMALL LETTER G WITH CIRCUMFLEX")
+             (10 65 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BH$B>.J8;z(B,LATIN SMALL LETTER H WITH CIRCUMFLEX")
+             (10 66 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BJ$B>.J8;z(B,LATIN SMALL LETTER J WITH CIRCUMFLEX")
+             (10 67 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%HIU$-(BS$B>.J8;z(B,LATIN SMALL LETTER S WITH CIRCUMFLEX")
+             (10 68 "$B%V%j!<%VIU$-(BU$B>.J8;z(B,LATIN SMALL LETTER U WITH BREVE")
+             (10 69 "$B%U%C%/IU$-(BM$B>.J8;z(B,$BM-@<?0;uI!2;(B,LATIN SMALL LETTER M WITH HOOK")
+             (10 70 "$B%U%C%/IU$-(BV$B>.J8;z(B,$BM-@<?0;u@\6a2;(B,LATIN SMALL LETTER V WITH HOOK")
+             (10 71 "$B%U%#%C%7%e%U%C%/IU$-(BR$B>.J8;z(B,$BM-@<;u7TCF$-2;(B,LATIN SMALL LETTER R WITH FISHHOOK")
+             (10 72 "ESH$B>.J8;z(B,$BL5@<8eIt;u7TK`;$2;(B,LATIN SMALL LETTER ESH")
+             (10 73 "EZH$B>.J8;z(B,$BM-@<8eIt;u7TK`;$2;(B,LATIN SMALL LETTER EZH")
+             (10 74 "$B%Y%k%HIU$-(BL$B>.J8;z(B,$BL5@<;u7TB&LLK`;$2;(B,LATIN SMALL LETTER L WITH BELT")
+             (10 75 "LEZH$B>.J8;z(B,$BM-@<;u7TB&LLK`;$2;(B,LATIN SMALL LETTER LEZH")
+             (10 76 "$B%?!<%s%I(BR$B>.J8;z(B,$BL5@<;u7T@\6a2;(B,LATIN SMALL LETTER TURNED R")
+             (10 77 "$B%l%H%m%U%l%C%/%9%U%C%/IU$-(BT$B>.J8;z(B,$BL5@<$=$j@eGKNv2;(B,LATIN SMALL LETTER T WITH RETROFLEX HOOK")
+             (10 78 "$B%F!<%kIU$-(BD$B>.J8;z(B,$BM-@<$=$j@eGKNv2;(B,LATIN SMALL LETTER D WITH TAIL")
+             (10 79 "$B%l%H%m%U%l%C%/%9%U%C%/IU$-(BN$B>.J8;z(B,$BM-@<$=$j@eI!2;(B,LATIN SMALL LETTER N WITH RETROFLEX HOOK")
+             (10 80 "$B%F!<%kIU$-(BR$B>.J8;z(B,$BM-@<$=$j@eCF$-2;(B,LATIN SMALL LETTER R WITH TAIL")
+             (10 81 "$B%U%C%/IU$-(BS$B>.J8;z(B,$BL5@<$=$j@eK`;$2;(B,LATIN SMALL LETTER S WITH HOOK")
+             (10 82 "$B%l%H%m%U%l%C%/%9%U%C%/IU$-(BZ$B>.J8;z(B,$BM-@<$=$j@eK`;$2;(B,LATIN SMALL LETTER Z WITH RETROFLEX HOOK")
+             (10 83 "$B%U%C%/IU$-%?!<%s%I(BR$B>.J8;z(B,$BM-@<$=$j@e@\6a2;(B,LATIN SMALL LETTER TURNED R WITH HOOK")
+             (10 84 "$B%l%H%m%U%l%C%/%9%U%C%/IU$-(BL$B>.J8;z(B,$BM-@<$=$j@eB&LL@\6a2;(B,LATIN SMALL LETTER L WITH RETROFLEX HOOK")
+             (10 85 "$B%9%H%m!<%/IU$-%I%C%H$J$7(BJ$B>.J8;z(B,$BM-@<9E8}38GKNv2;(B,LATIN SMALL LETTER DOTLESS J WITH STROKE")
+             (10 86 "$B:8%U%C%/IU$-(BN$B>.J8;z(B,$BM-@<9E8}38I!2;(B,LATIN SMALL LETTER N WITH LEFT HOOK")
+             (10 87 "$B%/%m%9%I%F!<%kIU$-(BJ$B>.J8;z(B,$BM-@<9E8}38K`;$2;(B,LATIN SMALL LETTER J WITH CROSSED-TAIL")
+             (10 88 "$B%?!<%s%I(BY$B>.J8;z(B,$BM-@<9E8}38B&LL@\6a2;(B,LATIN SMALL LETTER TURNED Y")
+             (10 89 "$B%9%/%j%W%H(BG$B>.J8;z(B,$BM-@<Fp8}38GKNv2;(B,LATIN SMALL LETTER SCRIPT G")
+             (10 90 "ENG$B>.J8;z(B,$BM-@<Fp8}38I!2;(B,LATIN SMALL LETTER ENG(Sami)")
+             (10 91 "$B%m%s%0%l%C%0IU$-%?!<%s%I(BM$B>.J8;z(B,$BM-@<Fp8}38@\6a2;(B,LATIN SMALL LETTER TURNED M WITH LONG LEG")
+             (10 92 "$B%$%s%P!<%F%C%I(BR$B%9%b!<%k%-%c%T%?%k(B,$BM-@<8}38?bK`;$2;(B,LATIN LETTER SMALL CAPITAL INVERTED R")
+             (10 93 "$B%9%H%m!<%/IU$-(BH$B>.J8;z(B,$BL5@<0vF,K`;$2;(B,LATIN SMALL LETTER H WITH STROKE")
+             (10 94 "$B%j%P!<%9%I%0%m%C%?%k%9%H%C%W(B,$BM-@<0vF,K`;$2;(B,LATIN LETTER PHARYNGEAL VOICED FRICATIVE")
+             (11 1 "$B%0%m%C%?%k%9%H%C%W(B,$BL5@<@<LgGKNv2;(B,LATIN LETTER GLOTTAL STOP")
+             (11 2 "$B%U%C%/IU$-(BH$B>.J8;z(B,$BM-@<@<LgK`;$2;(B,LATIN SMALL LETTER H WITH HOOK")
+             (11 3 "$BN>?05[Ce2;(B,LATIN LETTER BILABIAL CLICK")
+             (11 4 "$B9E8}38;u7T5[Ce2;(B,LATIN LETTER ALVEOLAR CLICK")
+             (11 5 "$B%U%C%/IU$-(BB$B>.J8;z(B,$BM-@<N>?0FbGK2;(B,LATIN SMALL LETTER B WITH HOOK")
+             (11 6 "$B%U%C%/IU$-(BD$B>.J8;z(B,$BM-@<;u7TFbGK2;(B,LATIN SMALL LETTER D WITH HOOK")
+             (11 7 "$B%U%C%/$H%9%H%m!<%/IU$-%I%C%H$J$7(BJ$B>.J8;z(B,$BM-@<9E8}38FbGK2;(B,LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK")
+             (11 8 "$B%U%C%/IU$-(BG$B>.J8;z(B,$BM-@<Fp8}38FbGK2;(B,LATIN SMALL LETTER G WITH HOOK")
+             (11 9 "$B%U%C%/IU$-(BG$BBgJ8;z(B,$BM-@<8}38?bFbGK2;(B,LATIN CAPITAL LETTER G WITH HOOK")
+             (11 10 "$B%j%,%A%c(BOE$B>.J8;z(B,$B1_?0A0@e9-!&CfCJJl2;(B,LATIN SMALL LIGATURE OE")
+             (11 11 "$B%j%,%A%c(BOE$BBgJ8;z(B,$B1_?0A0@e9-Jl2;(B,LATIN CAPITAL LIGATURE OE")
+             (11 12 "$B%9%H%m!<%/IU$-(BI$B>.J8;z(B,$BHs1_?0Cf@e69Jl2;(B,LATIN SMALL LETTER I WITH STROKE")
+             (11 13 "$B%P!<IU$-(BU$B>.J8;z(B,$B1_?0Cf@e69Jl2;(B,LATIN SMALL LETTER U BAR")
+             (11 14 "$B%j%P!<%9%I(BE$B>.J8;z(B,$BHs1_?0Cf@e69!&CfCJJl2;(B,LATIN SMALL LETTER REVERSED E")
+             (11 15 "$B%P!<IU$-(BO$B>.J8;z(B,$B1_?0Cf@e69!&CfCJJl2;(B,LATIN SMALL LETTER BARRED O")
+             (11 16 "SCHWA$B>.J8;z(B,$BHs1_?0Cf@eCf1{Jl2;(B,LATIN SMALL LETTER SCHWA")
+             (11 17 "$B%j%P!<%9%I%*!<%W%s(BE$B>.J8;z(B,$BHs1_?0Cf@e9-!&CfCJJl2;(B,LATIN SMALL LETTER REVERSED OPEN E")
+             (11 18 "$B%/%m!<%:%I%j%P!<%9%I%*!<%W%s(BE$B>.J8;z(B,$B1_?0Cf@e9-!&CfCJJl2;(B,LATIN SMALL LETTER CLOSED REVERSED OPEN E")
+             (11 19 "$B%?!<%s%I(BA$B>.J8;z(B,$BHs1_?0Cf@e69$a$N9-Jl2;(B,LATIN SMALL LETTER TURNED A")
+             (11 20 "$B%?!<%s%I(BM$B>.J8;z(B,$BHs1_?08e@e69Jl2;(B,LATIN SMALL LETTER TURNED M")
+             (11 21 "UPSILON$B>.J8;z(B,$B1_?08e@e9-$a$N69Jl2;(B,LATIN SMALL LETTER UPSILON")
+             (11 22 "$B%Y%S!<%,%s%^(B,$BHs1_?08e@e69CfCJJl2;(B,LATIN SMALL LETTER RAMS HORN")
+             (11 23 "$B%?!<%s%I(BV$B>.J8;z(B,$BHs1_?08e@e9-!&CfCJJl2;(B,LATIN SMALL LETTER TURNED V")
+             (11 24 "$B%*!<%W%s(BO$B>.J8;z(B,$B1_?08e@e9-!&CfCJJl2;(B,LATIN SMALL LETTER OPEN O")
+             (11 25 "$B%9%/%j%W%H(BA$B>.J8;z(B,$BHs1_?08e@e9-Jl2;(B,LATIN SMALL LETTER ALPHA")
+             (11 26 "$B%?!<%s%I(BALPHA$B>.J8;z(B,$B1_?08e@e9-Jl2;(B,LATIN SMALL LETTER TURNED ALPHA")
+             (11 27 "$B%?!<%s%I(BW$B>.J8;z(B,$BL5@<N>?0!&Fp8}38K`;$2;(B,LATIN SMALL LETTER TURNED W")
+             (11 28 "$B%?!<%s%I(BH$B>.J8;z(B,$BM-@<N>?0!&9E8}38@\6a2;(B,LATIN SMALL LETTER TURNED H")
+             (11 29 "$B%9%H%m!<%/IU$-%j%P!<%9%I%0%m%C%?%k%9%H%C%W(B,$BM-@<0vF,38K`;$2;(B,LATIN LETTER REVERSED GLOTTAL STOP WITH STROKE")
+             (11 30 "$B%9%H%m!<%/IU$-%0%m%C%?%k%9%H%C%W(B,$B0vF,38GKNv2;(B,LATIN LETTER GLOTTAL STOP WITH STROKE")
+             (11 31 "$B%+!<%kIU$-(BC$B>.J8;z(B,$B;u7T!&9E8}38K`;$2;(B,LATIN SMALL LETTER C WITH CURL")
+             (11 32 "$B%+!<%kIU$-(BZ$B>.J8;z(B,$B;u7T!&9E8}38K`;$2;(B,LATIN SMALL LETTER Z WITH CURL")
+             (11 33 "$B%m%s%0%l%C%0IU$-%?!<%s%I(BR$B>.J8;z(B,$B;u7TB&LLCF$-2;(B,LATIN SMALL LETTER TURNED R WITH LONG LEG")
+             (11 34 "$B%U%C%/IU$-(BHENG$B>.J8;z(B,$BL5@<8eIt;u7TFp8}38K`;$2;(B,LATIN SMALL LETTER HENG WITH HOOK")
+             (11 35 "$B%U%C%/IU$-(BSCHWA,LATIN SMALL LETTER SCHWA WITH HOOK")
+             (11 36 "$B%0%l!<%V%"%/%;%s%HIU$-(BAE$B>.J8;z(B,[LATIN SMALL LETTER AE WITH GRAVE]")
+             (11 37 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BAE$B>.J8;z(B,LATIN SMALL LETTER AE WITH ACUTE")
+             (11 38 "$B%0%l!<%V%"%/%;%s%HIU$-%9%/%j%W%H(BA$B>.J8;z(B,GREEK SMALL LETTER ALPHA WITH VARIA")
+             (11 39 "$B%"%-%e!<%H%"%/%;%s%HIU$-%9%/%j%W%H(BA$B>.J8;z(B,GREEK SMALL LETTER ALPHA WITH OXIA")
+             (11 40 "$B%0%l!<%V%"%/%;%s%HIU$-%*!<%W%s(BO$B>.J8;z(B,[LATIN SMALL LETTER OPEN O WITH GRAVE]")
+             (11 41 "$B%"%-%e!<%H%"%/%;%s%HIU$-%*!<%W%s(BO$B>.J8;z(B,[LATIN SMALL LETTER OPEN O WITH ACUTE]")
+             (11 42 "$B%0%l!<%V%"%/%;%s%HIU$-%?!<%s%I(BV$B>.J8;z(B,[LATIN SMALL LETTER TURNED V WITH GRAVE]")
+             (11 43 "$B%"%-%e!<%H%"%/%;%s%HIU$-%?!<%s%I(BV$B>.J8;z(B,[LATIN SMALL LETTER TURNED V WITH ACUTE]")
+             (11 44 "$B%0%l!<%V%"%/%;%s%HIU$-(BSCHWA$B>.J8;z(B,[LATIN SMALL LETTER SCHWA WITH GRAVE]")
+             (11 45 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BSCHWA$B>.J8;z(B,[LATIN SMALL LETTER SCHWA WITH ACUTE]")
+             (11 46 "$B%0%l!<%V%"%/%;%s%H$H%U%C%/IU$-(BSCHWA$B>.J8;z(B,[LATIN SMALL LETTER HOOKED SCHWA WITH GRAVE]")
+             (11 47 "$B%"%-%e!<%H%"%/%;%s%H$H%U%C%/IU$-(BSCHWA$B>.J8;z(B,[LATIN SMALL LETTER HOOKED SCHWA WITH ACUTE]")
+             (11 48 "$B%0%l!<%V%"%/%;%s%HIU$-(BEPSILON$B>.J8;z(B,GREEK SMALL LETTER EPSILON WITH VARIA")
+             (11 49 "$B%"%-%e!<%H%"%/%;%s%HIU$-(BEPSILON$B>.J8;z(B,GREEK SMALL LETTER EPSILON WITH OXIA")
+             (11 50 "$B%@%V%k%$%s%P!<%F%C%I%V%j!<%V(B($B9g@.2DG=(B),$BGK;$2;Kt$OFs=ED42;5-9f(B,COMBINING DOUBLE INVERTED BREVE")
+             (11 51 "$B>.=D@~(B,$BBh0l6/@*(B,MODIFIER LETTER VERTICAL LINE")
+             (11 52 "$B2<>.=D@~(B,$BBhFs6/@*(B,MODIFIER LETTER LOW VERTICAL LINE")
+             (11 53 "$BD9(B,MODIFIER LETTER TRIANGULAR COLON")
+             (11 54 "$BH>D9(B,MODIFIER LETTER HALF TRIANGULAR COLON")
+             (11 55 "$B%V%j!<%V(B($B9g@.2DG=(B),$BD6C;(B,COMBINING BREVE(Vrachy)")
+             (11 56 "$BO"7k$7$F$$$k(B,UNDERTIE(Enotikon)")
+             (11 57 "$B%@%V%k%"%-%e!<%H%"%/%;%s%H(B($B9g@.2DG=(B),$B@<D4D69b(B,COMBINING DOUBLE ACUTE ACCENT")
+             (11 58 "$B%"%-%e!<%H%"%/%;%s%H(B($B9g@.2DG=(B),$B@<D49b(B,COMBINING ACUTE ACCENT(Oxia)")
+             (11 59 "$B%^%/%m%s(B($B9g@.2DG=(B),$B@<D4Cf(B,COMBINING MACRON")
+             (11 60 "$B%0%l!<%V%"%/%;%s%H(B($B9g@.2DG=(B),$B@<D4Dc(B,COMBINING GRAVE ACCENT(Varia)")
+             (11 61 "$B%@%V%k%0%l!<%V%"%/%;%s%H(B($B9g@.2DG=(B),$B@<D4D6Dc(B,COMBINING DOUBLE GRAVE ACCENT")
+             (11 62 "$B%-%c%m%s(B($B9g@.2DG=(B),$B@<D4>e>:D4(B,COMBINING CARON")
+             (11 63 "$B%5!<%+%`%U%l%C%/%9%"%/%;%s%H(B($B9g@.2DG=(B),$B@<D42<9_D4(B,COMBINING CIRCUMFLEX ACCENT")
+             (11 64 "$B@<D45-9fD69b(B,MODIFIER LETTER EXTRA-HIGH TONE BAR")
+             (11 65 "$B@<D45-9f9b(B,MODIFIER LETTER HIGH TONE BAR")
+             (11 66 "$B@<D45-9fCf(B,MODIFIER LETTER MID TONE BAR")
+             (11 67 "$B@<D45-9fDc(B,MODIFIER LETTER LOW TONE BAR")
+             (11 68 "$B@<D45-9fD6Dc(B,MODIFIER LETTER EXTRA-LOW TONE BAR")
+             (11 69 "$B@<D45-9f>e>:D4(B,[RISING SYMBOL]")
+             (11 70 "$B@<D45-9f2<9_D4(B,[FALLING SYMBOL]")
+             (11 71 "$B2<%j%s%0(B($B9g@.2DG=(B),$BL5@<(B,COMBINING RING BELOW")
+             (11 72 "$B2<%-%c%m%s(B($B9g@.2DG=(B),$BM-@<(B,COMBINING CARON BELOW")
+             (11 73 "$B2<%i%$%H%O!<%U%j%s%0(B($B9g@.2DG=(B),$B$h$j1_?0@-$N6/$$(B,COMBINING RIGHT HALF RING BELOW")
+             (11 74 "$B2<%l%U%H%O!<%U%j%s%0(B($B9g@.2DG=(B),$B$h$j1_?0@-$N<e$$(B,COMBINING LEFT HALF RING BELOW")
+             (11 75 "$B2<%W%i%9(B($B9g@.2DG=(B),$BA04s$j$N(B,COMBINING PLUS SIGN BELOW")
+             (11 76 "$B2<%^%$%J%9(B($B9g@.2DG=(B),$B8e$m4s$j$N(B,COMBINING MINUS SIGN BELOW")
+             (11 77 "$B%@%$%(%l%7%9(B($B9g@.2DG=(B),$BCf@eJl2;2=(B,COMBINING DIAERESIS(Dialytika)")
+             (11 78 "$B>e(BX($B9g@.2DG=(B),$BCfCJCf@eJl2;2=(B,COMBINING X ABOVE")
+             (11 79 "$B2<=D@~(B($B9g@.2DG=(B),$B2;@a<g2;E*(B,COMBINING VERTICAL LINE BELOW")
+             (11 80 "$B2<%$%s%P!<%F%C%I%V%j!<%V(B($B9g@.2DG=(B),$B2;@aI{2;E*(B,COMBINING INVERTED BREVE BELOW")
+             (11 81 "r$B$N2;?'(B,MODIFIER LETTER RHOTIC HOOK")
+             (11 82 "$B2<%@%$%(%l%7%9(B($B9g@.2DG=(B),$B$+$9$l2;(B,COMBINING DIAERESIS BELOW")
+             (11 83 "$B2<%A%k%I(B($B9g@.2DG=(B),$B$-$7$_2;(B,COMBINING TILDE BELOW")
+             (11 84 "$B2<%7!<%,%k(B($B9g@.2DG=(B),$B@e@hC<?02;(B,COMBINING SEAGULL BELOW")
+             (11 85 "$B%A%k%I%*!<%P%l%$(B($B9g@.2DG=(B),$BFp8}382=$"$k$$$O0vF,2=(B,COMBINING TILDE OVERLAY")
+             (11 86 "$B2<%"%C%W%?%C%/(B($B9g@.2DG=(B),$B9b@e$N(B,COMBINING UP TACK BELOW")
+             (11 87 "$B2<%@%&%s%?%C%/(B($B9g@.2DG=(B),$BDc@e$N(B,COMBINING DOWN TACK BELOW")
+             (11 88 "$B2<%l%U%H%?%C%/(B($B9g@.2DG=(B),$BA0J}@e:,@-(B,COMBINING LEFT TACK BELOW")
+             (11 89 "$B2<%i%$%H%?%C%/(B($B9g@.2DG=(B),$B8eJ}@e:,@-(B,COMBINING RIGHT TACK BELOW")
+             (11 90 "$B2<%V%j%C%8(B($B9g@.2DG=(B),$B;u(B,COMBINING BRIDGE BELOW")
+             (11 91 "$B2<%$%s%P!<%F%C%I%V%j%C%8(B($B9g@.2DG=(B),$B@e@hE*(B,COMBINING INVERTED BRIDGE BELOW")
+             (11 92 "$B2<%9%/%(%"(B($B9g@.2DG=(B),$B@eC<E*(B,COMBINING SQUARE BELOW")
+             (11 93 "$B%A%k%I(B($B9g@.2DG=(B),$BI!2;2=(B,COMBINING TILDE")
+             (11 94 "$B>e%l%U%H%"%s%0%k(B($B9g@.2DG=(B),$B3+J|$,J9$3$($J$$(B,COMBINING LEFT ANGLE ABOVE")
+             (12 1 "$B9u4](B1,DINGBAT NEGATIVE CIRCLED DIGIT ONE")
+             (12 2 "$B9u4](B2,DINGBAT NEGATIVE CIRCLED DIGIT TWO")
+             (12 3 "$B9u4](B3,DINGBAT NEGATIVE CIRCLED DIGIT THREE")
+             (12 4 "$B9u4](B4,DINGBAT NEGATIVE CIRCLED DIGIT FOUR")
+             (12 5 "$B9u4](B5,DINGBAT NEGATIVE CIRCLED DIGIT FIVE")
+             (12 6 "$B9u4](B6,DINGBAT NEGATIVE CIRCLED DIGIT SIX")
+             (12 7 "$B9u4](B7,DINGBAT NEGATIVE CIRCLED DIGIT SEVEN")
+             (12 8 "$B9u4](B8,DINGBAT NEGATIVE CIRCLED DIGIT EIGHT")
+             (12 9 "$B9u4](B9,DINGBAT NEGATIVE CIRCLED DIGIT NINE")
+             (12 10 "$B9u4](B10,DINGBAT NEGATIVE CIRCLED NUMBER TEN")
+             (12 11 "$B9u4](B11,NEGATIVE CIRCLED NUMBER ELEVEN")
+             (12 12 "$B9u4](B12,NEGATIVE CIRCLED NUMBER TWELVE")
+             (12 13 "$B9u4](B13,NEGATIVE CIRCLED NUMBER THIRTEEN")
+             (12 14 "$B9u4](B14,NEGATIVE CIRCLED NUMBER FOURTEEN")
+             (12 15 "$B9u4](B15,NEGATIVE CIRCLED NUMBER FIFTEEN")
+             (12 16 "$B9u4](B16,NEGATIVE CIRCLED NUMBER SIXTEEN")
+             (12 17 "$B9u4](B17,NEGATIVE CIRCLED NUMBER SEVENTEEN")
+             (12 18 "$B9u4](B18,NEGATIVE CIRCLED NUMBER EIGHTEEN")
+             (12 19 "$B9u4](B19,NEGATIVE CIRCLED NUMBER NINETEEN")
+             (12 20 "$B9u4](B20,NEGATIVE CIRCLED NUMBER TWENTY")
+             (12 21 "$B%m!<%^?t;z(B1$B>.J8;z(B,SMALL ROMAN NUMERAL ONE")
+             (12 22 "$B%m!<%^?t;z(B2$B>.J8;z(B,SMALL ROMAN NUMERAL TWO")
+             (12 23 "$B%m!<%^?t;z(B3$B>.J8;z(B,SMALL ROMAN NUMERAL THREE")
+             (12 24 "$B%m!<%^?t;z(B4$B>.J8;z(B,SMALL ROMAN NUMERAL FOUR")
+             (12 25 "$B%m!<%^?t;z(B5$B>.J8;z(B,SMALL ROMAN NUMERAL FIVE")
+             (12 26 "$B%m!<%^?t;z(B6$B>.J8;z(B,SMALL ROMAN NUMERAL SIX")
+             (12 27 "$B%m!<%^?t;z(B7$B>.J8;z(B,SMALL ROMAN NUMERAL SEVEN")
+             (12 28 "$B%m!<%^?t;z(B8$B>.J8;z(B,SMALL ROMAN NUMERAL EIGHT")
+             (12 29 "$B%m!<%^?t;z(B9$B>.J8;z(B,SMALL ROMAN NUMERAL NINE")
+             (12 30 "$B%m!<%^?t;z(B10$B>.J8;z(B,SMALL ROMAN NUMERAL TEN")
+             (12 31 "$B%m!<%^?t;z(B11$B>.J8;z(B,SMALL ROMAN NUMERAL ELEVEN")
+             (12 32 "$B%m!<%^?t;z(B12$B>.J8;z(B,SMALL ROMAN NUMERAL TWELVE")
+             (12 33 "$B4](BA$B>.J8;z(B,CIRCLED LATIN SMALL LETTER A")
+             (12 34 "$B4](BB$B>.J8;z(B,CIRCLED LATIN SMALL LETTER B")
+             (12 35 "$B4](BC$B>.J8;z(B,CIRCLED LATIN SMALL LETTER C")
+             (12 36 "$B4](BD$B>.J8;z(B,CIRCLED LATIN SMALL LETTER D")
+             (12 37 "$B4](BE$B>.J8;z(B,CIRCLED LATIN SMALL LETTER E")
+             (12 38 "$B4](BF$B>.J8;z(B,CIRCLED LATIN SMALL LETTER F")
+             (12 39 "$B4](BG$B>.J8;z(B,CIRCLED LATIN SMALL LETTER G")
+             (12 40 "$B4](BH$B>.J8;z(B,CIRCLED LATIN SMALL LETTER H")
+             (12 41 "$B4](BI$B>.J8;z(B,CIRCLED LATIN SMALL LETTER I")
+             (12 42 "$B4](BJ$B>.J8;z(B,CIRCLED LATIN SMALL LETTER J")
+             (12 43 "$B4](BK$B>.J8;z(B,CIRCLED LATIN SMALL LETTER K")
+             (12 44 "$B4](BL$B>.J8;z(B,CIRCLED LATIN SMALL LETTER L")
+             (12 45 "$B4](BM$B>.J8;z(B,CIRCLED LATIN SMALL LETTER M")
+             (12 46 "$B4](BN$B>.J8;z(B,CIRCLED LATIN SMALL LETTER N")
+             (12 47 "$B4](BO$B>.J8;z(B,CIRCLED LATIN SMALL LETTER O")
+             (12 48 "$B4](BP$B>.J8;z(B,CIRCLED LATIN SMALL LETTER P")
+             (12 49 "$B4](BQ$B>.J8;z(B,CIRCLED LATIN SMALL LETTER Q")
+             (12 50 "$B4](BR$B>.J8;z(B,CIRCLED LATIN SMALL LETTER R")
+             (12 51 "$B4](BS$B>.J8;z(B,CIRCLED LATIN SMALL LETTER S")
+             (12 52 "$B4](BT$B>.J8;z(B,CIRCLED LATIN SMALL LETTER T")
+             (12 53 "$B4](BU$B>.J8;z(B,CIRCLED LATIN SMALL LETTER U")
+             (12 54 "$B4](BV$B>.J8;z(B,CIRCLED LATIN SMALL LETTER V")
+             (12 55 "$B4](BW$B>.J8;z(B,CIRCLED LATIN SMALL LETTER W")
+             (12 56 "$B4](BX$B>.J8;z(B,CIRCLED LATIN SMALL LETTER X")
+             (12 57 "$B4](BY$B>.J8;z(B,CIRCLED LATIN SMALL LETTER Y")
+             (12 58 "$B4](BZ$B>.J8;z(B,CIRCLED LATIN SMALL LETTER Z")
+             (12 59 "$B4]%"(B,CIRCLED KATAKANA A")
+             (12 60 "$B4]%$(B,CIRCLED KATAKANA I")
+             (12 61 "$B4]%&(B,CIRCLED KATAKANA U")
+             (12 62 "$B4]%((B,CIRCLED KATAKANA E")
+             (12 63 "$B4]%*(B,CIRCLED KATAKANA O")
+             (12 64 "$B4]%+(B,CIRCLED KATAKANA KA")
+             (12 65 "$B4]%-(B,CIRCLED KATAKANA KI")
+             (12 66 "$B4]%/(B,CIRCLED KATAKANA KU")
+             (12 67 "$B4]%1(B,CIRCLED KATAKANA KE")
+             (12 68 "$B4]%3(B,CIRCLED KATAKANA KO")
+             (12 69 "$B4]%5(B,CIRCLED KATAKANA SA")
+             (12 70 "$B4]%7(B,CIRCLED KATAKANA SI")
+             (12 71 "$B4]%9(B,CIRCLED KATAKANA SU")
+             (12 72 "$B4]%;(B,CIRCLED KATAKANA SE")
+             (12 73 "$B4]%=(B,CIRCLED KATAKANA SO")
+             (12 74 "$B4]%?(B,CIRCLED KATAKANA TA")
+             (12 75 "$B4]%A(B,CIRCLED KATAKANA TI")
+             (12 76 "$B4]%D(B,CIRCLED KATAKANA TU")
+             (12 77 "$B4]%F(B,CIRCLED KATAKANA TE")
+             (12 78 "$B4]%H(B,CIRCLED KATAKANA TO")
+             (12 79 "$B4]%m(B,CIRCLED KATAKANA RO")
+             (12 80 "$B4]%O(B,CIRCLED KATAKANA HA")
+             (12 81 "$B4]%K(B,CIRCLED KATAKANA NI")
+             (12 82 "$B4]%[(B,CIRCLED KATAKANA HO")
+             (12 83 "$B4]%X(B,CIRCLED KATAKANA HE")
+             (12 93 "$B%@%V%k%"%9%F(B,TWO ASTERISKS ALIGNED VERTICALLY")
+             (12 94 "$B%"%9%F%j%:%`(B,ASTERISM")
+             (13 1 "$B4](B1,CIRCLED DIGIT ONE")
+             (13 2 "$B4](B2,CIRCLED DIGIT TWO")
+             (13 3 "$B4](B3,CIRCLED DIGIT THREE")
+             (13 4 "$B4](B4,CIRCLED DIGIT FOUR")
+             (13 5 "$B4](B5,CIRCLED DIGIT FIVE")
+             (13 6 "$B4](B6,CIRCLED DIGIT SIX")
+             (13 7 "$B4](B7,CIRCLED DIGIT SEVEN")
+             (13 8 "$B4](B8,CIRCLED DIGIT EIGHT")
+             (13 9 "$B4](B9,CIRCLED DIGIT NINE")
+             (13 10 "$B4](B10,CIRCLED NUMBER TEN")
+             (13 11 "$B4](B11,CIRCLED NUMBER ELEVEN")
+             (13 12 "$B4](B12,CIRCLED NUMBER TWELVE")
+             (13 13 "$B4](B13,CIRCLED NUMBER THIRTEEN")
+             (13 14 "$B4](B14,CIRCLED NUMBER FOURTEEN")
+             (13 15 "$B4](B15,CIRCLED NUMBER FIFTEEN")
+             (13 16 "$B4](B16,CIRCLED NUMBER SIXTEEN")
+             (13 17 "$B4](B17,CIRCLED NUMBER SEVENTEEN")
+             (13 18 "$B4](B18,CIRCLED NUMBER EIGHTEEN")
+             (13 19 "$B4](B19,CIRCLED NUMBER NINETEEN")
+             (13 20 "$B4](B20,CIRCLED NUMBER TWENTY")
+             (13 21 "$B%m!<%^?t;z(B1,ROMAN NUMERAL ONE")
+             (13 22 "$B%m!<%^?t;z(B2,ROMAN NUMERAL TWO")
+             (13 23 "$B%m!<%^?t;z(B3,ROMAN NUMERAL THREE")
+             (13 24 "$B%m!<%^?t;z(B4,ROMAN NUMERAL FOUR")
+             (13 25 "$B%m!<%^?t;z(B5,ROMAN NUMERAL FIVE")
+             (13 26 "$B%m!<%^?t;z(B6,ROMAN NUMERAL SIX")
+             (13 27 "$B%m!<%^?t;z(B7,ROMAN NUMERAL SEVEN")
+             (13 28 "$B%m!<%^?t;z(B8,ROMAN NUMERAL EIGHT")
+             (13 29 "$B%m!<%^?t;z(B9,ROMAN NUMERAL NINE")
+             (13 30 "$B%m!<%^?t;z(B10,ROMAN NUMERAL TEN")
+             (13 31 "$B%m!<%^?t;z(B11,ROMAN NUMERAL ELEVEN")
+             (13 32 "$BA43Q%_%j(B,SQUARE MIRI")
+             (13 33 "$BA43Q%-%m(B,SQUARE KIRO")
+             (13 34 "$BA43Q%;%s%A(B,SQUARE SENTI")
+             (13 35 "$BA43Q%a!<%H%k(B,SQUARE MEETORU")
+             (13 36 "$BA43Q%0%i%`(B,SQUARE GURAMU")
+             (13 37 "$BA43Q%H%s(B,SQUARE TON")
+             (13 38 "$BA43Q%"!<%k(B,SQUARE AARU")
+             (13 39 "$BA43Q%X%/%?!<%k(B,SQUARE HEKUTAARU")
+             (13 40 "$BA43Q%j%C%H%k(B,SQUARE RITTORU")
+             (13 41 "$BA43Q%o%C%H(B,SQUARE WATTO")
+             (13 42 "$BA43Q%+%m%j!<(B,SQUARE KARORII")
+             (13 43 "$BA43Q%I%k(B,SQUARE DORU")
+             (13 44 "$BA43Q%;%s%H(B,SQUARE SENTO")
+             (13 45 "$BA43Q%Q!<%;%s%H(B,SQUARE PAASENTO")
+             (13 46 "$BA43Q%_%j%P!<%k(B,SQUARE MIRIBAARU")
+             (13 47 "$BA43Q%Z!<%8(B,SQUARE PEEZI")
+             (13 48 "$BA43Q(BMM,SQUARE MM")
+             (13 49 "$BA43Q(BCM,SQUARE CM")
+             (13 50 "$BA43Q(BKM,SQUARE KM")
+             (13 51 "$BA43Q(BMG,SQUARE MG")
+             (13 52 "$BA43Q(BKG,SQUARE KG")
+             (13 53 "$BA43Q(BCC,SQUARE CC")
+             (13 54 "$BA43Q(BM2,SQUARE M SQUARED")
+             (13 55 "$B%m!<%^?t;z(B12,ROMAN NUMERAL TWELVE")
+             (13 63 "$BA43Q859fJ?@.(B,SQUARE ERA NAME HEISEI")
+             (13 64 "$B;O$a%@%V%k%_%K%e!<%H(B,REVERSED DOUBLE PRIME QUOTATION MARK")
+             (13 65 "$B=*$o$j%@%V%k%_%K%e!<%H(B,LOW DOUBLE PRIME QUOTATION MARK")
+             (13 66 "$BA43Q(BNO,NUMERO SIGN")
+             (13 67 "$BA43Q(BKK,SQUARE KK")
+             (13 68 "$BA43Q(BTEL,TELEPHONE SIGN")
+             (13 69 "$B4]IU$->e(B,CIRCLED IDEOGRAPH HIGH")
+             (13 70 "$B4]IU$-Cf(B,CIRCLED IDEOGRAPH CENTRE")
+             (13 71 "$B4]IU$-2<(B,CIRCLED IDEOGRAPH LOW")
+             (13 72 "$B4]IU$-:8(B,CIRCLED IDEOGRAPH LEFT")
+             (13 73 "$B4]IU$-1&(B,CIRCLED IDEOGRAPH RIGHT")
+             (13 74 "$BA43Q3g8LIU$-3t(B,PARENTHESIZED IDEOGRAPH STOCK")
+             (13 75 "$BA43Q3g8LIU$-M-(B,PARENTHESIZED IDEOGRAPH HAVE")
+             (13 76 "$BA43Q3g8LIU$-Be(B,PARENTHESIZED IDEOGRAPH REPRESENT")
+             (13 77 "$BA43Q859fL@<#(B,SQUARE ERA NAME MEIZI")
+             (13 78 "$BA43Q859fBg@5(B,SQUARE ERA NAME TAISYOU")
+             (13 79 "$BA43Q859f><OB(B,SQUARE ERA NAME SYOUWA")
+             (13 83 "$B7PO)@QJ,5-9f(B,CONTOUR INTEGRAL")
+             (13 88 "$B%U%!%/%H%j%"%k(B,$BD>3Q(B,RIGHT ANGLE")
+             (13 89 "$BD>3Q;03Q(B,RIGHT TRIANGLE")
+             (13 93 "$B;M$DI)(B,BLACK DIAMOND MINUS WHITE X")
+             (13 94 "$B;X<(%^!<%/(B,WHITE RIGHT POINTING INDEX")
 
-             (14 1 "2003追")
-             (15 94 "2003追加")
-             (47 52 "2003追加")
-             (47 94 "2003追加")
-             (84 7 "2003追加")
-             (94 90 "2003追加")
-             (94 91 "2003追加")
-             (94 92 "2003追加")
-             (94 93 "2003追加")
-             (94 94 "2003追加"))))
+             (14 1 "2003$BDI(B")
+             (15 94 "2003$BDI2C(B")
+             (47 52 "2003$BDI2C(B")
+             (47 94 "2003$BDI2C(B")
+             (84 7 "2003$BDI2C(B")
+             (94 90 "2003$BDI2C(B")
+             (94 91 "2003$BDI2C(B")
+             (94 92 "2003$BDI2C(B")
+             (94 93 "2003$BDI2C(B")
+             (94 94 "2003$BDI2C(B"))))
     (dolist (x l)
       (aset skk-tankan-annotation-table
             (make-char 'japanese-jisx0213-1 (+ 32 (car x)) (+ 32 (nth 1 x)))

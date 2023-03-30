@@ -1,4 +1,4 @@
-;;; skk-exserv.el --- SKK サーバーのためのプログラム -*- coding: iso-2022-jp -*-
+;;; skk-exserv.el --- SKK $B%5!<%P!<$N$?$a$N%W%m%0%i%`(B -*- coding: iso-2022-jp -*-
 
 ;; Copyright (C) 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
 ;;               1997, 1998, 1999, 2000
@@ -139,23 +139,23 @@ candidates that are delimited by slash.")
 (defmethod server-version ((engine dbskkd-engine))
   (or skk-exserv-list
       (skk-error "Lack of host information of SKK server"
-                 "SKK サーバーのホスト情報がありません" ))
+                 "SKK $B%5!<%P!<$N%[%9%H>pJs$,$"$j$^$;$s(B" ))
   (or (skk-open-server)
       (skk-error "Cannot open connection to SKK server"
-                 "SKK サーバーとコネクションを張ることができません"))
+                 "SKK $B%5!<%P!<$H%3%M%/%7%g%s$rD%$k$3$H$,$G$-$^$;$s(B"))
   (save-excursion
     (unwind-protect
         (progn
           (set-buffer (oref engine buffer))
           (let (v)
             (erase-buffer)
-            ;; サーバーバージョンを得る。
+            ;; $B%5!<%P!<%P!<%8%g%s$rF@$k!#(B
             (process-send-string (oref engine process-name) "2")
             (while (and (server-opened-p engine) (eq (buffer-size) 0))
               (accept-process-output))
             (setq v (buffer-string))
             (erase-buffer)
-            ;; ホスト名を得る。
+            ;; $B%[%9%HL>$rF@$k!#(B
             (process-send-string (oref engine process-name) "3")
             (while (and (server-opened-p engine) (eq (buffer-size) 0))
               (accept-process-output))
@@ -163,7 +163,7 @@ candidates that are delimited by slash.")
             (format
              (concat "SKK SERVER version %s"
                      (if skk-japanese-message-and-error
-                         "(ホスト名 %s)"
+                         "($B%[%9%HL>(B %s)"
                        "running on HOST %s"))
              v (buffer-string) )))
       (erase-buffer))))
@@ -192,7 +192,7 @@ candidates that are delimited by slash.")
               (forward-char 2)
               (and (setq l (skk-compute-henkan-lists okurigana))
                    (cond ((and okurigana skk-henkan-okuri-strictly)
-                          ;; 送り仮名が同一のエントリのみを返す。
+                          ;; $BAw$j2>L>$,F10l$N%(%s%H%j$N$_$rJV$9!#(B
                           (nth 2 l))
                          ((and okurigana skk-henkan-strict-okuri-precedence)
                           (skk-nunion (nth 2 l) (car l)))
@@ -200,17 +200,17 @@ candidates that are delimited by slash.")
 
 ;;;###autoload
 (defun skk-adjust-search-prog-list-for-server-search (&optional non-del)
-  ;; skk-exserv-list が nil であれば、
-  ;; skk-search-prog-list から skk-exserv-search を car に持つリストを消す。
-  ;; non-nil であれば、加える。
+  ;; skk-exserv-list $B$,(B nil $B$G$"$l$P!"(B
+  ;; skk-search-prog-list $B$+$i(B skk-exserv-search $B$r(B car $B$K;}$D%j%9%H$r>C$9!#(B
+  ;; non-nil $B$G$"$l$P!"2C$($k!#(B
   (if skk-exserv-list
       (if (null (assq 'skk-exserv-search skk-search-prog-list))
-          ;; skk-search-prog-list が nil ということはまずないだろうが、念のた
-          ;; め、setq しておく。
+          ;; skk-search-prog-list $B$,(B nil $B$H$$$&$3$H$O$^$:$J$$$@$m$&$,!"G0$N$?(B
+          ;; $B$a!"(Bsetq $B$7$F$*$/!#(B
           (setq skk-search-prog-list
-                ;; 末尾に付ける。末尾には (skk-okuri-search) を持ってきたい人
-                ;; もいるかも。オプションで付ける場所を変更するようにした方が
-                ;; 良い？
+                ;; $BKvHx$KIU$1$k!#KvHx$K$O(B (skk-okuri-search) $B$r;}$C$F$-$?$$?M(B
+                ;; $B$b$$$k$+$b!#%*%W%7%g%s$GIU$1$k>l=j$rJQ99$9$k$h$&$K$7$?J}$,(B
+                ;; $BNI$$!)(B
                 (nconc skk-search-prog-list (list '(skk-exserv-search)))))
     (if (not non-del)
         (remove-alist 'skk-search-prog-list 'skk-exserv-search))))

@@ -4,7 +4,8 @@
 ;;   Enami Tsugutomo <enami@ba2.so-net.or.jp>
 
 ;; Author: Enami Tsugutomo <enami@ba2.so-net.or.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 
 ;; This file is part of Daredevil SKK.
@@ -149,7 +150,7 @@ The MODE should be canonical."
     (t
      (skk-isearch-turn-off-skk-mode))))
 
-
+
 (defun skk-isearch-symbolic-mode (mode)
   "Return symbolic skk isearch mode for given numerical MODE."
   (car (rassq mode skk-isearch-mode-canonical-alist)))
@@ -224,7 +225,7 @@ kakutei'ed and erase the buffer contents."
           (skk-isearch-setup-keymap (cons 'keymap
                                           isearch-mode-map))))
   (set skk-isearch-overriding-local-map skk-isearch-mode-map)
-  ;; Input Method として SKK を使っている場合の対策
+  ;; Input Method $B$H$7$F(B SKK $B$r;H$C$F$$$k>l9g$NBP:v(B
   (when (and current-input-method
              (string-match "^japanese-skk" current-input-method))
     (let* ((method current-input-method)
@@ -235,7 +236,7 @@ kakutei'ed and erase the buffer contents."
         (unless current-input-method
           (setq deactivate-current-input-method-function func)
           (setq current-input-method method)))))
-  ;; skk-isearch の状態を表す内部変数の設定
+  ;; skk-isearch $B$N>uBV$rI=$9FbItJQ?t$N@_Dj(B
   (setq skk-isearch-switch t)
   (setq skk-isearch-in-editing nil)
   (setq skk-isearch-current-buffer (current-buffer))
@@ -260,10 +261,10 @@ kakutei'ed and erase the buffer contents."
     (setq skk-isearch-message nil
           skk-isearch-last-mode-string ""
           skk-isearch-last-mode-regexp "")
-    ;; サーチ中に入力モードを変更したら、モードラインの表示もそれに従い
-    ;; 変更されるので、カレントバッファの入力モードとモードラインの表示
-    ;; とが sync しなくなる。従い、サーチが終了した際、モードラインをカ
-    ;; レントバッファの入力モードと sync させる。
+    ;; $B%5!<%ACf$KF~NO%b!<%I$rJQ99$7$?$i!"%b!<%I%i%$%s$NI=<($b$=$l$K=>$$(B
+    ;; $BJQ99$5$l$k$N$G!"%+%l%s%H%P%C%U%!$NF~NO%b!<%I$H%b!<%I%i%$%s$NI=<((B
+    ;; $B$H$,(B sync $B$7$J$/$J$k!#=>$$!"%5!<%A$,=*N;$7$?:]!"%b!<%I%i%$%s$r%+(B
+    ;; $B%l%s%H%P%C%U%!$NF~NO%b!<%I$H(B sync $B$5$;$k!#(B
     (cl-case mode
       (hiragana
        (skk-j-mode-on))
@@ -275,11 +276,11 @@ kakutei'ed and erase the buffer contents."
        (skk-latin-mode-on))
       (jisx0208-latin
        (skk-jisx0208-latin-mode-on))))
-  ;; Input Method として SKK を使っている場合の対策
+  ;; Input Method $B$H$7$F(B SKK $B$r;H$C$F$$$k>l9g$NBP:v(B
   (when (string-match "^japanese-skk" (format "%s" default-input-method))
     (with-current-buffer (get-buffer-create skk-isearch-working-buffer)
       (deactivate-input-method)))
-  ;; skk-isearch の状態を表す内部変数の設定
+  ;; skk-isearch $B$N>uBV$rI=$9FbItJQ?t$N@_Dj(B
   (setq skk-isearch-switch nil)
   (unless skk-isearch-in-editing
     (setq skk-isearch-state nil))
@@ -296,14 +297,14 @@ Optional argument PREFIX is appended if given."
                                  skk-isearch-incomplete-message
                                  prefix)))
     (isearch-message)))
-
+
 ;;
 ;; define keymap
 ;;
 
 (defun skk-isearch-find-keys-define (map commands command)
-  ;; COMMANDS のいずれかにバインドされているキーを全て調べる。
-  ;; skk-isearh の中でそれらのキーを COMMAND にバインドする。
+  ;; COMMANDS $B$N$$$:$l$+$K%P%$%s%I$5$l$F$$$k%-!<$rA4$FD4$Y$k!#(B
+  ;; skk-isearh $B$NCf$G$=$l$i$N%-!<$r(B COMMAND $B$K%P%$%s%I$9$k!#(B
   (let (prefs)
     (dolist (c commands)
       (dolist (key (where-is-internal c (current-global-map)))
@@ -350,7 +351,7 @@ Optional argument PREFIX is appended if given."
     (skk-isearch-find-keys-define map commands 'skk-isearch-skk-mode))
 
   (if (fboundp 'isearch-other-control-char)         ;2013-10-08 Remove functions
-      (define-key map [?\C-x t] 'isearch-other-control-char)) ; GNU Emacs 24.4 から廃止
+      (define-key map [?\C-x t] 'isearch-other-control-char)) ; GNU Emacs 24.4 $B$+$iGQ;_(B
 
   (define-key map [?\C-0] 'skk-isearch-start-henkan)
   (define-key map [?\C-1] 'skk-isearch-start-henkan)
@@ -382,7 +383,7 @@ Optional argument PREFIX is appended if given."
   ;;
   map)
 
-
+
 ;;
 ;; wrapper functions
 ;;
@@ -413,8 +414,8 @@ Optional argument PREFIX is appended if given."
                 ;; some command refers them.
                 (let* ((keys (read-key-sequence nil))
                        (this-command (key-binding keys))
-                       ;; 直後の command-execute() にて、skk-insert() 経由で
-                       ;; skk-dcomp-multiple-show() が実行されるとエラーとなってしまう
+                       ;; $BD>8e$N(B command-execute() $B$K$F!"(Bskk-insert() $B7PM3$G(B
+                       ;; skk-dcomp-multiple-show() $B$,<B9T$5$l$k$H%(%i!<$H$J$C$F$7$^$&(B
                        skk-dcomp-multiple-activate)
                   (setq last-command-event (aref keys (1- (length keys))))
                   (command-execute this-command))
@@ -449,7 +450,7 @@ If the conversion is in progress and no string is fixed, just return nil."
       ;; update echo area.
       (skk-isearch-incomplete-message))))
 
-
+
 ;;
 ;; regexp search supports.
 ;;
@@ -491,7 +492,7 @@ If the current mode is different from previous, remove it first."
    (skk-isearch-search-string-regexp string)
    string))
 
-
+
 ;;
 ;; interactive functions.
 ;;
@@ -547,7 +548,7 @@ If the current mode is different from previous, remove it first."
     ;;     [cl-struct-isearch--state "tes" "[aa] tes" 195 195 t ..]
     ;;     [cl-struct-isearch--state "te" "[aa] te" 102 102 t ..]
     ;;     [cl-struct-isearch--state "t" "[aa] t" 92 92 t ..]
-    ;;     [cl-struct-isearch--state "" "[か] " 78 t t ..]
+    ;;     [cl-struct-isearch--state "" "[$B$+(B] " 78 t t ..]
     (let* ((cmd (nth 1 isearch-cmds))
            (oldmsg (if (null cmd) "" (aref cmd 2)))
            (prompt (skk-isearch-mode-string))
@@ -555,10 +556,10 @@ If the current mode is different from previous, remove it first."
       (unless (or (null cmd)
                   (string-match (concat "^" (regexp-quote prompt))
                                 oldmsg))
-        ;; `skk-isearch-delete-char' が呼ばれる前に `skk-isearch-working-buffer'
-        ;; 内のモードが切り替えられていた場合、 isearch-cmds の第 2 要素につい
-        ;; て、 messege の内容を update しないと [DEL] したときのモードの表示が
-        ;; おかしくなる。
+        ;; `skk-isearch-delete-char' $B$,8F$P$l$kA0$K(B `skk-isearch-working-buffer'
+        ;; $BFb$N%b!<%I$,@Z$jBX$($i$l$F$$$?>l9g!"(B isearch-cmds $B$NBh(B 2 $BMWAG$K$D$$(B
+        ;; $B$F!"(B messege $B$NFbMF$r(B update $B$7$J$$$H(B [DEL] $B$7$?$H$-$N%b!<%I$NI=<($,(B
+        ;; $B$*$+$7$/$J$k!#(B
         (cl-do ((alist skk-isearch-mode-string-alist (cdr alist))
                 (msg nil (when (string-match
                                 (concat "^" (regexp-quote (cdar alist)))
@@ -655,16 +656,16 @@ If the current mode is different from previous, remove it first."
           (set skk-isearch-overriding-local-map local-map))))))
 
 (defun skk-isearch-start-henkan (&optional digit last-event)
-  "skk-isearch の▽モードで変換を開始する。
-このコマンドは digit-argument の 0-9 に対応するキーに割り当てられる。
-変換には skk-search-prog-list の代わりに skk-search-prog-list-{0-9}
-が参照される。"
+  "skk-isearch $B$N"&%b!<%I$GJQ49$r3+;O$9$k!#(B
+$B$3$N%3%^%s%I$O(B digit-argument $B$N(B 0-9 $B$KBP1~$9$k%-!<$K3d$jEv$F$i$l$k!#(B
+$BJQ49$K$O(B skk-search-prog-list $B$NBe$o$j$K(B skk-search-prog-list-{0-9}
+$B$,;2>H$5$l$k!#(B"
   (interactive)
   (let ((digit (or digit
                    (- (logand last-command-event ?\177) ?0)))
         (event (read-event (skk-isearch-incomplete-message))))
     (cond ((equal event ?\ )
-           ;; XEmacs では eq にはならない
+           ;; XEmacs $B$G$O(B eq $B$K$O$J$i$J$$(B
            (with-current-buffer (get-buffer-create skk-isearch-working-buffer)
              (when (eq skk-henkan-mode 'on)
                (skk-bind-last-command-char skk-start-henkan-char
@@ -675,15 +676,15 @@ If the current mode is different from previous, remove it first."
           (t
            (skk-unread-event event)
            (if (fboundp 'isearch-other-control-char) ; 2013-10-08 Remove functions.
-               (isearch-other-control-char))))))     ; GNU Emacs 24.4 から廃止
+               (isearch-other-control-char))))))     ; GNU Emacs 24.4 $B$+$iGQ;_(B
 
-
+
 ;;
 ;; advices.
 ;;
 
 (defadvice isearch-repeat (after skk-isearch-ad activate compile)
-  "`isearch-message' を適切に設定する。"
+  "`isearch-message' $B$rE,@Z$K@_Dj$9$k!#(B"
   (when skk-isearch-switch
     (unless (string-match (concat "^" (regexp-quote (skk-isearch-mode-string)))
                           isearch-message)
@@ -709,7 +710,7 @@ If the current mode is different from previous, remove it first."
           (isearch-update))))))
 
 (defadvice isearch-edit-string (before skk-isearch-ad activate compile)
-  "`isearch-message' を適切に設定する。"
+  "`isearch-message' $B$rE,@Z$K@_Dj$9$k!#(B"
   (when skk-isearch-switch
     (with-current-buffer (get-buffer-create skk-isearch-working-buffer)
       (setq skk-isearch-state (skk-isearch-current-mode))
@@ -719,7 +720,7 @@ If the current mode is different from previous, remove it first."
       (setq isearch-message (substring isearch-message (match-end 0))))))
 
 (defadvice isearch-search (before skk-isearch-ad activate compile)
-  "`isearch-message' を適切に設定する。"
+  "`isearch-message' $B$rE,@Z$K@_Dj$9$k!#(B"
   (when skk-isearch-switch
     (unless (or isearch-nonincremental
                 (string-match (concat "^" (regexp-quote
@@ -778,7 +779,7 @@ If the current mode is different from previous, remove it first."
 
 (put 'digit-argument 'isearch-command t)
 (if (fboundp 'isearch-other-control-char)         ; 2013-10-08 Remove functions
-    (put 'isearch-other-control-char 'isearch-command t)) ; GNU Emacs 24.4 から廃止
+    (put 'isearch-other-control-char 'isearch-command t)) ; GNU Emacs 24.4 $B$+$iGQ;_(B
 (put 'skk-isearch-delete-char 'isearch-command t)
 (put 'skk-isearch-exit 'isearch-command t)
 (put 'skk-isearch-keyboard-quit 'isearch-command t)

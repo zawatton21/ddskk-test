@@ -4,7 +4,8 @@
 ;;   Masatake YAMATO <masata-y@is.aist-nara.ac.jp>
 
 ;; Author: Masatake YAMATO <masata-y@is.aist-nara.ac.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 
 ;; This file is part of Daredevil SKK.
@@ -42,15 +43,15 @@
 
 ;;;###autoload
 (defun skk-cursor-current-color ()
-  ;; カレントバッファの SKK のモードから、カーソルの色を取得する。
+  ;; $B%+%l%s%H%P%C%U%!$N(B SKK $B$N%b!<%I$+$i!"%+!<%=%k$N?'$r<hF@$9$k!#(B
   (cond ((not (and skk-use-color-cursor
                    skk-mode))
          (skk-cursor-default-color))
 
-        ;; `skk-start-henkan' の中では、skk-j-mode フラグを立てながら、
-        ;; skk-abbrev-mode フラグも立てている (変換後、直後に入力する文
-        ;; 字が元の入力モードにて行われるように)。従い、skk-abbrev-mode
-        ;; フラグのチェックの優先度を上げる。
+        ;; `skk-start-henkan' $B$NCf$G$O!"(Bskk-j-mode $B%U%i%0$rN)$F$J$,$i!"(B
+        ;; skk-abbrev-mode $B%U%i%0$bN)$F$F$$$k(B ($BJQ498e!"D>8e$KF~NO$9$kJ8(B
+        ;; $B;z$,85$NF~NO%b!<%I$K$F9T$o$l$k$h$&$K(B)$B!#=>$$!"(Bskk-abbrev-mode
+        ;; $B%U%i%0$N%A%'%C%/$NM%@hEY$r>e$2$k!#(B
         (skk-abbrev-mode skk-cursor-abbrev-color)
 
         (skk-jisx0208-latin-mode skk-cursor-jisx0208-latin-color)
@@ -67,7 +68,8 @@
 
 ;;;###autoload
 (defun skk-cursor-off-1 ()
-  (ccc-set-cursor-color-buffer-local nil))
+  (when ccc-default-cursor-color
+    (ccc-set-cursor-color-buffer-local nil)))
 
 (provide 'skk-cursor)
 

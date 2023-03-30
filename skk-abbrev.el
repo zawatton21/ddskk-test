@@ -3,7 +3,8 @@
 ;; Copyright (C) 1999, 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 ;; Created: Oct. 23, 1999
 
@@ -25,9 +26,9 @@
 ;;; Commentary:
 
 ;; <how to install>
-;;   下記のフォームを ~/.emacs.d/init.el か ~/.skk に書いて下さい。
-;;   skk-search-prog-list については、全部を写す必要はありません。
-;;   (skk-abbrev-search) を含むように指定して下さい。
+;;   $B2<5-$N%U%)!<%`$r(B ~/.emacs.d/init.el $B$+(B ~/.skk $B$K=q$$$F2<$5$$!#(B
+;;   skk-search-prog-list $B$K$D$$$F$O!"A4It$r<L$9I,MW$O$"$j$^$;$s!#(B
+;;   (skk-abbrev-search) $B$r4^$`$h$&$K;XDj$7$F2<$5$$!#(B
 ;;
 ;; (setq skk-search-prog-list
 ;;       '((skk-search-jisyo-file skk-jisyo 0 t)
@@ -37,15 +38,15 @@
 ;;
 ;;
 ;; <how to work>
-;;   skk-abbrev-mode で変換したとき、補完したときに Emacs original の
-;;   abbrev mode を使って変換します。
+;;   skk-abbrev-mode $B$GJQ49$7$?$H$-!"Jd40$7$?$H$-$K(B Emacs original $B$N(B
+;;   abbrev mode $B$r;H$C$FJQ49$7$^$9!#(B
 ;;
-;; skk-look との優先順位は、
-;;  a.変換については、skk-search-prog-list の中で (skk-abbrev-search) を
-;;    先順位に書き指定して下さい。skk-abbrev-search の方が skk-look より軽い
-;;    です。
-;;  b.補完については、skk-use-look を指定していても、常に skk-abbrev-search
-;;    の方が先に検索されます。
+;; skk-look $B$H$NM%@h=g0L$O!"(B
+;;  a.$BJQ49$K$D$$$F$O!"(Bskk-search-prog-list $B$NCf$G(B (skk-abbrev-search) $B$r(B
+;;    $B@h=g0L$K=q$-;XDj$7$F2<$5$$!#(Bskk-abbrev-search $B$NJ}$,(B skk-look $B$h$j7Z$$(B
+;;    $B$G$9!#(B
+;;  b.$BJd40$K$D$$$F$O!"(Bskk-use-look $B$r;XDj$7$F$$$F$b!">o$K(B skk-abbrev-search
+;;    $B$NJ}$,@h$K8!:w$5$l$^$9!#(B
 
 ;;; Code:
 
@@ -85,9 +86,9 @@
              (setq c-word (skk-look-completion)))))
        (unless c-word
          (if skk-japanese-message-and-error
-             (error "\"%s\" で補完すべき見出し語は%sありません"
+             (error "\"%s\" $B$GJd40$9$Y$-8+=P$78l$O(B%s$B$"$j$^$;$s(B"
                     skk-completion-word
-                    (if first "" "他に"))
+                    (if first "" "$BB>$K(B"))
            (error "No %scompletions for \"%s\""
                   (if first "" "more ")
                   skk-completion-word)))

@@ -3,7 +3,8 @@
 ;; Copyright (C) 1999 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese
 
 ;; This file is part of Daredevil SKK.
@@ -23,26 +24,26 @@
 
 ;;; Commentary:
 
-;; 辞書中にない読みのブレた見出し語で変換した際に、内部で skk-correct-table
-;; を参照して正しい見出し語に置き換え候補を検索するプログラムです。
-;; skk-correct-search の引数に、ブレ補正後に検索したい辞書を、
-;; skk-search-prog-list と同じ要領でリストで表し、検索プログラムとともに記載
-;; して下さい。例えばこんな感じです。
+;; $B<-=qCf$K$J$$FI$_$N%V%l$?8+=P$78l$GJQ49$7$?:]$K!"FbIt$G(B skk-correct-table
+;; $B$r;2>H$7$F@5$7$$8+=P$78l$KCV$-49$(8uJd$r8!:w$9$k%W%m%0%i%`$G$9!#(B
+;; skk-correct-search $B$N0z?t$K!"%V%lJd@58e$K8!:w$7$?$$<-=q$r!"(B
+;; skk-search-prog-list $B$HF1$8MWNN$G%j%9%H$GI=$7!"8!:w%W%m%0%i%`$H$H$b$K5-:\(B
+;; $B$7$F2<$5$$!#Nc$($P$3$s$J46$8$G$9!#(B
 
 ;;   (skk-correct-search
 ;;    '((skk-search-jisyo-file skk-jisyo 0 t)
 ;;      (skk-search-server skk-aux-large-jisyo 10000)
 ;;      (skk-okuri-search)))
 
-;;     * 上記の例では、補正した見出し語に対し、個人辞書、サーバー、自動送り
-;;       処理して個人辞書という検索を行ないますが、どこかで補正後の見出し語
-;;       に対する候補が見つかればそれ以上は検索を行ないません。
+;;     * $B>e5-$NNc$G$O!"Jd@5$7$?8+=P$78l$KBP$7!"8D?M<-=q!"%5!<%P!<!"<+F0Aw$j(B
+;;       $B=hM}$7$F8D?M<-=q$H$$$&8!:w$r9T$J$$$^$9$,!"$I$3$+$GJd@58e$N8+=P$78l(B
+;;       $B$KBP$9$k8uJd$,8+$D$+$l$P$=$l0J>e$O8!:w$r9T$J$$$^$;$s!#(B
 
-;; これを更に skk-search-prog-list の中の適当な個所に入れましょう。下記のよ
-;; うに個人辞書検索直後に、一度見出し語を補正して個人辞書を検索し直し、サー
-;; バー検索後に見つからなかったら再度補正してサーバーを検索する、というのも
-;; 一案です。あるいは、個人の癖をもろに反映している個人辞書のブレ補正は止め
-;; て、サーバーのみ補正後検索をする、というのも良いでしょう。
+;; $B$3$l$r99$K(B skk-search-prog-list $B$NCf$NE,Ev$J8D=j$KF~$l$^$7$g$&!#2<5-$N$h(B
+;; $B$&$K8D?M<-=q8!:wD>8e$K!"0lEY8+=P$78l$rJd@5$7$F8D?M<-=q$r8!:w$7D>$7!"%5!<(B
+;; $B%P!<8!:w8e$K8+$D$+$i$J$+$C$?$i:FEYJd@5$7$F%5!<%P!<$r8!:w$9$k!"$H$$$&$N$b(B
+;; $B0l0F$G$9!#$"$k$$$O!"8D?M$NJJ$r$b$m$KH?1G$7$F$$$k8D?M<-=q$N%V%lJd@5$O;_$a(B
+;; $B$F!"%5!<%P!<$N$_Jd@58e8!:w$r$9$k!"$H$$$&$N$bNI$$$G$7$g$&!#(B
 
 ;;   (setq skk-search-prog-list
 ;;         '((skk-search-jisyo-file skk-jisyo 0 t)
@@ -53,24 +54,24 @@
 ;;        '((skk-search-server skk-aux-large-jisyo 10000)
 ;;          (skk-okuri-search)))))
 
-;; 現在のところ、skk-correct-table の各要素を最初から順に取り出し、ブレた見
-;; 出し語がないかどうかを調べて、ブレが見つかったらそれ以上 skk-correct-table
-;; の後半部分は見ない仕様になっています。
-;; とりあえず Naoki Wakamatsu <m5032106@u-aizu.ac.jp> さんが Message-Id:
-;;  <200001260732.QAA00868@ring.etl.go.jp> で列挙してくださった読みのブレを
-;; 単純に sort して、2 文字のもの, 1 文字のものという順で skk-correct-table
-;; に収めていますが、上記のように何か一つブレが見つかったらそれ以上はテーブル
-;; を見ていないので、このテーブルのブレの優先順位は検討した方が良いでしょう。
+;; $B8=:_$N$H$3$m!"(Bskk-correct-table $B$N3FMWAG$r:G=i$+$i=g$K<h$j=P$7!"%V%l$?8+(B
+;; $B=P$78l$,$J$$$+$I$&$+$rD4$Y$F!"%V%l$,8+$D$+$C$?$i$=$l0J>e(B skk-correct-table
+;; $B$N8eH>ItJ,$O8+$J$$;EMM$K$J$C$F$$$^$9!#(B
+;; $B$H$j$"$($:(B Naoki Wakamatsu <m5032106@u-aizu.ac.jp> $B$5$s$,(B Message-Id:
+;;  <200001260732.QAA00868@ring.etl.go.jp> $B$GNs5s$7$F$/$@$5$C$?FI$_$N%V%l$r(B
+;; $BC1=c$K(B sort $B$7$F!"(B2 $BJ8;z$N$b$N(B, 1 $BJ8;z$N$b$N$H$$$&=g$G(B skk-correct-table
+;; $B$K<}$a$F$$$^$9$,!">e5-$N$h$&$K2?$+0l$D%V%l$,8+$D$+$C$?$i$=$l0J>e$O%F!<%V%k(B
+;; $B$r8+$F$$$J$$$N$G!"$3$N%F!<%V%k$N%V%l$NM%@h=g0L$O8!F$$7$?J}$,NI$$$G$7$g$&!#(B
 
-;; 今後の改良のアイディアの一つとしては、変換条件に応じて見るブレと見ないブレ
-;; を作るのも良いかもしれません。例えば、このブレは送りあり変換のときだけしか
-;; 検索しない、などというものです。この辺りは実際に使ってみてご意見をお聞かせ
-;; 下さい。
+;; $B:#8e$N2~NI$N%"%$%G%#%"$N0l$D$H$7$F$O!"JQ49>r7o$K1~$8$F8+$k%V%l$H8+$J$$%V%l(B
+;; $B$r:n$k$N$bNI$$$+$b$7$l$^$;$s!#Nc$($P!"$3$N%V%l$OAw$j$"$jJQ49$N$H$-$@$1$7$+(B
+;; $B8!:w$7$J$$!"$J$I$H$$$&$b$N$G$9!#$3$NJU$j$O<B:]$K;H$C$F$_$F$40U8+$r$*J9$+$;(B
+;; $B2<$5$$!#(B
 
-;; なお、変換時に当初手で入力したブレた見出し語は、そのまま個人辞書に取り込ま
-;; れますが、これは仕様です。何故なら、確定時には、確定された候補が、見出し語
-;; のブレを補正して見つけた候補かどうかを確認する術が現在のところ提供されてい
-;; ないからです。
+;; $B$J$*!"JQ49;~$KEv=i<j$GF~NO$7$?%V%l$?8+=P$78l$O!"$=$N$^$^8D?M<-=q$K<h$j9~$^(B
+;; $B$l$^$9$,!"$3$l$O;EMM$G$9!#2?8N$J$i!"3NDj;~$K$O!"3NDj$5$l$?8uJd$,!"8+=P$78l(B
+;; $B$N%V%l$rJd@5$7$F8+$D$1$?8uJd$+$I$&$+$r3NG'$9$k=Q$,8=:_$N$H$3$mDs6!$5$l$F$$(B
+;; $B$J$$$+$i$G$9!#(B
 
 ;;; Code:
 
@@ -85,40 +86,40 @@
 (defvar skk-correct-table
   '(
     ;; 2 chars
-    ("おー" . "おう")           ; 大きい
-    ("おー" . "おお")
-    ("おう" . "おお")
-    ("とう" . "とお")           ; 通る
-    ("どう" . "どお")
-    ("やう" . "よう")           ; やうやk /漸/ -> ようやk /漸/
-    ("らう" . "ろう")           ; らうs /労/ -> ろうs /労/
+    ("$B$*!<(B" . "$B$*$&(B")           ; $BBg$-$$(B
+    ("$B$*!<(B" . "$B$*$*(B")
+    ("$B$*$&(B" . "$B$*$*(B")
+    ("$B$H$&(B" . "$B$H$*(B")           ; $BDL$k(B
+    ("$B$I$&(B" . "$B$I$*(B")
+    ("$B$d$&(B" . "$B$h$&(B")           ; $B$d$&$d(Bk /$BA2(B/ -> $B$h$&$d(Bk /$BA2(B/
+    ("$B$i$&(B" . "$B$m$&(B")           ; $B$i$&(Bs /$BO+(B/ -> $B$m$&(Bs /$BO+(B/
     ;; 1 char
-    ("い" . "ゆ")           ; いきどm /行き止/ -> ゆきどm /行き止/
-    ("い" . "よ")           ; いi /良/ -> よi /良/
-    ("お" . "う")           ; ほおt /放/ -> ほうt /放/
-    ("お" . "ほ")           ; よそおu /裝/ -> よそほu /裝/
-    ("お" . "を")           ; くちおs /口惜/ -> くちをs /口惜/
-    ("か" . "が")           ; まぬかr /免/ -> まぬがr /免/
-    ("ざ" . "さ")           ; はだざむk /肌寒/ -> はださむi /肌寒/
-    ("じ" . "ぢ")           ; みじかn /身近/ -> みぢかn /身近/
-    ("そ" . "ぞ")           ; みぎそろe /右揃/ -> みぎぞろe /右揃/
-    ("た" . "だ")           ; やくたt /役立/ -> やくだt /役立/
-    ("づ" . "ず")           ; わづらw /煩/ -> わずらw /煩/ ; むづかs /難/ -> むずかs /難/
-    ("と" . "ど")           ; もとr /戻/ -> もどr /戻/
-    ("は" . "わ")           ; めざはr /目障/ -> めざわr /目障/
-    ("ば" . "は")           ; はらi /払/  -> ばらi /払/
-    ("ぱ" . "は")           ; ぱt /張/ -> はt /張/
-    ("ひ" . "い")           ; ふがひなi /腑甲斐無/ -> ふがいなi /腑甲斐無/
-    ("ひ" . "び")           ; りょうひらk /両開/ -> りょうびらk /両開/
-    ("ふ" . "ぶ")           ; ふかk /深/ -> ぶかk /深/
-    ("ぶ" . "ふ")           ; けぶかi /毛深/ -> けふかi /毛深/
-    ("む" . "ん")           ; やむごとなs /止事無/ -> やんごとなs /止事無/
-    ("ゆ" . "い")           ; ゆきどm /行き止/ -> いきどm /行き止/
-    ("よ" . "い")           ; よi /良/ -> いi /良/
-    ("ゐ" . "い")           ; ゐr /居/ -> いr /居/
+    ("$B$$(B" . "$B$f(B")           ; $B$$$-$I(Bm /$B9T$-;_(B/ -> $B$f$-$I(Bm /$B9T$-;_(B/
+    ("$B$$(B" . "$B$h(B")           ; $B$$(Bi /$BNI(B/ -> $B$h(Bi /$BNI(B/
+    ("$B$*(B" . "$B$&(B")           ; $B$[$*(Bt /$BJ|(B/ -> $B$[$&(Bt /$BJ|(B/
+    ("$B$*(B" . "$B$[(B")           ; $B$h$=$*(Bu /$Bjf(B/ -> $B$h$=$[(Bu /$Bjf(B/
+    ("$B$*(B" . "$B$r(B")           ; $B$/$A$*(Bs /$B8}@K(B/ -> $B$/$A$r(Bs /$B8}@K(B/
+    ("$B$+(B" . "$B$,(B")           ; $B$^$L$+(Br /$BLH(B/ -> $B$^$L$,(Br /$BLH(B/
+    ("$B$6(B" . "$B$5(B")           ; $B$O$@$6$`(Bk /$BH)4((B/ -> $B$O$@$5$`(Bi /$BH)4((B/
+    ("$B$8(B" . "$B$B(B")           ; $B$_$8$+(Bn /$B?H6a(B/ -> $B$_$B$+(Bn /$B?H6a(B/
+    ("$B$=(B" . "$B$>(B")           ; $B$_$.$=$m(Be /$B1&B7(B/ -> $B$_$.$>$m(Be /$B1&B7(B/
+    ("$B$?(B" . "$B$@(B")           ; $B$d$/$?(Bt /$BLrN)(B/ -> $B$d$/$@(Bt /$BLrN)(B/
+    ("$B$E(B" . "$B$:(B")           ; $B$o$E$i(Bw /$BHQ(B/ -> $B$o$:$i(Bw /$BHQ(B/ ; $B$`$E$+(Bs /$BFq(B/ -> $B$`$:$+(Bs /$BFq(B/
+    ("$B$H(B" . "$B$I(B")           ; $B$b$H(Br /$BLa(B/ -> $B$b$I(Br /$BLa(B/
+    ("$B$O(B" . "$B$o(B")           ; $B$a$6$O(Br /$BL\>c(B/ -> $B$a$6$o(Br /$BL\>c(B/
+    ("$B$P(B" . "$B$O(B")           ; $B$O$i(Bi /$BJ'(B/  -> $B$P$i(Bi /$BJ'(B/
+    ("$B$Q(B" . "$B$O(B")           ; $B$Q(Bt /$BD%(B/ -> $B$O(Bt /$BD%(B/
+    ("$B$R(B" . "$B$$(B")           ; $B$U$,$R$J(Bi /$Bg%9CHeL5(B/ -> $B$U$,$$$J(Bi /$Bg%9CHeL5(B/
+    ("$B$R(B" . "$B$S(B")           ; $B$j$g$&$R$i(Bk /$BN>3+(B/ -> $B$j$g$&$S$i(Bk /$BN>3+(B/
+    ("$B$U(B" . "$B$V(B")           ; $B$U$+(Bk /$B?<(B/ -> $B$V$+(Bk /$B?<(B/
+    ("$B$V(B" . "$B$U(B")           ; $B$1$V$+(Bi /$BLS?<(B/ -> $B$1$U$+(Bi /$BLS?<(B/
+    ("$B$`(B" . "$B$s(B")           ; $B$d$`$4$H$J(Bs /$B;_;vL5(B/ -> $B$d$s$4$H$J(Bs /$B;_;vL5(B/
+    ("$B$f(B" . "$B$$(B")           ; $B$f$-$I(Bm /$B9T$-;_(B/ -> $B$$$-$I(Bm /$B9T$-;_(B/
+    ("$B$h(B" . "$B$$(B")           ; $B$h(Bi /$BNI(B/ -> $B$$(Bi /$BNI(B/
+    ("$B$p(B" . "$B$$(B")           ; $B$p(Br /$B5o(B/ -> $B$$(Br /$B5o(B/
     )
-  "*見出し語変換のためのテーブル。
-各要素のデータ構造は、\(\"読みがぶれた見出し語\" . \"正しい見出し語\"\)。")
+  "*$B8+=P$78lJQ49$N$?$a$N%F!<%V%k!#(B
+$B3FMWAG$N%G!<%?9=B$$O!"(B\(\"$BFI$_$,$V$l$?8+=P$78l(B\" . \"$B@5$7$$8+=P$78l(B\"\)$B!#(B")
 
 ;; internal variable
 (defvar skk-correct-current-table nil)
@@ -136,7 +137,7 @@
     v))
 
 (defun skk-correct (string)
-  ;; STRING 中にブレがあったらその部分を正しい文字列に置き換えて返す。
+  ;; STRING $BCf$K%V%l$,$"$C$?$i$=$NItJ,$r@5$7$$J8;zNs$KCV$-49$($FJV$9!#(B
   (let (v)
     (save-match-data
       (while (and (not v) skk-correct-current-table)

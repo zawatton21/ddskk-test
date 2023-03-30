@@ -2,10 +2,11 @@
 ;; Copyright (C) 1992, 1996, 1998
 ;; Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
 ;; Copyright (C) 1999, 2000, 2001, 2002
-;; SKK Development Team <skk@ring.gr.jp>
+;; SKK Development Team
 ;;
 ;; Author: Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese
 ;;
 ;; This is the tutorial text for Daredevil SKK version 11.1 and and later
@@ -33,481 +34,481 @@ principle, you can master the usage of SKK quickly.  This tutorial explains
 SKK assuming that you know enough about Emacs.
 
 You will learn the usage of SKK by solving problems.  The last line of each
-Problem buffer will begin with 【>>】.  You have to make line in the Solution
+Problem buffer will begin with $B!Z(B>>$B![(B.  You have to make line in the Solution
 buffer as same as the last line of each Problem buffer.  When you have
-done, type 『C-x n』(Next).  (『C-x』 means <control-x>, that is, typing
-『x』 key holding the control key.)  If your solution is correct, the
+done, type $B!X(BC-x n$B!Y(B(Next).  ($B!X(BC-x$B!Y(B means <control-x>, that is, typing
+$B!X(Bx$B!Y(B key holding the control key.)  If your solution is correct, the
 buffers will be updated and you will proceed to the next problem.
 
-Type 『C-x q』(Quit) if you wish to quit the tutorial.  Type 『C-x s』
+Type $B!X(BC-x q$B!Y(B(Quit) if you wish to quit the tutorial.  Type $B!X(BC-x s$B!Y(B
 (Skip) if you wish to skip the problem.
 
 >> (concat "My name is " (skktut-user-name) ".")
 ----
-== Invoking SKK, かな mode ==
+== Invoking SKK, $B$+$J(B mode ==
 
-In the following, if you encounter lines beginning with 【!!】, follow the
+In the following, if you encounter lines beginning with $B!Z(B!!$B![(B, follow the
 instructions there.
 
-You can invoke SKK by typing『C-x C-j』.  Let's try that.
+You can invoke SKK by typing$B!X(BC-x C-j$B!Y(B.  Let's try that.
 
-!! Type 『C-x C-j』.
+!! Type $B!X(BC-x C-j$B!Y(B.
 
 Note that a part of the mode line which shows minor modes of the Solution
-buffer is now 【かな】.  This mode is called かな mode.  In this mode,
-lowercase Latin letters are interpreted as Romazi (ローマ字) and will be
+buffer is now $B!Z$+$J![(B.  This mode is called $B$+$J(B mode.  In this mode,
+lowercase Latin letters are interpreted as Romazi ($B%m!<%^;z(B) and will be
 converted to the corresponding hirakanas.  For instance, if you type
-『aiueo』, you will get 【あいうえお】.  (In かな mode, don't use
+$B!X(Baiueo$B!Y(B, you will get $B!Z$"$$$&$($*![(B.  (In $B$+$J(B mode, don't use
 uppercase Latin characters until we explain about them.)
 
->> かきくけこ
+>> $B$+$-$/$1$3(B
 ----
-== From かな mode to ASCII mode ==
+== From $B$+$J(B mode to ASCII mode ==
 
-You can move from かな mode to ASCII mode by typing 『l』(for Latin).
+You can move from $B$+$J(B mode to ASCII mode by typing $B!X(Bl$B!Y(B(for Latin).
 
-!! Type 『l』 now.
+!! Type $B!X(Bl$B!Y(B now.
 
 Note also how the mode line changed.
 
 In ASCII mode, keys will be interpreted as ordinary Emacs commands.  It is
 almost identical with the state you were in just before you invoked SKK,
 and we will explain the tiny difference soon.  In ASCII mode, you will see
-【SKK】 in the mode line, and this is to indicate that SKK has been
+$B!Z(BSKK$B![(B in the mode line, and this is to indicate that SKK has been
 invoked in this buffer.
 
 >> Now we are in ASCII mode.
 ----
-== From ASCII mode to かな mode ==
+== From ASCII mode to $B$+$J(B mode ==
 
-You can move from ASCII mode to かな mode by typing 『C-j』.  In summary:
+You can move from ASCII mode to $B$+$J(B mode by typing $B!X(BC-j$B!Y(B.  In summary:
 
-	 l  : かな --> ASCII
-	C-j : ASCII --> かな
+	 l  : $B$+$J(B --> ASCII
+	C-j : ASCII --> $B$+$J(B
 
->> ASCII から かな
+>> ASCII $B$+$i(B $B$+$J(B
 ----
-== カナ mode ==
+== $B%+%J(B mode ==
 
-Input of katakana (カタカナ) is done in カナ mode.  You can move
-between かな mode and カナ mode by typing 『q』(for qana = かな/カナ
+Input of katakana ($B%+%?%+%J(B) is done in $B%+%J(B mode.  You can move
+between $B$+$J(B mode and $B%+%J(B mode by typing $B!X(Bq$B!Y(B(for qana = $B$+$J(B/$B%+%J(B
 (^_^)).
 
-	q : かな --> カナ
-	q : カナ --> かな
+	q : $B$+$J(B --> $B%+%J(B
+	q : $B%+%J(B --> $B$+$J(B
 
->> ひらかな から カタカナ そしてまた ひらかな
+>> $B$R$i$+$J(B $B$+$i(B $B%+%?%+%J(B $B$=$7$F$^$?(B $B$R$i$+$J(B
 ----
-== How to input 【ん】 ==
+== How to input $B!Z$s![(B ==
 
-【ん】 can be inputted by 『nn』 or 『n'』.  If it will be followed by a
-consonant except 『n』 and 『y』, you may simply type 『n』.
+$B!Z$s![(B can be inputted by $B!X(Bnn$B!Y(B or $B!X(Bn'$B!Y(B.  If it will be followed by a
+consonant except $B!X(Bn$B!Y(B and $B!X(By$B!Y(B, you may simply type $B!X(Bn$B!Y(B.
 
->> かなかんじへんかん
+>> $B$+$J$+$s$8$X$s$+$s(B
 ----
-== How to imput small ひらかな characters==
+== How to imput small $B$R$i$+$J(B characters==
 
-You can enter each small hirakana character by prefixing 『x』 to its
+You can enter each small hirakana character by prefixing $B!X(Bx$B!Y(B to its
 Romazi representation, e.g.:
 
-	『xa』==>【ぁ】、『xya』==>【ゃ】
+	$B!X(Bxa$B!Y(B==>$B!Z$!![!"!X(Bxya$B!Y(B==>$B!Z$c![(B
 
 However, in most cases, you can enter them like this:
 
-	『chotto』==>【ちょっと】、『tyotto』==>【ちょっと】
+	$B!X(Bchotto$B!Y(B==>$B!Z$A$g$C$H![!"!X(Btyotto$B!Y(B==>$B!Z$A$g$C$H![(B
 
->> あっ そうだったのか
+>> $B$"$C(B $B$=$&$@$C$?$N$+(B
 ----
 == Input of long vowel ==
 
 A long vowel may be entered by using:
 
-	『-』==>【ー】
+	$B!X(B-$B!Y(B==>$B!Z!<![(B
 
->> えーと
+>> $B$(!<$H(B
 ----
-== 全英 (zenei) mode ==
+== $BA41Q(B (zenei) mode ==
 
-Zenkaku (全角, square shaped) character strings like 【ＳＫＫ】 may be
-entered in 全英 (zenei) mode.  In 全英 mode, Latin characters 『a』-『z』
-and 『A』-『Z』 are input as square shaped alphabets (normally occupying
-double horizontal space compared to ASCII characters).  From either かな
-mode or カナ mode, you can move to 全英 mode by typing 『L』(for Large
-sized Latin).  From 全英 mode, you can return to かな/カナ mode by 『C-j』.
+Zenkaku ($BA43Q(B, square shaped) character strings like $B!Z#S#K#K![(B may be
+entered in $BA41Q(B (zenei) mode.  In $BA41Q(B mode, Latin characters $B!X(Ba$B!Y(B-$B!X(Bz$B!Y(B
+and $B!X(BA$B!Y(B-$B!X(BZ$B!Y(B are input as square shaped alphabets (normally occupying
+double horizontal space compared to ASCII characters).  From either $B$+$J(B
+mode or $B%+%J(B mode, you can move to $BA41Q(B mode by typing $B!X(BL$B!Y(B(for Large
+sized Latin).  From $BA41Q(B mode, you can return to $B$+$J(B/$B%+%J(B mode by $B!X(BC-j$B!Y(B.
 
-	 L  : かな/カナ -->   全英
-	C-j :   全英    --> かな/カナ
+	 L  : $B$+$J(B/$B%+%J(B -->   $BA41Q(B
+	C-j :   $BA41Q(B    --> $B$+$J(B/$B%+%J(B
 
->> ＳＫＫがつかえるのはＥｍａｃｓだけです
+>> $B#S#K#K$,$D$+$($k$N$O#E#m#a#c#s$@$1$G$9(B
 ----
 == Summary up to this point ==
 
-You can invoke SKK by 『C-x C-j』.  SKK has four modes:
+You can invoke SKK by $B!X(BC-x C-j$B!Y(B.  SKK has four modes:
 
-	ASCII mode, かな mode, カナ mode and 全英 mode
+	ASCII mode, $B$+$J(B mode, $B%+%J(B mode and $BA41Q(B mode
 
 You can change modes as follows:
 
-	ASCII  == C-j ==>  かな/カナ  == l ==> ASCII
+	ASCII  == C-j ==>  $B$+$J(B/$B%+%J(B  == l ==> ASCII
 
-	かな <== q ==> カナ
+	$B$+$J(B <== q ==> $B%+%J(B
 
-	全英   == C-j ==>  かな/カナ  == L ==> 全英
+	$BA41Q(B   == C-j ==>  $B$+$J(B/$B%+%J(B  == L ==> $BA41Q(B
 
->> ＳＫＫには ASCIIモード と かなモード と カナモード と ぜんえいモード がある
+>> $B#S#K#K$K$O(B ASCII$B%b!<%I(B $B$H(B $B$+$J%b!<%I(B $B$H(B $B%+%J%b!<%I(B $B$H(B $B$<$s$($$%b!<%I(B $B$,$"$k(B
 ----
-== かな mode ==
+== $B$+$J(B mode ==
 
-In かな mode, the following keys have special meanings.  Other keys such
-as 『C-a』, 『%』 are interpreted as ordinary Emacs keys.  This is also
-the case for カナ mode.
+In $B$+$J(B mode, the following keys have special meanings.  Other keys such
+as $B!X(BC-a$B!Y(B, $B!X(B%$B!Y(B are interpreted as ordinary Emacs keys.  This is also
+the case for $B%+%J(B mode.
 
 	l, q, x and L		Already explained.
-	Other lowercases	Interpreted as Romazi, and entered as かな.
+	Other lowercases	Interpreted as Romazi, and entered as $B$+$J(B.
 	Other uppercases	Entering kana-to-kanji conversion mode.
 	/			Entering ASCII conversion mode.
 				(To be explained later.)
-	,			Inserting 【、】.
-	.			Inserting 【。】.
-	[ and ]			Inserting 【「】 and 【」】 respectively.
+	,			Inserting $B!Z!"![(B.
+	.			Inserting $B!Z!#![(B.
+	[ and ]			Inserting $B!Z!V![(B and $B!Z!W![(B respectively.
 
-!! Try typing 『,』『.』『[』 and 『]』.
+!! Try typing $B!X(B,$B!Y!X(B.$B!Y!X(B[$B!Y(B and $B!X(B]$B!Y(B.
 
->> 「あ、そうだったのか。」
+>> $B!V$"!"$=$&$@$C$?$N$+!#!W(B
 ----
 == Kana-to-kanji conversion ==
 
-Kana-to-kanji conversion is done in かな mode.
+Kana-to-kanji conversion is done in $B$+$J(B mode.
 
-!! If you are not in かな mode now, change mode to かな mode, and type
-!! 『Kanji』.  (Note that the first character is an uppercase character.)
+!! If you are not in $B$+$J(B mode now, change mode to $B$+$J(B mode, and type
+!! $B!X(BKanji$B!Y(B.  (Note that the first character is an uppercase character.)
 
-The buffer should become 【▽かんじ】.  You are in ▽ mode now.
+The buffer should become $B!Z"&$+$s$8![(B.  You are in $B"&(B mode now.
 
 !! Now hit <space> key.
 
-You have: 【▼漢字】.  You are in ▼ mode now.
+You have: $B!Z"'4A;z![(B.  You are in $B"'(B mode now.
 
-!! Type 『C-j』.
+!! Type $B!X(BC-j$B!Y(B.
 
 You have solved the following problem!
 
->> 漢字
+>> $B4A;z(B
 ----
 Let's try another one.
 
-!! If you are not in かな mode now, change mode to かな mode, type
-!! 『Kanji』, and then hit <space> key twice.
+!! If you are not in $B$+$J(B mode now, change mode to $B$+$J(B mode, type
+!! $B!X(BKanji$B!Y(B, and then hit <space> key twice.
 
 The buffer should change as follows:
 
-	【▽かんじ】 ==> 【▼漢字】 ==> 【▼幹事】
+	$B!Z"&$+$s$8![(B ==> $B!Z"'4A;z![(B ==> $B!Z"'44;v![(B
 
-!! Type 『C-j』.
+!! Type $B!X(BC-j$B!Y(B.
 
 You've got the solution!
 
->> 幹事
+>> $B44;v(B
 ----
-This one is slightly more complicated, so type carefully.  『□』 will
-denote a <space> key.  If you see 『□□』, for instance, type <space> key
+This one is slightly more complicated, so type carefully.  $B!X""!Y(B will
+denote a <space> key.  If you see $B!X""""!Y(B, for instance, type <space> key
 twice.
 
-!! Change mode to かな mode if necessary and type
-!! 『Kanji□□noNyuuryoku□haYoui□desu.』.
+!! Change mode to $B$+$J(B mode if necessary and type
+!! $B!X(BKanji$B""""(BnoNyuuryoku$B""(BhaYoui$B""(Bdesu.$B!Y(B.
 
->> 漢字の入力は容易です。
+>> $B4A;z$NF~NO$OMF0W$G$9!#(B
 ----
-!! In かな mode, type 『kanji』.
+!! In $B$+$J(B mode, type $B!X(Bkanji$B!Y(B.
 
-You get 【かんじ】.  Suppose, however, that you should have typed 『Kanji』.
-You can delete three characters backwards and type 『Kanji』 in such a case.
+You get $B!Z$+$s$8![(B.  Suppose, however, that you should have typed $B!X(BKanji$B!Y(B.
+You can delete three characters backwards and type $B!X(BKanji$B!Y(B in such a case.
 But, there is also the following alternative way to achieve the same effect.
 
-!! Type 『C-b』(backward-char) three times.
+!! Type $B!X(BC-b$B!Y(B(backward-char) three times.
 
-The point is now on 【か】.
+The point is now on $B!Z$+![(B.
 
-!! Type 『Q』.
+!! Type $B!X(BQ$B!Y(B.
 
-【▽】 is inserted before 【か】, and you are in ▽ mode.
+$B!Z"&![(B is inserted before $B!Z$+![(B, and you are in $B"&(B mode.
 
-!! Type 『C-e』(end-of-line), 『□』(<space>) and 『C-j』.
+!! Type $B!X(BC-e$B!Y(B(end-of-line), $B!X""!Y(B(<space>) and $B!X(BC-j$B!Y(B.
 
->> 漢字
+>> $B4A;z(B
 ----
-== Sub modes of かな mode ==
+== Sub modes of $B$+$J(B mode ==
 
-かな mode is divided into two submodes: hirakana no-conversion mode and
+$B$+$J(B mode is divided into two submodes: hirakana no-conversion mode and
 conversion to Kanji mode.  Hirakana no-conversion mode will be referred to
-as ■ mode.  Conversion to kanji mode is further divided into two modes:
-▽ mode and ▼ mode.  Namely, かな mode is divided into three submodes:
+as $B"#(B mode.  Conversion to kanji mode is further divided into two modes:
+$B"&(B mode and $B"'(B mode.  Namely, $B$+$J(B mode is divided into three submodes:
 
-	■ mode, ▽ mode, ▼ mode
+	$B"#(B mode, $B"&(B mode, $B"'(B mode
 
-In ■ mode, lowercase Romazi characters you type are converted to
+In $B"#(B mode, lowercase Romazi characters you type are converted to
 hirakanas and are inserted into the buffer.  These hirakanas are not
-converted to Kanji anymore.  ■ mode is the basic mode of SKK and you
+converted to Kanji anymore.  $B"#(B mode is the basic mode of SKK and you
 should remember this point.
 
->> ひらかなかくていにゅうりょくは、なんども、れんしゅうしてきました。
+>> $B$R$i$+$J$+$/$F$$$K$e$&$j$g$/$O!"$J$s$I$b!"$l$s$7$e$&$7$F$-$^$7$?!#(B
 ----
-== ▽ mode and ▼ mode ==
+== $B"&(B mode and $B"'(B mode ==
 
 Kana-to-kanji conversion in SKK is done as follows.
-	1 Determine the string which is the source of conversion. (▽ mode)
-	2 Show candidates of conversion for the source. (▼ mode)
-	3 Select the candidate you want and finish the conversion. (▼ mode)
-As we have already seen, in the case of entering 【漢字】, the source
-string of the conversion is 【かんじ】.  If you type 『Kanji』, 【かんじ】
-will be entered in ▽ mode.  If you hit <space> in ▽ mode, the string
-between 【▽】 and the point becomes the source of the conversion.  At
-the same time, the mode becomes ▼ mode and the first candidate will be
-shown.  In ▼ mode, <space> displays the next candidate.  If you type
-『C-j』 in ▼ mode, the current candidate becomes the final result of the
-conversion, and the mode becomes ■ mode.
+	1 Determine the string which is the source of conversion. ($B"&(B mode)
+	2 Show candidates of conversion for the source. ($B"'(B mode)
+	3 Select the candidate you want and finish the conversion. ($B"'(B mode)
+As we have already seen, in the case of entering $B!Z4A;z![(B, the source
+string of the conversion is $B!Z$+$s$8![(B.  If you type $B!X(BKanji$B!Y(B, $B!Z$+$s$8![(B
+will be entered in $B"&(B mode.  If you hit <space> in $B"&(B mode, the string
+between $B!Z"&![(B and the point becomes the source of the conversion.  At
+the same time, the mode becomes $B"'(B mode and the first candidate will be
+shown.  In $B"'(B mode, <space> displays the next candidate.  If you type
+$B!X(BC-j$B!Y(B in $B"'(B mode, the current candidate becomes the final result of the
+conversion, and the mode becomes $B"#(B mode.
 
-Hint: 洗濯(せんたく), 選択(せんたく)
+Hint: $B@vBu(B($B$;$s$?$/(B), $BA*Br(B($B$;$s$?$/(B)
 
->> 「洗濯」を選択する。
+>> $B!V@vBu!W$rA*Br$9$k!#(B
 ----
 Modes related to SKK usually change as follows.
 
-	■ == Uppercase char. ==> ▽ == <space> ==> ▼ == 『C-j』 ==> ■
+	$B"#(B == Uppercase char. ==> $B"&(B == <space> ==> $B"'(B == $B!X(BC-j$B!Y(B ==> $B"#(B
 
-	▽ == 『C-j』 ==> ■
+	$B"&(B == $B!X(BC-j$B!Y(B ==> $B"#(B
 
-is used to go back to ■ mode when you enter ▽ mode by mistake.
+is used to go back to $B"#(B mode when you enter $B"&(B mode by mistake.
 
-	▼ == <return> and all the pritable keys  ==> ■
+	$B"'(B == <return> and all the pritable keys  ==> $B"#(B
 
 means that these keys automatically select the current candidate as the
-final result of conversion.  This action is called 確定 (Kakutei).  Let
+final result of conversion.  This action is called $B3NDj(B (Kakutei).  Let
 us try this.
 
-!! Type 『Kyouto□,Oosaka□,Koube□.』 in ■ mode.  Recall that
-!! 『□』 denotes a <space> key.
+!! Type $B!X(BKyouto$B""(B,Oosaka$B""(B,Koube$B""(B.$B!Y(B in $B"#(B mode.  Recall that
+!! $B!X""!Y(B denotes a <space> key.
 
->> 京都、大阪、神戸。
+>> $B5~ET!"Bg:e!"?@8M!#(B
 ----
-We have learned that, in ▼ mode, <return> and all the printable keys
-cause 確定 as side effects.
+We have learned that, in $B"'(B mode, <return> and all the printable keys
+cause $B3NDj(B as side effects.
 
-Moreover, if you type any uppercase character except 『L』, the
-current candidate becomes the final result and enter ▽ mode.
+Moreover, if you type any uppercase character except $B!X(BL$B!Y(B, the
+current candidate becomes the final result and enter $B"&(B mode.
 
-	▼ == uppercase except 『L』 ==> ▽
+	$B"'(B == uppercase except $B!X(BL$B!Y(B ==> $B"&(B
 
-!! Type 『Kana□Kanji□Henkan□.』 in ■ mode.
+!! Type $B!X(BKana$B""(BKanji$B""(BHenkan$B""(B.$B!Y(B in $B"#(B mode.
 
->> 仮名漢字変換。
+>> $B2>L>4A;zJQ49!#(B
 ----
-!! Type 『Kanakanjihenkan□』 in ■ mode.
+!! Type $B!X(BKanakanjihenkan$B""!Y(B in $B"#(B mode.
 
-Your buffer becomes 【▼かなかんじへんかん】 and you should see the prompt:
-	かなかんじへんかん
-in the minibuffer.  In ▼ mode, the source string to be converted is
-already fixed.  In our case, SKK tried to convert the string 【かなかんじ
-へんかん】, but could not find it in 辞書. (i.e., dictionary)
+Your buffer becomes $B!Z"'$+$J$+$s$8$X$s$+$s![(B and you should see the prompt:
+	$B$+$J$+$s$8$X$s$+$s(B
+in the minibuffer.  In $B"'(B mode, the source string to be converted is
+already fixed.  In our case, SKK tried to convert the string $B!Z$+$J$+$s$8(B
+$B$X$s$+$s![(B, but could not find it in $B<-=q(B. (i.e., dictionary)
 In such a case, SKK automatically enters register-a-word-to-dictionary
-mode (this mode will be referred to as 辞書登録 mode).
-  In 辞書登録 mode, the string for which the conversion failed becomes the
-key word (見出し語, midashigo) for the new entry to be registered to 辞書.
+mode (this mode will be referred to as $B<-=qEPO?(B mode).
+  In $B<-=qEPO?(B mode, the string for which the conversion failed becomes the
+key word ($B8+=P$78l(B, midashigo) for the new entry to be registered to $B<-=q(B.
 
 !! Verify that the cursor is in the minibuffer, and type
-!! 『Kana□Kanji□Henkan□』 followed by <return> key.
+!! $B!X(BKana$B""(BKanji$B""(BHenkan$B""!Y(B followed by <return> key.
 
->> 仮名漢字変換
+>> $B2>L>4A;zJQ49(B
 ----
 We have just added the line
 
-	かなかんじへんかん /仮名漢字変換/
+	$B$+$J$+$s$8$X$s$+$s(B /$B2>L>4A;zJQ49(B/
 
-to the 辞書 buffer.  We can verify this as follows.
+to the $B<-=q(B buffer.  We can verify this as follows.
 
-!! Type 『Kanakanjihenkan□』 in ■ mode, and
-!! 確定 (Kakutei, finalize) it by 『C-j』.
+!! Type $B!X(BKanakanjihenkan$B""!Y(B in $B"#(B mode, and
+!! $B3NDj(B (Kakutei, finalize) it by $B!X(BC-j$B!Y(B.
 
->> 仮名漢字変換
+>> $B2>L>4A;zJQ49(B
 ----
-== empty 登録 (registration) ==
+== empty $BEPO?(B (registration) ==
 
-If you enter 辞書登録 mode by mistake, you can abort it by hitting 『C-g』
+If you enter $B<-=qEPO?(B mode by mistake, you can abort it by hitting $B!X(BC-g$B!Y(B
 or by registering an empty string.
 
-!! Type 『Kanakanjihenken□』 in ■ mode.
+!! Type $B!X(BKanakanjihenken$B""!Y(B in $B"#(B mode.
 
-辞書 does not contain 【かなかんじへんけん】, so you get 【かなかんじへん
-けん】 in the minibuffer.
+$B<-=q(B does not contain $B!Z$+$J$+$s$8$X$s$1$s![(B, so you get $B!Z$+$J$+$s$8$X$s(B
+$B$1$s![(B in the minibuffer.
 
 !! Verify that the cursor is in the minibuffer, and hit <return>.
 
-The 【*答*】 buffer now becomes 【▽かなかんじへんけん】.
+The $B!Z(B*$BEz(B*$B![(B buffer now becomes $B!Z"&$+$J$+$s$8$X$s$1$s![(B.
 
-!! Verify that 【*答*】 is the current buffer.  Hit <delete> key
-!! twice, and then type 『kan□.』.
+!! Verify that $B!Z(B*$BEz(B*$B![(B is the current buffer.  Hit <delete> key
+!! twice, and then type $B!X(Bkan$B""(B.$B!Y(B.
 
->> 仮名漢字変換。
+>> $B2>L>4A;zJQ49!#(B
 ----
-We assume that 辞書 contains the line:
+We assume that $B<-=q(B contains the line:
 
-	ご /五/互/伍/午/呉/吾/娯/後/御/悟/梧/檎/瑚/碁/語/誤/護/醐/
+	$B$4(B /$B8^(B/$B8_(B/$B8`(B/$B8a(B/$B8b(B/$B8c(B/$B8d(B/$B8e(B/$B8f(B/$B8g(B/$B8h(B/$B8i(B/$B8j(B/$B8k(B/$B8l(B/$B8m(B/$B8n(B/$B8o(B/
 
-You can enter 【碁】 as follows.
+You can enter $B!Z8k![(B as follows.
 
-!! Type 『Go□□□□□□』 in ■ mode. (You have to hit <space> six times.)
+!! Type $B!X(BGo$B""""""""""""!Y(B in $B"#(B mode. (You have to hit <space> six times.)
 
 You now see the line:
 
-	A:檎  S:瑚  D:碁  F:語  J:誤  K:護  L:醐  [残り 0]
+	A:$B8i(B  S:$B8j(B  D:$B8k(B  F:$B8l(B  J:$B8m(B  K:$B8n(B  L:$B8o(B  [$B;D$j(B 0]
 
 in the echo area.  As we have just seen, after the fifth candidate, seven of
-them are displayed together in the echo area.  To select 【碁】, type
-lowercase 『d』.
+them are displayed together in the echo area.  To select $B!Z8k![(B, type
+lowercase $B!X(Bd$B!Y(B.
 
->> 碁
+>> $B8k(B
 ----
-!! Type 【Go□】 in ■ mode.
+!! Type $B!Z(BGo$B""![(B in $B"#(B mode.
 
-This time 【碁】 is displayed as the first candidate.  This is because we
-have done 確定 by that character.  But we want 【午】 this time.
+This time $B!Z8k![(B is displayed as the first candidate.  This is because we
+have done $B3NDj(B by that character.  But we want $B!Z8a![(B this time.
 
-!! Type 『□□□□□□』. (six <space>'s.)
+!! Type $B!X""""""""""""!Y(B. (six <space>'s.)
 
-We entered 辞書登録 mode as we ran out of candidates.  Actually 【午】 was
+We entered $B<-=qEPO?(B mode as we ran out of candidates.  Actually $B!Z8a![(B was
 among the candidated but we had overrun.
 
-!! Hit <return> key and type 『x』.
+!! Hit <return> key and type $B!X(Bx$B!Y(B.
 
 <return> key registers an empty string (which actually makes no real
-registration) and we return to the state just before 辞書登録.  In ▼ mode,
-we can return to previous candiate(s) by the 『x』 key.  You should now be
-able to select 【午】 from the candidates in the echo area.
+registration) and we return to the state just before $B<-=qEPO?(B.  In $B"'(B mode,
+we can return to previous candiate(s) by the $B!X(Bx$B!Y(B key.  You should now be
+able to select $B!Z8a![(B from the candidates in the echo area.
 
->> 午
+>> $B8a(B
 ----
-We try 【午後】 this time.
+We try $B!Z8a8e![(B this time.
 
-!! Type 『Gogo□』in ■ mode.
+!! Type $B!X(BGogo$B""!Y(Bin $B"#(B mode.
 
-As there is no 【ごご】 in 辞書, we enter 辞書登録 mode.
+As there is no $B!Z$4$4![(B in $B<-=q(B, we enter $B<-=qEPO?(B mode.
 
-!! Verify that the minibuffer prompt is 【ごご】, and type 『Go□』.
+!! Verify that the minibuffer prompt is $B!Z$4$4![(B, and type $B!X(BGo$B""!Y(B.
 
-The minibuffer becomes 【ごご ▼午】.
+The minibuffer becomes $B!Z$4$4(B $B"'8a![(B.
 
-!! Then, type 『Go□□□□□j』.
+!! Then, type $B!X(BGo$B""""""""""(Bj$B!Y(B.
 
-We have 【ごご 午後】 in the minibuffer.
+We have $B!Z$4$4(B $B8a8e![(B in the minibuffer.
 
 !! Hit <return> key.
 
->> 午後
+>> $B8a8e(B
 ----
-We now have the entry 【ごご /午後/】 in the 辞書 buffer.  So the
+We now have the entry $B!Z$4$4(B /$B8a8e(B/$B![(B in the $B<-=q(B buffer.  So the
 following problem should be easy.
 
->> 午後の碁。
+>> $B8a8e$N8k!#(B
 ----
-== Recursive 辞書登録 ==
+== Recursive $B<-=qEPO?(B ==
 
-!! Type 『Saikiteki□』 in ■ mode.
-!! Verify the prompt 【さいきてき】 in the minibuffer, and type 『Saiki□』.
+!! Type $B!X(BSaikiteki$B""!Y(B in $B"#(B mode.
+!! Verify the prompt $B!Z$5$$$-$F$-![(B in the minibuffer, and type $B!X(BSaiki$B""!Y(B.
 
-We don't have 【さいき】 in 辞書 either, so we recursively
-(i.e., 再帰的に) enter 辞書登録 mode.
+We don't have $B!Z$5$$$-![(B in $B<-=q(B either, so we recursively
+(i.e., $B:F5"E*$K(B) enter $B<-=qEPO?(B mode.
 
-!! Construct 【再帰】 in the minibuffer.  (Hint: 再(さい), 帰(き))
-!! Hit <return> key after you have 【さいき 再帰】 in the minibuffer.
+!! Construct $B!Z:F5"![(B in the minibuffer.  (Hint: $B:F(B($B$5$$(B), $B5"(B($B$-(B))
+!! Hit <return> key after you have $B!Z$5$$$-(B $B:F5"![(B in the minibuffer.
 
-Now we can continue the registration of 【さいきてき】.
+Now we can continue the registration of $B!Z$5$$$-$F$-![(B.
 
-!! You should have 【さいきてき 再帰】 in the minibuffer.  Construct 【的】.
+!! You should have $B!Z$5$$$-$F$-(B $B:F5"![(B in the minibuffer.  Construct $B!ZE*![(B.
 
-Hint: 辞書(じしょ), 登録(とうろく), 学習(がくしゅう)
+Hint: $B<-=q(B($B$8$7$g(B), $BEPO?(B($B$H$&$m$/(B), $B3X=,(B($B$,$/$7$e$&(B)
 
->> 再帰的辞書登録を学習しました。
+>> $B:F5"E*<-=qEPO?$r3X=,$7$^$7$?!#(B
 ----
 == How to enter words with okurigana ==
 
-Words like 「動く」 have okurigana parts, and SKK 辞書 have entries like:
+Words like $B!VF0$/!W(B have okurigana parts, and SKK $B<-=q(B have entries like:
 
-	うごk /動/
+	$B$&$4(Bk /$BF0(B/
 
 for these words.  We make use of these entries to enter words with
 okuriganas.
 
-!! in ■ mode, type 『UgoKounimoUgoKenakatta.』.
+!! in $B"#(B mode, type $B!X(BUgoKounimoUgoKenakatta.$B!Y(B.
 
-Some nouns become verbs by affixing them with 「する」, but for such verbs
+Some nouns become verbs by affixing them with $B!V$9$k!W(B, but for such verbs
 it is recommened to enter the original noun and the okurigana part
 separately.
 
->> 動こうにも動けなかった。
+>> $BF0$3$&$K$bF0$1$J$+$C$?!#(B
 ----
-;; (save-excursion (save-match-data (set-buffer " *skk-tut-jisyo*") (goto-char skk-okuri-ari-min) (when (search-forward "\nうごk /動/" skk-okuri-nasi-min t) (delete-region (progn (beginning-of-line) (point)) (progn (forward-line 1) (point))))))
+;; (save-excursion (save-match-data (set-buffer " *skk-tut-jisyo*") (goto-char skk-okuri-ari-min) (when (search-forward "\n$B$&$4(Bk /$BF0(B/" skk-okuri-nasi-min t) (delete-region (progn (beginning-of-line) (point)) (progn (forward-line 1) (point))))))
 == How to register words with okurigana ==
 
-Let's see what happens if 辞書 does not have 「うごk」 as 見出し語.
+Let's see what happens if $B<-=q(B does not have $B!V$&$4(Bk$B!W(B as $B8+=P$78l(B.
 
-!! In ■ mode, type『UgoKu』.
+!! In $B"#(B mode, type$B!X(BUgoKu$B!Y(B.
 
-We enter 辞書登録 mode in the minibuffer, and we have the prompt 【うご*く
-】.  As 辞書 has the entry 「どう /動/」, we can make 【動】 in the
+We enter $B<-=qEPO?(B mode in the minibuffer, and we have the prompt $B!Z$&$4(B*$B$/(B
+$B![(B.  As $B<-=q(B has the entry $B!V$I$&(B /$BF0(B/$B!W(B, we can make $B!ZF0![(B in the
 minibuffer.
 
 Remark: You have only to construct the main part without the okurigana,
 in the minibuffer.
 
-!! Hit <return> key after you have 【動】 in the minibuffer.
+!! Hit <return> key after you have $B!ZF0![(B in the minibuffer.
 
->> 動く
+>> $BF0$/(B
 ----
 == How to enter words containing double consonants ==
 
 We do this like the following:
 
-	『TukaTta□』 → 【使った】
-	『HosSuru□』 → 【欲する】
+	$B!X(BTukaTta$B""!Y(B $B"*(B $B!Z;H$C$?![(B
+	$B!X(BHosSuru$B""!Y(B $B"*(B $B!ZM_$9$k![(B
 
-where our 辞書 is like:
+where our $B<-=q(B is like:
 
-	つかt /使/
-	ほっs /欲/
+	$B$D$+(Bt /$B;H(B/
+	$B$[$C(Bs /$BM_(B/
 
-Hint: 人口(じんこう), 一億(いちおく), 達した(たっした), 知った(しった)
+Hint: $B?M8}(B($B$8$s$3$&(B), $B0l2/(B($B$$$A$*$/(B), $BC#$7$?(B($B$?$C$7$?(B), $BCN$C$?(B($B$7$C$?(B)
 
->> 人口が一億に達したことを知った。
+>> $B?M8}$,0l2/$KC#$7$?$3$H$rCN$C$?!#(B
 ----
 == ASCII conversion ==
 
-It is possible to enter 見出し語 in ASCII characters, and transform them.
-This is called 「英字変換」(ASCII conversion).
+It is possible to enter $B8+=P$78l(B in ASCII characters, and transform them.
+This is called $B!V1Q;zJQ49!W(B(ASCII conversion).
 
-!! In ■ mode, type 『/file□』.
+!! In $B"#(B mode, type $B!X(B/file$B""!Y(B.
 
-Typing 『/』 in ■ mode lets you enter ▽ mode.  Unlike ordinary ▽ mode,
+Typing $B!X(B/$B!Y(B in $B"#(B mode lets you enter $B"&(B mode.  Unlike ordinary $B"&(B mode,
 however, the ASCII characters you type will be entered without any
-transformations.  In this case, our 辞書 does not have the 見出し語
-「file」, we enter 辞書登録 mode.
+transformations.  In this case, our $B<-=q(B does not have the $B8+=P$78l(B
+$B!V(Bfile$B!W(B, we enter $B<-=qEPO?(B mode.
 
-!! Verify that the prompt in the minibuffer is 【file】, type
-!! 『qfairu』, and then hit <return> key.
+!! Verify that the prompt in the minibuffer is $B!Z(Bfile$B![(B, type
+!! $B!X(Bqfairu$B!Y(B, and then hit <return> key.
 
->> 「ファイル」が登録されました。
+>> $B!V%U%!%$%k!W$,EPO?$5$l$^$7$?!#(B
 ----
 == Symbols ==
 
-The following symbols are registered in 辞書 under the 見出し語
-「きごう」.
+The following symbols are registered in $B<-=q(B under the $B8+=P$78l(B
+$B!V$-$4$&!W(B.
 
-      　 、 。 ， ． ・ ： ； ？ ！ ゛ ゜ ´ ｀ ¨ ＾ ￣ ＿ ヽ ヾ ゝ ゞ 〃
-   仝 々 〆 〇 ー ― ‐ ／ ＼ ～ ∥ ｜ … ‥ ‘ ’ “ ” （ ） 〔 〕 ［ ］
-   ｛ ｝ 〈 〉 《 》 「 」 『 』 【 】 ＋ － ± × ÷ ＝ ≠ ＜ ＞ ≦ ≧ ∞
-   ∴ ♂ ♀ ° ′ ″ ℃ ￥ ＄ ￠ ￡ ％ ＃ ＆ ＊ ＠ § ☆ ★ ○ ● ◎ ◇
-      ◆ □ ■ △ ▲ ▽ ▼ ※ 〒 → ← ↑ ↓ 〓
+      $B!!(B $B!"(B $B!#(B $B!$(B $B!%(B $B!&(B $B!'(B $B!((B $B!)(B $B!*(B $B!+(B $B!,(B $B!-(B $B!.(B $B!/(B $B!0(B $B!1(B $B!2(B $B!3(B $B!4(B $B!5(B $B!6(B $B!7(B
+   $B!8(B $B!9(B $B!:(B $B!;(B $B!<(B $B!=(B $B!>(B $B!?(B $B!@(B $B!A(B $B!B(B $B!C(B $B!D(B $B!E(B $B!F(B $B!G(B $B!H(B $B!I(B $B!J(B $B!K(B $B!L(B $B!M(B $B!N(B $B!O(B
+   $B!P(B $B!Q(B $B!R(B $B!S(B $B!T(B $B!U(B $B!V(B $B!W(B $B!X(B $B!Y(B $B!Z(B $B![(B $B!\(B $B!](B $B!^(B $B!_(B $B!`(B $B!a(B $B!b(B $B!c(B $B!d(B $B!e(B $B!f(B $B!g(B
+   $B!h(B $B!i(B $B!j(B $B!k(B $B!l(B $B!m(B $B!n(B $B!o(B $B!p(B $B!q(B $B!r(B $B!s(B $B!t(B $B!u(B $B!v(B $B!w(B $B!x(B $B!y(B $B!z(B $B!{(B $B!|(B $B!}(B $B!~(B
+      $B"!(B $B""(B $B"#(B $B"$(B $B"%(B $B"&(B $B"'(B $B"((B $B")(B $B"*(B $B"+(B $B",(B $B"-(B $B".(B
 
->> 〒980
+>> $B")(B980
 ----
 == Greek and Cyrillic characters ==
 
@@ -515,79 +516,79 @@ They are registered in the Jisyoes as follows
 (in classical Jisyoes, Russia and russia
 were used instead of Cyrillic and cyrillic).
 
-  Greek /Α/Β/Γ/Δ/Ε/Ζ/Η/Θ/Ι/Κ/ ...
+  Greek /$B&!(B/$B&"(B/$B&#(B/$B&$(B/$B&%(B/$B&&(B/$B&'(B/$B&((B/$B&)(B/$B&*(B/ ...
 
-  greek /α/β/γ/δ/ε/ζ/η/θ/ι/κ/ ...
+  greek /$B&A(B/$B&B(B/$B&C(B/$B&D(B/$B&E(B/$B&F(B/$B&G(B/$B&H(B/$B&I(B/$B&J(B/ ...
 
-  Cyrillic /А/Б/В/Г/Д/Е/Ё/Ж/З/И/ ...
+  Cyrillic /$B'!(B/$B'"(B/$B'#(B/$B'$(B/$B'%(B/$B'&(B/$B''(B/$B'((B/$B')(B/$B'*(B/ ...
 
-  cyrillic /а/б/в/г/д/е/ё/ж/з/и/ ...
+  cyrillic /$B'Q(B/$B'R(B/$B'S(B/$B'T(B/$B'U(B/$B'V(B/$B'W(B/$B'X(B/$B'Y(B/$B'Z(B/ ...
 
-We can use 英字変換 (ASCII conversion) to enter these characters.
+We can use $B1Q;zJQ49(B (ASCII conversion) to enter these characters.
 
->> εδ
+>> $B&E&D(B
 ----
 == Input by code ==
 
 You can enter any Kanji characters by their codes (either JIS or EUC).
 
-For example, the JIS code for 「學」 is 「555C」.  So you can enter it as
+For example, the JIS code for $B!VU\!W(B is $B!V(B555C$B!W(B.  So you can enter it as
 follows.
 
-!! In ■ mode, type 『\』.
+!! In $B"#(B mode, type $B!X(B\$B!Y(B.
 
 You get the prompt
-【7/8 bits or KUTEN code for japanese-jisx0208 (00nn or CR for Jump Menu):】.
+$B!Z(B7/8 bits or KUTEN code for japanese-jisx0208 (00nn or CR for Jump Menu):$B![(B.
 
-!! Type 『555c』 and hit <return> key.
+!! Type $B!X(B555c$B!Y(B and hit <return> key.
 
-Hint: 東北(とうほく), 大(だい)
+Hint: $BElKL(B($B$H$&$[$/(B), $BBg(B($B$@$$(B)
 
->> 東北大學
+>> $BElKLBgU\(B
 ----
-== Completion of 見出し語 ==
+== Completion of $B8+=P$78l(B ==
 
-Hitting <tab> key in ▽ mode invokes completion of 見出し語.  Let σ be
-the string you entered in ▽ mode just before you type <tab>.  Then the
-first occurrence (if any) of such a τ in the 辞書 buffer that has σ as
-its initial segement and distinct from σ will be displayed.
+Hitting <tab> key in $B"&(B mode invokes completion of $B8+=P$78l(B.  Let $B&R(B be
+the string you entered in $B"&(B mode just before you type <tab>.  Then the
+first occurrence (if any) of such a $B&S(B in the $B<-=q(B buffer that has $B&R(B as
+its initial segement and distinct from $B&R(B will be displayed.
 
-!! In ■ mode, type 『konoHikouki□yorianoHi』.
+!! In $B"#(B mode, type $B!X(BkonoHikouki$B""(ByorianoHi$B!Y(B.
 
-The buffer becomes 【この飛行機よりあの▽ひ】.
+The buffer becomes $B!Z$3$NHt9T5!$h$j$"$N"&$R![(B.
 
 !! Now, hit <tab> key.
 
 Completion is performed and the buffer becomes
-【この飛行機よりあの▽ひこうき】.
+$B!Z$3$NHt9T5!$h$j$"$N"&$R$3$&$-![(B.
 
->> この飛行機よりあの飛行機にしよう。
+>> $B$3$NHt9T5!$h$j$"$NHt9T5!$K$7$h$&!#(B
 ----
-The 見出し語 search for the completion is performed starting from the
-beginning of the 辞書 buffer.  Therefore, if there are several 見出し語
-in the 辞書 buffer whose initial segment matches σ, then the first such
+The $B8+=P$78l(B search for the completion is performed starting from the
+beginning of the $B<-=q(B buffer.  Therefore, if there are several $B8+=P$78l(B
+in the $B<-=q(B buffer whose initial segment matches $B&R(B, then the first such
 string will be displayed.  If that is not what you expected, you can type
-『.』(period) to get the second candidate, and you can continue to type 『.』
+$B!X(B.$B!Y(B(period) to get the second candidate, and you can continue to type $B!X(B.$B!Y(B
 to get more candates.  If you have overrun, you can back up by typing
-『,』(comma) several times.
+$B!X(B,$B!Y(B(comma) several times.
 
-Let us try to enter the sentence 「佐藤と斎藤では佐藤のほうがありふれた名
-字だ。」.
+Let us try to enter the sentence $B!V:4F#$H:XF#$G$O:4F#$N$[$&$,$"$j$U$l$?L>(B
+$B;z$@!#!W(B.
 
-!! In ■ mode, type 『Satou□toSaitou□dehaSa』 and hit <tab> key.
+!! In $B"#(B mode, type $B!X(BSatou$B""(BtoSaitou$B""(BdehaSa$B!Y(B and hit <tab> key.
 
-The buffer becomes 【佐藤と斎藤では▽さいとう】.
+The buffer becomes $B!Z:4F#$H:XF#$G$O"&$5$$$H$&![(B.
 
-!! Type 『..,』.
+!! Type $B!X(B..,$B!Y(B.
 
->> 佐藤と斎藤では佐藤のほうがありふれた名字だ。
+>> $B:4F#$H:XF#$G$O:4F#$N$[$&$,$"$j$U$l$?L>;z$@!#(B
 ----
 When SKK is invoked for the first time in the current Emacs session, it
-reads in your personal 辞書 file into the 辞書 buffer.  The 辞書 buffer
-will be updated each time you make a 確定.
-When you exit from Emacs, SKK saves the content of the 辞書 buffer into
-your personal 辞書 file.  So, normally, you don't have to be aware of
-saving the 辞書 buffer.  When SKK updates your personal 辞書 file
+reads in your personal $B<-=q(B file into the $B<-=q(B buffer.  The $B<-=q(B buffer
+will be updated each time you make a $B3NDj(B.
+When you exit from Emacs, SKK saves the content of the $B<-=q(B buffer into
+your personal $B<-=q(B file.  So, normally, you don't have to be aware of
+saving the $B<-=q(B buffer.  When SKK updates your personal $B<-=q(B file
 (.skk-jisyo) it backups the content of the current .skk-jisyo to
 .skk-jisyo.BAK.  This backup file may be useful if your .skk-jisyo is
 damaged accidentally.
@@ -595,9 +596,9 @@ damaged accidentally.
 SKK has a lot more features we couldn't explain in this short tutorial.
 For further information about SKK refer to the SKK manual.
 
-Here is your last problem.  Hint: 終了(しゅうりょう)
+Here is your last problem.  Hint: $B=*N;(B($B$7$e$&$j$g$&(B)
 
->> これで SKK チュートリアルを終了します。
+>> $B$3$l$G(B SKK $B%A%e!<%H%j%"%k$r=*N;$7$^$9!#(B
 ----
 ;; (skktut-end-tutorial)
 

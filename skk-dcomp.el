@@ -5,7 +5,8 @@
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Author: IRIE Tetsuya <irie@t.email.ne.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 
 ;; This file is part of Daredevil SKK.
@@ -25,76 +26,76 @@
 
 ;;; Commentary:
 
-;; これは▽モードにおける見出し語の入力を、自動的にダイナミックにコンプ
-;; リーションするプログラムです。
+;; $B$3$l$O"&%b!<%I$K$*$1$k8+=P$78l$NF~NO$r!"<+F0E*$K%@%$%J%_%C%/$K%3%s%W(B
+;; $B%j!<%7%g%s$9$k%W%m%0%i%`$G$9!#(B
 
-;; MS Excel のセル入力の自動補完 (同じ列に既に入力している文字列があっ
-;; たときにそれを参照して補完しようとする機能) を見ていて、これ便利だなぁ
-;; と思ったのが、開発のきっかけです。
+;; MS Excel $B$N%;%kF~NO$N<+F0Jd40(B ($BF1$8Ns$K4{$KF~NO$7$F$$$kJ8;zNs$,$"$C(B
+;; $B$?$H$-$K$=$l$r;2>H$7$FJd40$7$h$&$H$9$k5!G=(B) $B$r8+$F$$$F!"$3$lJXMx$@$J$!(B
+;; $B$H;W$C$?$N$,!"3+H/$N$-$C$+$1$G$9!#(B
 
-;; その後、増井俊之 さんが開発している POBox を見て、MS Excel を見た際に
-;; 思ったことを思い出し、SKK の skk-comp.el で提供されているコンプリーシ
-;; ョンの機能を自動的に提供する方向で実装してみたのが skk-dcomp.el のコー
-;; ディング始まりです。
+;; $B$=$N8e!"A}0f=SG7(B $B$5$s$,3+H/$7$F$$$k(B POBox $B$r8+$F!"(BMS Excel $B$r8+$?:]$K(B
+;; $B;W$C$?$3$H$r;W$$=P$7!"(BSKK $B$N(B skk-comp.el $B$GDs6!$5$l$F$$$k%3%s%W%j!<%7(B
+;; $B%g%s$N5!G=$r<+F0E*$KDs6!$9$kJ}8~$G<BAu$7$F$_$?$N$,(B skk-dcomp.el $B$N%3!<(B
+;; $B%G%#%s%0;O$^$j$G$9!#(B
 
-;; POBox は沢山候補を出しますが、少し動作が遅いのが難点です。skk-dcomp.el
-;; は一つしか候補を出しませんが、ユーザの見出し語の入力に追従しダイナミッ
-;; クにコンプリーションする機能は POBox 同様持っていますし、また動作はかな
-;; り高速で、skk-dcomp.el を使うことによるオーバーヘッドを体感することはな
-;; いと思います。
+;; POBox $B$OBt;38uJd$r=P$7$^$9$,!">/$7F0:n$,CY$$$N$,FqE@$G$9!#(Bskk-dcomp.el
+;; $B$O0l$D$7$+8uJd$r=P$7$^$;$s$,!"%f!<%6$N8+=P$78l$NF~NO$KDI=>$7%@%$%J%_%C(B
+;; $B%/$K%3%s%W%j!<%7%g%s$9$k5!G=$O(B POBox $BF1MM;}$C$F$$$^$9$7!"$^$?F0:n$O$+$J(B
+;; $B$j9bB.$G!"(Bskk-dcomp.el $B$r;H$&$3$H$K$h$k%*!<%P!<%X%C%I$rBN46$9$k$3$H$O$J(B
+;; $B$$$H;W$$$^$9!#(B
 
 
 ;; <INSTALL>
 
-;; SKK を普通に make して下さい。特に作業は不要です。
+;; SKK $B$rIaDL$K(B make $B$7$F2<$5$$!#FC$K:n6H$OITMW$G$9!#(B
 
 ;; <HOW TO USE>
 
-;; ~/.emacs.d/init.el もしくは ~/.skk に (setq skk-dcomp-activate t) と書き
-;; ましょう。
-;; SKK 起動後にダイナミックコンプリーションの機能を止めたかったら、
-;; (setq skk-dcomp-activate nil) を評価しましょう。
+;; ~/.emacs.d/init.el $B$b$7$/$O(B ~/.skk $B$K(B (setq skk-dcomp-activate t) $B$H=q$-(B
+;; $B$^$7$g$&!#(B
+;; SKK $B5/F08e$K%@%$%J%_%C%/%3%s%W%j!<%7%g%s$N5!G=$r;_$a$?$+$C$?$i!"(B
+;; (setq skk-dcomp-activate nil) $B$rI>2A$7$^$7$g$&!#(B
 
 
 ;; <HOW TO WORK>
 
-;; ▽モードに入り見出し語を入力すると、個人辞書を自動的に検索し、見出
-;; し語を コンプリーションします。下記のように動作します (カッコ内はキー
-;; 入力を、-!- はポイント位置を表します)。
+;; $B"&%b!<%I$KF~$j8+=P$78l$rF~NO$9$k$H!"8D?M<-=q$r<+F0E*$K8!:w$7!"8+=P(B
+;; $B$78l$r(B $B%3%s%W%j!<%7%g%s$7$^$9!#2<5-$N$h$&$KF0:n$7$^$9(B ($B%+%C%3Fb$O%-!<(B
+;; $BF~NO$r!"(B-!- $B$O%]%$%s%H0LCV$rI=$7$^$9(B)$B!#(B
 
-;;   (Ho) ▽ほ -> ▽ほ-!-んとう
+;;   (Ho) $B"&$[(B -> $B"&$[(B-!-$B$s$H$&(B
 
-;;   * SKK のコンプリーションは、元来個人辞書のみを参照する仕様になってい
-;;     るので、個人辞書にない見出し語はコンプリーションされません。
-;;   * コンプリーションは、送りなし変換の場合しか行われません。
-;;   * Ho の入力に対し、「ほんとう」がコンプリーションされるかどうかは個
-;;     人辞書のエントリの順番次第 (変換順に降順に並んでいる) ですので、人
-;;     それぞれ違うはずです。
+;;   * SKK $B$N%3%s%W%j!<%7%g%s$O!"85Mh8D?M<-=q$N$_$r;2>H$9$k;EMM$K$J$C$F$$(B
+;;     $B$k$N$G!"8D?M<-=q$K$J$$8+=P$78l$O%3%s%W%j!<%7%g%s$5$l$^$;$s!#(B
+;;   * $B%3%s%W%j!<%7%g%s$O!"Aw$j$J$7JQ49$N>l9g$7$+9T$o$l$^$;$s!#(B
+;;   * Ho $B$NF~NO$KBP$7!"!V$[$s$H$&!W$,%3%s%W%j!<%7%g%s$5$l$k$+$I$&$+$O8D(B
+;;     $B?M<-=q$N%(%s%H%j$N=gHV<!Bh(B ($BJQ49=g$K9_=g$KJB$s$G$$$k(B) $B$G$9$N$G!"?M(B
+;;     $B$=$l$>$l0c$&$O$:$G$9!#(B
 
-;; 自動的にコンプリーションされた見出し語が、自分の意図したものであれば TAB
-;; を押すことでポイント位置を動かし、コンプリーションされた見出し語を選択す
-;; ることができます。そのまま SPC を押して変換するなり、q を押してカタカナ
-;; にするなり SKK 本来の動作を何でも行うことができます。
+;; $B<+F0E*$K%3%s%W%j!<%7%g%s$5$l$?8+=P$78l$,!"<+J,$N0U?^$7$?$b$N$G$"$l$P(B TAB
+;; $B$r2!$9$3$H$G%]%$%s%H0LCV$rF0$+$7!"%3%s%W%j!<%7%g%s$5$l$?8+=P$78l$rA*Br$9(B
+;; $B$k$3$H$,$G$-$^$9!#$=$N$^$^(B SPC $B$r2!$7$FJQ49$9$k$J$j!"(Bq $B$r2!$7$F%+%?%+%J(B
+;; $B$K$9$k$J$j(B SKK $BK\Mh$NF0:n$r2?$G$b9T$&$3$H$,$G$-$^$9!#(B
 
-;;   (Ho) ▽ほ -> ▽ほ-!-んとう (TAB) -> ▽ほんとう-!- (TAB)
+;;   (Ho) $B"&$[(B -> $B"&$[(B-!-$B$s$H$&(B (TAB) -> $B"&$[$s$H$&(B-!- (TAB)
 
-;; コンプリーションされた見出し語が自分の意図したものでない場合は、かま
-;; わず次の入力をして下さい。コンプリーションされた部分を無視したかのように
-;; 動作します。
+;; $B%3%s%W%j!<%7%g%s$5$l$?8+=P$78l$,<+J,$N0U?^$7$?$b$N$G$J$$>l9g$O!"$+$^(B
+;; $B$o$:<!$NF~NO$r$7$F2<$5$$!#%3%s%W%j!<%7%g%s$5$l$?ItJ,$rL5;k$7$?$+$N$h$&$K(B
+;; $BF0:n$7$^$9!#(B
 
-;;   (Ho) ▽ほ -> ▽ほ-!-んとう (ka) -> ▽ほか-!-ん
+;;   (Ho) $B"&$[(B -> $B"&$[(B-!-$B$s$H$&(B (ka) -> $B"&$[$+(B-!-$B$s(B
 
-;; コンプリーションされない状態が自分の意図したものである場合も、コンプリー
-;; ションされた部分を単に無視するだけで OK です。
+;; $B%3%s%W%j!<%7%g%s$5$l$J$$>uBV$,<+J,$N0U?^$7$?$b$N$G$"$k>l9g$b!"%3%s%W%j!<(B
+;; $B%7%g%s$5$l$?ItJ,$rC1$KL5;k$9$k$@$1$G(B OK $B$G$9!#(B
 
-;;   (Ho) ▽ほ -> ▽ほ-!-んとう (C-j) -> ほ
-;;   (Ho) ▽ほ -> ▽ほ-!-んとう (SPC) -> ▼保 (「ほ」を見出し語とした変換が行われる)
-;;   (Ho) ▽ほ -> ▽ほ-!-んとう (q) -> ホ
+;;   (Ho) $B"&$[(B -> $B"&$[(B-!-$B$s$H$&(B (C-j) -> $B$[(B
+;;   (Ho) $B"&$[(B -> $B"&$[(B-!-$B$s$H$&(B (SPC) -> $B"'J](B ($B!V$[!W$r8+=P$78l$H$7$?JQ49$,9T$o$l$k(B)
+;;   (Ho) $B"&$[(B -> $B"&$[(B-!-$B$s$H$&(B (q) -> $B%[(B
 
-;; コンプリーションされた状態から BS を押すと、消されたコンプリーション前の
-;; 見出し語から再度コンプリーションを行います。
+;; $B%3%s%W%j!<%7%g%s$5$l$?>uBV$+$i(B BS $B$r2!$9$H!">C$5$l$?%3%s%W%j!<%7%g%sA0$N(B
+;; $B8+=P$78l$+$i:FEY%3%s%W%j!<%7%g%s$r9T$$$^$9!#(B
 
-;;   (Ho) ▽ほ -> ▽ほ-!-んとう (ka) -> ▽ほか-!-ん (BS) -> ▽ほ-!-んとう
+;;   (Ho) $B"&$[(B -> $B"&$[(B-!-$B$s$H$&(B (ka) -> $B"&$[$+(B-!-$B$s(B (BS) -> $B"&$[(B-!-$B$s$H$&(B
 
 ;;; Code:
 
@@ -182,8 +183,8 @@
                                                skk-henkan-start-point (point)))
                                      (string= skk-dcomp-multiple-prefix skk-prefix)))))))
 
-;; 複数表示のために検索して辞書バッファの point を動かすと、skk-comp の
-;; 補完候補が狂ってしまうので一旦保存しておき最後に元に戻す
+;; $BJ#?tI=<($N$?$a$K8!:w$7$F<-=q%P%C%U%!$N(B point $B$rF0$+$9$H!"(Bskk-comp $B$N(B
+;; $BJd408uJd$,68$C$F$7$^$&$N$G0lC6J]B8$7$F$*$-:G8e$K85$KLa$9(B
 (defmacro skk-dcomp-save-point-in-jisyo-buffer (form)
   `(let (alist)
      (dolist (buf skk-dcomp-multiple-keep-point-buffer-list)
@@ -230,13 +231,13 @@
 (defun skk-dcomp-multiple-get-candidates (&optional same-key)
   (let (candidates)
     (cond
-     ;; (1) 新規検索
+     ;; (1) $B?75,8!:w(B
      ((not same-key)
       (setq skk-dcomp-multiple-select-index
-            ;; skk-comp の C-u TAB を考慮する
+            ;; skk-comp $B$N(B C-u TAB $B$r9MN8$9$k(B
             (if (and current-prefix-arg (listp current-prefix-arg)) 0 -1))
       (setq skk-dcomp-multiple-key
-            ;; skk-comp の C-u TAB を考慮する
+            ;; skk-comp $B$N(B C-u TAB $B$r9MN8$9$k(B
             (if (and current-prefix-arg (listp current-prefix-arg))
                 skk-comp-key
               (let ((key (buffer-substring-no-properties
@@ -246,10 +247,10 @@
                   key))))
       (setq skk-dcomp-multiple-prefix skk-prefix)
       (setq skk-dcomp-multiple-search-done nil)
-      (let ( ;; `skk-comp-get-candidate' に必要なデータを束縛
+      (let ( ;; `skk-comp-get-candidate' $B$KI,MW$J%G!<%?$rB+G{(B
             (skk-comp-key skk-dcomp-multiple-key)
             (skk-comp-prefix skk-dcomp-multiple-prefix)
-            ;; `skk-comp-get-candidate' で値が変わってしまうため束縛
+            ;; `skk-comp-get-candidate' $B$GCM$,JQ$o$C$F$7$^$&$?$aB+G{(B
             (skk-current-completion-prog-list
              skk-current-completion-prog-list)
             (skk-server-completion-words skk-server-completion-words)
@@ -257,8 +258,8 @@
             (i 0)
             cand)
         (when (or skk-comp-use-prefix
-                  ;; skk-comp-use-prefix が nil の場合、▽n などは
-                  ;; 補完候補を検索しない
+                  ;; skk-comp-use-prefix $B$,(B nil $B$N>l9g!""&(Bn $B$J$I$O(B
+                  ;; $BJd408uJd$r8!:w$7$J$$(B
                   (not (skk-get-kana skk-current-rule-tree)))
           (skk-dcomp-save-point-in-jisyo-buffer
            (while (and (< i skk-dcomp-multiple-rows)
@@ -271,18 +272,18 @@
           (setq skk-dcomp-multiple-search-done t))
         (setq skk-dcomp-multiple-candidates candidates)))
 
-     ;; (2) 全て検索済
+     ;; (2) $BA4$F8!:w:Q(B
      (skk-dcomp-multiple-search-done
       (setq candidates (skk-dcomp-multiple-extract-candidates
                         skk-dcomp-multiple-candidates
                         skk-dcomp-multiple-select-index)))
 
-     ;; (3) 全検索する (TAB 連打で繰り越したとき)
+     ;; (3) $BA48!:w$9$k(B (TAB $BO"BG$G7+$j1[$7$?$H$-(B)
      ((and same-key
            (< (1- (length skk-dcomp-multiple-candidates))
               skk-dcomp-multiple-select-index))
       (skk-dcomp-save-point-in-jisyo-buffer
-       (let ( ;; `skk-comp-get-all-candidates' で空になってしまうため束縛
+       (let ( ;; `skk-comp-get-all-candidates' $B$G6u$K$J$C$F$7$^$&$?$aB+G{(B
              (skk-comp-kakutei-midasi-list skk-comp-kakutei-midasi-list)
              (skk-server-completion-words skk-server-completion-words)
              (skk-look-completion-words skk-look-completion-words))
@@ -298,7 +299,7 @@
                         skk-dcomp-multiple-candidates
                         skk-dcomp-multiple-select-index)))
 
-     ;; (4) 単なる TAB 打鍵
+     ;; (4) $BC1$J$k(B TAB $BBG80(B
      (t
       (setq candidates skk-dcomp-multiple-candidates)))
     (when candidates
@@ -356,12 +357,12 @@
                                     (- (current-column) margin))))
             (setq bottom (> (1+ i) (vertical-motion (1+ i))))
             (cond (bottom
-                   ;; バッファ最終行では普通に overlay を追加していく方
-                   ;; 法だと overlay の表示される順番が狂うことがあって
-                   ;; うまくない。したがって前回の overlay の
-                   ;; after-string に追加する。ただし、EOB の場合は
-                   ;; prefix の overlay と衝突するため
-                   ;; `skk-prefix-overlay' に追加する
+                   ;; $B%P%C%U%!:G=*9T$G$OIaDL$K(B overlay $B$rDI2C$7$F$$$/J}(B
+                   ;; $BK!$@$H(B overlay $B$NI=<($5$l$k=gHV$,68$&$3$H$,$"$C$F(B
+                   ;; $B$&$^$/$J$$!#$7$?$,$C$FA02s$N(B overlay $B$N(B
+                   ;; after-string $B$KDI2C$9$k!#$?$@$7!"(BEOB $B$N>l9g$O(B
+                   ;; prefix $B$N(B overlay $B$H>WFM$9$k$?$a(B
+                   ;; `skk-prefix-overlay' $B$KDI2C$9$k(B
                    (setq ol (if (zerop i)
                                 (cond ((or (not skk-echo)
                                            (string= "" skk-prefix)
@@ -375,32 +376,32 @@
                   (t
                    (setq col (skk-move-to-screen-column beg-col))
                    (cond ((> beg-col col)
-                          ;; 桁合わせの空白を追加
+                          ;; $B7e9g$o$;$N6uGr$rDI2C(B
                           (setq str (concat (make-string (- beg-col col) ? )
                                             str)))
-                         ;; overlay の左端がマルチ幅文字と重なったときの微調整
+                         ;; overlay $B$N:8C<$,%^%k%AI}J8;z$H=E$J$C$?$H$-$NHyD4@0(B
                          ((< beg-col col)
                           (backward-char)
                           (setq col (skk-screen-column))
                           (setq str (concat (make-string (- beg-col col) ? )
                                             str))))))
-            ;; この時点で overlay の開始位置に point がある
+            ;; $B$3$N;~E@$G(B overlay $B$N3+;O0LCV$K(B point $B$,$"$k(B
             (unless bottom
               (let ((ol-beg (point))
                     (ol-end-col (+ col (string-width str)))
                     base-ol)
                 (setq col (skk-move-to-screen-column ol-end-col))
-                ;; overlay の右端がマルチ幅文字と重なったときの微調整
+                ;; overlay $B$N1&C<$,%^%k%AI}J8;z$H=E$J$C$?$H$-$NHyD4@0(B
                 (when (< ol-end-col col)
                   (setq str (concat str
                                     (make-string (- col ol-end-col) ? ))))
                 (setq ol (make-overlay ol-beg (point)))
-                ;; 元テキストの face を継承しないように1つ後ろに
-                ;; overlay を作って、その face を 'default に指定しておく
+                ;; $B85%F%-%9%H$N(B face $B$r7Q>5$7$J$$$h$&$K(B1$B$D8e$m$K(B
+                ;; overlay $B$r:n$C$F!"$=$N(B face $B$r(B 'default $B$K;XDj$7$F$*$/(B
                 (setq base-ol (make-overlay (point) (1+ (point))))
                 (overlay-put base-ol 'face 'default)
                 (push base-ol skk-dcomp-multiple-overlays)
-                ;; 候補が可視かどうかチェック
+                ;; $B8uJd$,2D;k$+$I$&$+%A%'%C%/(B
                 (unless (pos-visible-in-window-p (point))
                   (setq invisible t)))))
           (overlay-put ol 'invisible t)
@@ -448,7 +449,7 @@
                skk-use-look)
       (setq skk-look-completion-words nil))
     (skk-dcomp-do-completion (point)))
-  ;; dcomp との順番制御のため、ここで呼ぶ
+  ;; dcomp $B$H$N=gHV@)8f$N$?$a!"$3$3$G8F$V(B
   (skk-henkan-on-message))
 
 ;;; advices.
@@ -462,7 +463,7 @@
     ad-do-it)
    (t
     (cond
-     ((or (eq skk-henkan-mode 'active) ; ▼モード
+     ((or (eq skk-henkan-mode 'active) ; $B"'%b!<%I(B
           (skk-get-prefix skk-current-rule-tree)
           (not skk-comp-stack))
       (skk-set-marker skk-dcomp-start-point nil)
@@ -481,7 +482,7 @@
     ad-do-it
     (when (and skk-j-mode
                (or skk-use-kana-keyboard
-                   ;; 送りあり変換が始まったら補完しない
+                   ;; $BAw$j$"$jJQ49$,;O$^$C$?$iJd40$7$J$$(B
                    (not (memq last-command-event skk-set-henkan-point-key))))
       (if (skk-get-prefix skk-current-rule-tree)
           (when (and (skk-dcomp-multiple-activate-p)
@@ -571,6 +572,11 @@
   ad-do-it
   (skk-dcomp-after-delete-backward-char))
 
+(defadvice abort-minibuffers (around skk-dcomp-ad activate)
+  (skk-dcomp-before-kakutei)
+  ad-do-it
+  (skk-dcomp-after-delete-backward-char))
+
 ;; (defadvice skk-henkan (before skk-dcomp-ad activate)
 (defadvice skk-start-henkan (before skk-dcomp-ad activate)
   (skk-dcomp-cleanup-buffer))
@@ -609,7 +615,7 @@
                  (skk-dcomp-multiple-increase-index
                   skk-dcomp-multiple-select-index))
            (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates
-                                     ;; skk-comp の C-u TAB を考慮する
+                                     ;; skk-comp $B$N(B C-u TAB $B$r9MN8$9$k(B
                                      (not (and current-prefix-arg
                                                (listp current-prefix-arg)))))))))
 

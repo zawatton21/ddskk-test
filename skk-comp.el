@@ -1,11 +1,12 @@
-;;; skk-comp.el --- 補完のためのプログラム -*- coding: iso-2022-jp -*-
+;;; skk-comp.el --- $BJd40$N$?$a$N%W%m%0%i%`(B -*- coding: iso-2022-jp -*-
 
 ;; Copyright (C) 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997
 ;;               1999, 2000
 ;;   Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
 
 ;; Author: Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
-;; Maintainer: SKK Development Team <skk@ring.gr.jp>
+;; Maintainer: SKK Development Team
+;; URL: https://github.com/skk-dev/ddskk
 ;; Keywords: japanese, mule, input method
 
 ;; This file is part of Daredevil SKK.
@@ -25,7 +26,7 @@
 
 ;;; Commentary:
 
-;; ▽さ (TAB) -> ▽さとう (.) -> ▽さいとう (,) -> ▽さとう(.) -> ▽さいとう
+;; $B"&$5(B (TAB) -> $B"&$5$H$&(B (.) -> $B"&$5$$$H$&(B (,) -> $B"&$5$H$&(B(.) -> $B"&$5$$$H$&(B
 
 ;;; Code:
 
@@ -42,9 +43,9 @@
 
 ;;;###autoload
 (defun skk-comp-start-henkan (arg)
-  "▽モードで読みを補完した後、変換する。
-それ以外のモードではオリジナルのキーマップに割り付けられたコマンドをエミュレー
-トする。"
+  "$B"&%b!<%I$GFI$_$rJd40$7$?8e!"JQ49$9$k!#(B
+$B$=$l0J30$N%b!<%I$G$O%*%j%8%J%k$N%-!<%^%C%W$K3d$jIU$1$i$l$?%3%^%s%I$r%(%_%e%l!<(B
+$B%H$9$k!#(B"
   (interactive "*P")
   (cond
    ((eq skk-henkan-mode 'on)
@@ -64,8 +65,8 @@
   (when set-this-command
     (setq this-command 'skk-comp-do))
   (let ((inhibit-quit t)
-        ;; skk-num が require されてないと
-        ;; buffer-local 値を壊す恐れあり。
+        ;; skk-num $B$,(B require $B$5$l$F$J$$$H(B
+        ;; buffer-local $BCM$r2u$962$l$"$j!#(B
         skk-num-list
         tmp-key data
         orig-key
@@ -76,23 +77,23 @@
             skk-comp-depth 0
             skk-comp-prefix skk-prefix)
       ;;  key  \ use-prefix    nil    kakutei-first   non-nil    # data
-      ;; "かk"           "か"  , ""    "か"  , "k"    "か", "k"  #    t
-      ;; "かn"           "かん", ""    "かん", ""     "か", "n"  # non-t
+      ;; "$B$+(Bk"           "$B$+(B"  , ""    "$B$+(B"  , "k"    "$B$+(B", "k"  #    t
+      ;; "$B$+(Bn"           "$B$+$s(B", ""    "$B$+$s(B", ""     "$B$+(B", "n"  # non-t
       (setq tmp-key (buffer-substring-no-properties
                      skk-henkan-start-point (point)))
-      ;; skk-kana-cleanup() を呼ぶ前の key を取得
+      ;; skk-kana-cleanup() $B$r8F$VA0$N(B key $B$r<hF@(B
       (unless (or skk-abbrev-mode
                   (memq skk-comp-use-prefix '(nil kakutei-first)))
         (save-match-data
           (if (string-match "^\\([^a-z]*\\)[a-z]*$" tmp-key)
               (setq skk-comp-key (match-string 1 tmp-key))
-            ;; 送り無しで見出しにアルファベットを含むような変則的な候補は、
-            ;; skk-echo も考えるとまともな対処が面倒なので、
-            ;; 害が無い範囲で適当に処理。 nil か kakutei-first を使ってもらう。
+            ;; $BAw$jL5$7$G8+=P$7$K%"%k%U%!%Y%C%H$r4^$`$h$&$JJQB'E*$J8uJd$O!"(B
+            ;; skk-echo $B$b9M$($k$H$^$H$b$JBP=h$,LLE]$J$N$G!"(B
+            ;; $B32$,L5$$HO0O$GE,Ev$K=hM}!#(B nil $B$+(B kakutei-first $B$r;H$C$F$b$i$&!#(B
             (setq skk-comp-key tmp-key))))
-      ;; prefix に対応する「かな」etc. があれば non-t
-      ;; 副作用を伴なうルールが指定されているかもしれないので、
-      ;; データがあるかどうかのチェックのみに使う。
+      ;; prefix $B$KBP1~$9$k!V$+$J!W(Betc. $B$,$"$l$P(B non-t
+      ;; $BI{:nMQ$rH<$J$&%k!<%k$,;XDj$5$l$F$$$k$+$b$7$l$J$$$N$G!"(B
+      ;; $B%G!<%?$,$"$k$+$I$&$+$N%A%'%C%/$N$_$K;H$&!#(B
       (setq data (skk-kana-cleanup 'force))
       (when (or skk-abbrev-mode
                 (memq skk-comp-use-prefix '(nil kakutei-first)))
@@ -107,19 +108,19 @@
     (when skk-katakana
       (setq skk-comp-key (skk-katakana-to-hiragana skk-comp-key)))
     (cond
-     ;; (全候補探索済み)
+     ;; ($BA48uJdC5:w:Q$_(B)
      (skk-comp-search-done
       (if (zerop skk-comp-depth)
-          ;; circulate ならば c-word = skk-comp-key なので c-word = nil
-          ;; non-circulate ならば これ以上候補がないので c-word = nil
+          ;; circulate $B$J$i$P(B c-word = skk-comp-key $B$J$N$G(B c-word = nil
+          ;; non-circulate $B$J$i$P(B $B$3$l0J>e8uJd$,$J$$$N$G(B c-word = nil
           (if skk-comp-circulate
               (setq skk-comp-depth (length skk-comp-stack)))
         (setq skk-comp-depth (1- skk-comp-depth))
         (setq c-word (nth skk-comp-depth skk-comp-stack))))
-     ;; (未探索候補が残っている可能性有り)
+     ;; ($BL$C5:w8uJd$,;D$C$F$$$k2DG=@-M-$j(B)
      (t
       (cond
-       ;; 最後に得られた候補を表示している
+       ;; $B:G8e$KF@$i$l$?8uJd$rI=<($7$F$$$k(B
        ((zerop skk-comp-depth)
         (setq c-word
               (let ((word (skk-comp-get-candidate first)))
@@ -127,13 +128,13 @@
                   (setq word (skk-comp-get-candidate)))
                 word))
         (if c-word
-            ;; 新規に見つけたときだけ push する。
+            ;; $B?75,$K8+$D$1$?$H$-$@$1(B push $B$9$k!#(B
             (push c-word skk-comp-stack)
           (setq skk-comp-search-done t)
           (if skk-comp-circulate
               (setq skk-comp-depth (length skk-comp-stack)))))
        (t
-        ;; "," などで前候補に戻っている
+        ;; "," $B$J$I$GA08uJd$KLa$C$F$$$k(B
         (setq skk-comp-depth (1- skk-comp-depth)
               c-word (nth skk-comp-depth skk-comp-stack))))))
     (cond
@@ -152,15 +153,15 @@
                (assq 'skk-comp-by-history skk-completion-prog-list)
                (or (not skk-comp-use-prefix)
                    (string= skk-comp-prefix "")))
-          (skk-message "これ以上の履歴はありません"
+          (skk-message "$B$3$l0J>e$NMzNr$O$"$j$^$;$s(B"
                        "No more words in history"))
          (t
           (if skk-japanese-message-and-error
-              (message "\"%s\" で補完すべき見出し語は%sありません"
+              (message "\"%s\" $B$GJd40$9$Y$-8+=P$78l$O(B%s$B$"$j$^$;$s(B"
                        (if skk-comp-use-prefix
                            (concat orig-key skk-comp-prefix)
                          orig-key)
-                       (if first "" "他に"))
+                       (if first "" "$BB>$K(B"))
             (message "No %scompletions for \"%s\""
                      (if first "" "more ")
                      (if skk-comp-use-prefix
@@ -186,7 +187,7 @@
     (while (and (null cand)
                 skk-current-completion-prog-list)
       (setq prog (car skk-current-completion-prog-list))
-      (setq cand (eval prog)        ; `skk-comp-key' をキーとして、文字列ひとつが戻る
+      (setq cand (eval prog)        ; `skk-comp-key' $B$r%-!<$H$7$F!"J8;zNs$R$H$D$,La$k(B
             skk-comp-first nil)
       (unless cand
         (setq skk-current-completion-prog-list
@@ -217,8 +218,8 @@
 
 ;;;###autoload
 (defun skk-comp-get-regexp (prefix)
-  ;; プレフィックスに対応する正規表現を返す。
-  ;; 一度生成した正規表現は skk-comp-prefix-regexp-alist に保存しておく。
+  ;; $B%W%l%U%#%C%/%9$KBP1~$9$k@55,I=8=$rJV$9!#(B
+  ;; $B0lEY@8@.$7$?@55,I=8=$O(B skk-comp-prefix-regexp-alist $B$KJ]B8$7$F$*$/!#(B
   (or (cdr (assoc prefix skk-comp-prefix-regexp-alist))
       (let ((regexp
              (if (string= prefix "")
@@ -244,7 +245,7 @@
 
 ;;;###autoload
 (defun skk-comp-collect-kana (tree)
-  ;; skk-rule-tree の部分木に属する "かな" を集める
+  ;; skk-rule-tree $B$NItJ,LZ$KB0$9$k(B "$B$+$J(B" $B$r=8$a$k(B
   (let ((data (skk-get-kana tree))
         (branches (skk-get-branch-list tree))
         kana kana-list)
@@ -260,14 +261,14 @@
 
 ;;;###autoload
 (defun skk-comp-arrange-kana-list (kana-list prefix)
-  ;; skk-comp-collect-kana から得た "かな" のリストを元に
-  ;; プレフィックスに対応した調整をする
+  ;; skk-comp-collect-kana $B$+$iF@$?(B "$B$+$J(B" $B$N%j%9%H$r85$K(B
+  ;; $B%W%l%U%#%C%/%9$KBP1~$7$?D4@0$r$9$k(B
   (let (short-list long-list tmp)
     (dolist (kana kana-list)
       (if (= (length kana) 1)
           (add-to-list 'short-list kana)
         (add-to-list 'long-list kana)))
-    ;; "に" がある時に "にゃ" とかはいらない
+    ;; "$B$K(B" $B$,$"$k;~$K(B "$B$K$c(B" $B$H$+$O$$$i$J$$(B
     (dolist (s-kana short-list)
       (dolist (l-kana long-list)
         (when (string= s-kana
@@ -280,8 +281,8 @@
 
 ;;;###autoload
 (defun skk-comp-from-jisyo (file)
-  ;; skk-comp-prefix を使える
-  "SKK 辞書フォーマットの FILE から補完候補を得る。"
+  ;; skk-comp-prefix $B$r;H$($k(B
+  "SKK $B<-=q%U%)!<%^%C%H$N(B FILE $B$+$iJd408uJd$rF@$k!#(B"
   (let ((buffer (skk-get-jisyo-buffer file 'nomsg))
         (abbrev skk-abbrev-mode)
         (key skk-comp-key)
@@ -302,7 +303,7 @@
 (defun skk-comp-search-current-buffer (key &optional abbrev)
   (let (c-word)
     (save-match-data
-      ;; `case-fold-search' は、辞書バッファでは常に nil。
+      ;; `case-fold-search' $B$O!"<-=q%P%C%U%!$G$O>o$K(B nil$B!#(B
       (while (and (not c-word)
                   (search-forward
                    (concat "\n"
@@ -314,20 +315,20 @@
                     ?\040) ;SPC
           (setq c-word (concat key
                                (buffer-substring-no-properties
-                                ;; 見出し語に空白は含まれない。
-                                ;; " /" をサーチする必要はない。
+                                ;; $B8+=P$78l$K6uGr$O4^$^$l$J$$!#(B
+                                ;; " /" $B$r%5!<%A$9$kI,MW$O$J$$!#(B
                                 (point)
                                 (1- (search-forward " ")))))
           (when (and abbrev
                      (string-match "\\Ca" c-word))
-            ;; abbrev モードで「3ねん」などの補完はしない
+            ;; abbrev $B%b!<%I$G!V(B3$B$M$s!W$J$I$NJd40$O$7$J$$(B
             (setq c-word nil))))
       c-word)))
 
 ;;;###autoload
 (defun skk-comp-re-search-current-buffer (key prefix &optional abbrev)
-  ;; 問題のあるケースがあるかもしれないので
-  ;; skk-comp-search-current-buffer との一本化はとりあえず保留
+  ;; $BLdBj$N$"$k%1!<%9$,$"$k$+$b$7$l$J$$$N$G(B
+  ;; skk-comp-search-current-buffer $B$H$N0lK\2=$O$H$j$"$($:J]N1(B
   (let (c-word regexp-key)
     (setq regexp-key (concat (regexp-quote
                               (if skk-use-numeric-conversion
@@ -335,7 +336,7 @@
                                 key))
                              (skk-comp-get-regexp prefix)))
     (save-match-data
-      ;; `case-fold-search' は、辞書バッファでは常に nil。
+      ;; `case-fold-search' $B$O!"<-=q%P%C%U%!$G$O>o$K(B nil$B!#(B
       (while (and (not c-word)
                   (re-search-forward (concat "\n" regexp-key) nil t))
         (beginning-of-line)
@@ -350,14 +351,14 @@
                                 (1- (search-forward " ")))))
           (when (and abbrev
                      (string-match "\\Ca" c-word))
-            ;; abbrev モードで「3ねん」などの補完はしない
+            ;; abbrev $B%b!<%I$G!V(B3$B$M$s!W$J$I$NJd40$O$7$J$$(B
             (setq c-word nil))))
       c-word)))
 
 ;;;###autoload
 (defun skk-comp-previous (&optional set-this-command)
-  ;; skk-abbrev-comma, skk-insert-comma のサブルーチン。
-  ;; 直前に補完を行った見出しを挿入する。
+  ;; skk-abbrev-comma, skk-insert-comma $B$N%5%V%k!<%A%s!#(B
+  ;; $BD>A0$KJd40$r9T$C$?8+=P$7$rA^F~$9$k!#(B
   (when set-this-command
     (setq this-command 'skk-comp-do))
   (let ((inhibit-quit t)
@@ -373,13 +374,13 @@
       (insert c-word))
      (t
       (if (null skk-comp-circulate)
-          ;; non-circulate ならば skk-comp-depth が範囲外なので 1 戻す
+          ;; non-circulate $B$J$i$P(B skk-comp-depth $B$,HO0O30$J$N$G(B 1 $BLa$9(B
           (setq skk-comp-depth (1- skk-comp-depth))
         (delete-region skk-henkan-start-point (point))
         (insert skk-comp-key))
       ;;(setq skk-comp-depth (1- skk-comp-depth))
       (ding)
-      (skk-message "\"%s\"で補完すべき見出し語は他にありません"
+      (skk-message "\"%s\"$B$GJd40$9$Y$-8+=P$78l$OB>$K$"$j$^$;$s(B"
                    "No more previous completions for \"%s\""
                    (if skk-comp-use-prefix
                        (concat skk-comp-key skk-comp-prefix)
@@ -395,8 +396,8 @@
 
 ;;;###autoload
 (defun skk-try-completion (arg)
-  "▽モードで見出し語を補完する。
-それ以外のモードでは、オリジナルのキー割り付けのコマンドをエミュレートする。"
+  "$B"&%b!<%I$G8+=P$78l$rJd40$9$k!#(B
+$B$=$l0J30$N%b!<%I$G$O!"%*%j%8%J%k$N%-!<3d$jIU$1$N%3%^%s%I$r%(%_%e%l!<%H$9$k!#(B"
   (interactive "P")
   (skk-with-point-move
    (if (eq skk-henkan-mode 'on)
@@ -406,26 +407,26 @@
 
 ;;;###autoload
 (defun skk-comp-wrapper (&optional arg)
-  "Character でないキーに補完を割り当てるためのコマンド。"
+  "Character $B$G$J$$%-!<$KJd40$r3d$jEv$F$k$?$a$N%3%^%s%I!#(B"
   (interactive "p")
   (skk-bind-last-command-char skk-try-completion-char
     (call-interactively #'skk-insert)))
 
 ;;;###autoload
 (defun skk-previous-comp-maybe (&optional arg)
-  "Character でないキーに補完前候補を割り当てるためのコマンド。
-▽モードでは補完前候補、さもなければオリジナルのキー定義を実行する。"
+  "Character $B$G$J$$%-!<$KJd40A08uJd$r3d$jEv$F$k$?$a$N%3%^%s%I!#(B
+$B"&%b!<%I$G$OJd40A08uJd!"$5$b$J$1$l$P%*%j%8%J%k$N%-!<Dj5A$r<B9T$9$k!#(B"
   (interactive "P")
-  (if (eq skk-henkan-mode 'on) ;▽モード
+  (if (eq skk-henkan-mode 'on) ;$B"&%b!<%I(B
       (skk-comp-previous t)
     (skk-emulate-original-map arg)))
 
 ;;;###autoload
 (defun skk-comp-by-history ()
-  ;; skk-comp-prefix を考慮
-  "入力が空の時に履歴から補完する。
-対象は現在の Emacs のセッションにおいて行った送り無し変換のうち、
-`skk-kakutei-history-limit' で指定される最近のものである。"
+  ;; skk-comp-prefix $B$r9MN8(B
+  "$BF~NO$,6u$N;~$KMzNr$+$iJd40$9$k!#(B
+$BBP>]$O8=:_$N(B Emacs $B$N%;%C%7%g%s$K$*$$$F9T$C$?Aw$jL5$7JQ49$N$&$A!"(B
+`skk-kakutei-history-limit' $B$G;XDj$5$l$k:G6a$N$b$N$G$"$k!#(B"
   (when (and (string= skk-comp-key "")
              (or (not skk-comp-use-prefix)
                  (string= skk-comp-prefix "")))
@@ -436,7 +437,7 @@
 
 ;;;###autoload
 (defun skk-comp-smart-find (&optional path)
-  "`smart-find' が見つけたファイル名で補完する"
+  "`smart-find' $B$,8+$D$1$?%U%!%$%kL>$GJd40$9$k(B"
   (cond (skk-abbrev-mode
          (when skk-comp-first
            (setq skk-comp-smart-find-files
@@ -450,11 +451,11 @@
 ;;;###autoload
 (defun skk-search-smart-find (&optional path not-abbrev-only
                                         without-char-maybe)
-  "`smart-find'を利用した変換を行う。
-SKK abbrev モードにて、英文字 + `skk-completion-search-char' (~)で
-未完スペルを指定して変換すると、補完候補が変換候補として出現する。
-デフォルトでは SKK abbrev モードのみで有効な機能だが、
-NOT-ABBREV-ONLY を指定する事で常に有効となる。"
+  "`smart-find'$B$rMxMQ$7$?JQ49$r9T$&!#(B
+SKK abbrev $B%b!<%I$K$F!"1QJ8;z(B + `skk-completion-search-char' (~)$B$G(B
+$BL$40%9%Z%k$r;XDj$7$FJQ49$9$k$H!"Jd408uJd$,JQ498uJd$H$7$F=P8=$9$k!#(B
+$B%G%U%)%k%H$G$O(B SKK abbrev $B%b!<%I$N$_$GM-8z$J5!G=$@$,!"(B
+NOT-ABBREV-ONLY $B$r;XDj$9$k;v$G>o$KM-8z$H$J$k!#(B"
   (when (and (or not-abbrev-only
                  skk-abbrev-mode))
     (skk-completion-search `((skk-comp-smart-find ',path))
@@ -464,7 +465,7 @@ NOT-ABBREV-ONLY を指定する事で常に有効となる。"
 
 ;;;###autoload
 (defun skk-smart-find (key &optional path)
-  ;; smart-find は provide されていない
+  ;; smart-find $B$O(B provide $B$5$l$F$$$J$$(B
   (unless (fboundp 'smart-find-file)
     (let ((dont-bind-my-keys t))
       (load-library "smart-find"))
@@ -490,14 +491,14 @@ NOT-ABBREV-ONLY を指定する事で常に有効となる。"
 
 ;;;###autoload
 (defun skk-comp-lisp-symbol (&optional predicate)
-  "Lisp symbol 名で補完する。
-PREDICATE に引数 1 個の関数を指定すれば、PREDICATE を満たすシンボル
-に限って補完する。PREDICATE には `fboundp', `boundp', `commandp'
-などが指定できる。指定しなければ関数または変数に限って補完する。
+  "Lisp symbol $BL>$GJd40$9$k!#(B
+PREDICATE $B$K0z?t(B 1 $B8D$N4X?t$r;XDj$9$l$P!"(BPREDICATE $B$rK~$?$9%7%s%\%k(B
+$B$K8B$C$FJd40$9$k!#(BPREDICATE $B$K$O(B `fboundp', `boundp', `commandp'
+$B$J$I$,;XDj$G$-$k!#;XDj$7$J$1$l$P4X?t$^$?$OJQ?t$K8B$C$FJd40$9$k!#(B
 
-`skk-completion-prog-list' へ追加すると有効となる。
-\(add-to-list 'skk-completion-prog-list
-         '\(skk-comp-lisp-symbol\) t\)"
+`skk-completion-prog-list' $B$XDI2C$9$k$HM-8z$H$J$k!#(B
+\(add-to-list \\='skk-completion-prog-list
+         \\='\(skk-comp-lisp-symbol\) t\)"
   (cond (skk-abbrev-mode
          (when skk-comp-first
            (let (temp)
@@ -510,7 +511,7 @@ PREDICATE に引数 1 個の関数を指定すれば、PREDICATE を満たすシ
                            (all-completions skk-comp-key obarray predicate))
                          #'string-lessp))
              (when temp
-               ;; read-only な object などもあるのでそのまま使わない
+               ;; read-only $B$J(B object $B$J$I$b$"$k$N$G$=$N$^$^;H$o$J$$(B
                (setq skk-comp-lisp-symbols (mapcar #'copy-sequence temp)))))
          (if skk-comp-lisp-symbols
              (pop skk-comp-lisp-symbols)
@@ -521,19 +522,19 @@ PREDICATE に引数 1 個の関数を指定すれば、PREDICATE を満たすシ
 ;;;###autoload
 (defun skk-search-lisp-symbol (&optional predicate not-abbrev-only
                                          without-char-maybe)
-  "Lisp symbol 名で補完した結果を検索結果として返す。
-PREDICATE に引数 1 個の関数を指定すれば、PREDICATE を満たすシンボル
-に限って補完する。PREDICATE には `fboundp', `boundp', `commandp'
-などが指定できる。指定しなければ関数または変数に限って補完する。
-SKK abbrev モードにて、英文字 + `skk-completion-search-char' (~)で
-未完スペルを指定して変換すると、補完候補が変換候補として出現する。
-デフォルトでは SKK abbrev モードのみで有効な機能だが、
-NOT-ABBREV-ONLY を指定する事で常に有効となる。
+  "Lisp symbol $BL>$GJd40$7$?7k2L$r8!:w7k2L$H$7$FJV$9!#(B
+PREDICATE $B$K0z?t(B 1 $B8D$N4X?t$r;XDj$9$l$P!"(BPREDICATE $B$rK~$?$9%7%s%\%k(B
+$B$K8B$C$FJd40$9$k!#(BPREDICATE $B$K$O(B `fboundp', `boundp', `commandp'
+$B$J$I$,;XDj$G$-$k!#;XDj$7$J$1$l$P4X?t$^$?$OJQ?t$K8B$C$FJd40$9$k!#(B
+SKK abbrev $B%b!<%I$K$F!"1QJ8;z(B + `skk-completion-search-char' (~)$B$G(B
+$BL$40%9%Z%k$r;XDj$7$FJQ49$9$k$H!"Jd408uJd$,JQ498uJd$H$7$F=P8=$9$k!#(B
+$B%G%U%)%k%H$G$O(B SKK abbrev $B%b!<%I$N$_$GM-8z$J5!G=$@$,!"(B
+NOT-ABBREV-ONLY $B$r;XDj$9$k;v$G>o$KM-8z$H$J$k!#(B
 
 
-設定例
-\(add-to-list 'skk-search-prog-list
-         '\(skk-search-lisp-symbol\) t\)"
+$B@_DjNc(B
+\(add-to-list \\='skk-search-prog-list
+         \\='\(skk-search-lisp-symbol\) t\)"
   (when (and (or not-abbrev-only
                  skk-abbrev-mode))
     (skk-completion-search `((skk-comp-lisp-symbol ',predicate))
@@ -542,11 +543,11 @@ NOT-ABBREV-ONLY を指定する事で常に有効となる。
                            without-char-maybe)))
 
 (defun skk-comp-restrict-by-prefix (comp-prog)
-  "補完プログラムにより得られた候補を `skk-comp-prefix' で絞り込む。
-`skk-comp-prefix' に対応していない補完プログラムを手軽に対応させる際に使う。
+  "$BJd40%W%m%0%i%`$K$h$jF@$i$l$?8uJd$r(B `skk-comp-prefix' $B$G9J$j9~$`!#(B
+`skk-comp-prefix' $B$KBP1~$7$F$$$J$$Jd40%W%m%0%i%`$r<j7Z$KBP1~$5$;$k:]$K;H$&!#(B
 
-  (skk-comp-restrict-by-prefix '(your-completion-program))
-のようなものを `skk-completion-prog-list' の要素に指定する。"
+  (skk-comp-restrict-by-prefix \\='(your-completion-program))
+$B$N$h$&$J$b$N$r(B `skk-completion-prog-list' $B$NMWAG$K;XDj$9$k!#(B"
   (save-match-data
     (let ((regexp-key (concat "^"
                               (regexp-quote skk-comp-key)
@@ -563,13 +564,13 @@ NOT-ABBREV-ONLY を指定する事で常に有効となる。
 ;;;###autoload
 (defun skk-completion-search (comp-prog-list &optional search-prog-list
                                              without-midasi without-char-maybe)
-  "変換キーで補完を行い、得られた各見出しでさらに検索する。
-COMP-PROG-LIST は `skk-completion-prog-list' と同じ形式で、
-これに含まれる補完関数によって、まず変換キーから見出しのリストを得る。
-SEARCH-PROG-LIST は `skk-search-prog-list' と同じ形式で、
-補完関数によって得た見出しをこれに含まれる検索関数により変換候補を得る。
-デフォルトでは、補完によって得られた見出しと対応する候補はセットであるが、
-WITHOUT-MIDASI を指定すると見出しは省かれる。"
+  "$BJQ49%-!<$GJd40$r9T$$!"F@$i$l$?3F8+=P$7$G$5$i$K8!:w$9$k!#(B
+COMP-PROG-LIST $B$O(B `skk-completion-prog-list' $B$HF1$87A<0$G!"(B
+$B$3$l$K4^$^$l$kJd404X?t$K$h$C$F!"$^$:JQ49%-!<$+$i8+=P$7$N%j%9%H$rF@$k!#(B
+SEARCH-PROG-LIST $B$O(B `skk-search-prog-list' $B$HF1$87A<0$G!"(B
+$BJd404X?t$K$h$C$FF@$?8+=P$7$r$3$l$K4^$^$l$k8!:w4X?t$K$h$jJQ498uJd$rF@$k!#(B
+$B%G%U%)%k%H$G$O!"Jd40$K$h$C$FF@$i$l$?8+=P$7$HBP1~$9$k8uJd$O%;%C%H$G$"$k$,!"(B
+WITHOUT-MIDASI $B$r;XDj$9$k$H8+=P$7$O>J$+$l$k!#(B"
   (let (search-char)
     (when (or (setq search-char
                     (eq (aref skk-henkan-key (1- (length skk-henkan-key)))
@@ -586,10 +587,10 @@ WITHOUT-MIDASI を指定すると見出しは省かれる。"
           (setq tmp (skk-search-progs midasi
                                       (or search-prog-list
                                           skk-search-prog-list)))
-          (when tmp ; 補完対象と検索対象は独立なので存在しない事も
+          (when tmp ; $BJd40BP>]$H8!:wBP>]$OFHN)$J$N$GB8:_$7$J$$;v$b(B
             (unless without-midasi
               (setq words (nconc words (list midasi))))
-            ;; SKK 本体で skk-nunion してるのでここでは高速性重視
+            ;; SKK $BK\BN$G(B skk-nunion $B$7$F$k$N$G$3$3$G$O9bB.@-=E;k(B
             (setq words (nconc words tmp))))
         words))))
 
