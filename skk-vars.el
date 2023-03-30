@@ -5225,7 +5225,7 @@ then filename of the English version will be \"SKK.tut.E\".")
 (defvar skk-show-mode-functions '((inline . skk-show-mode-inline)
                                   (tooltip . skk-show-mode-tooltip)))
 (defcustom skk-show-mode-show nil
-  "*Non-nil $G$"$l$P!"$+$J%bー%I$d%"%9%-ー%bー%I$XGP$jLf$o$C$?$H$-$K%+ー%=%k86=|$K skk-*-mode-string $r1mJ>$9$k!#
+  "*Non-nil であれば、かなモードやアスキーモードへ切り替わったときにカーソル付近に skk-*-mode-string を表示する。
 
 表示スタイルは `skk-show-mode-style' で指定する。"
   :type 'boolean
