@@ -173,7 +173,7 @@
 (defconst skk-bayesian-command-sort "#sort\n")
 (defconst skk-bayesian-command-add "#add\n")
 (defconst skk-bayesian-command-save "#save\n")
-(defconst skk-bayesian-coding-system 'euc-jp)
+(defconst skk-bayesian-coding-system 'utf-8)
 (defconst skk-bayesian-corpus-buffer-name " *skk-corpus*")
 
 

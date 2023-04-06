@@ -3827,7 +3827,7 @@ If you want to restore the dictionary from your drive, try
 ;;;###autoload
 (defun skk-get-jisyo-buffer (file &optional nomsg)
   "FILE を開いて SKK 辞書バッファを作り、バッファを返す。
-辞書バッファには `skk-jisyo-code' が適用される (nil であれば euc) が、FILE に
+辞書バッファには `skk-jisyo-code' が適用される (nil であれば utf-8) が、FILE に
  (\"path/to/file\" . CODING-SYSTEM) のコンスセルも指定できる。
 オプショナル引数の NOMSG を指定するとファイル読み込みの際のメッセージを表示しな
 い。"
@@ -3838,7 +3838,7 @@ If you want to restore the dictionary from your drive, try
                                                ((string= file (skk-jisyo))
                                                 (skk-jisyo t))
                                                (t
-                                                skk-jisyo-code))))
+                                                'utf-8)))) ;; use utf-8 as default
            (file (or (car-safe file)
                      file))
            (enable-character-translation
@@ -3854,20 +3854,8 @@ If you want to restore the dictionary from your drive, try
         (with-current-buffer buf
           (buffer-disable-undo)
           (auto-save-mode -1)
-          ;; ワーキングバッファのモードラインはアップデートされない？
-          ;;(make-local-variable 'line-number-mode)
-          ;;(make-local-variable 'column-number-mode)
-          ;;(setq column-number-mode nil
-          ;;      line-number-mode nil)
           (setq buffer-read-only nil
                 case-fold-search nil
-                ;; buffer-file-name を nil にしておくと M-x compile など
-                ;; 内部で save-some-buffers をコールしているコマンドを
-                ;; 使ったときでもセーブするかどうかを尋ねてこなくなる。
-                ;; buffer-file-name file
-                ;; cache-long-line-scans nil
-                ;; dabbrev のサーチとなるバッファにならないように存在し
-                ;; ないモード名にしておく。実害のある副作用はないはず。
                 major-mode 'skk-jisyo-mode
                 mode-name "SKK dic")
           (unless nomsg
@@ -3889,6 +3877,7 @@ If you want to restore the dictionary from your drive, try
           (skk-setup-jisyo-buffer)
           (set-buffer-modified-p nil)))
       buf)))
+
 
 ;;;###autoload
 (defun skk-search ()

@@ -333,7 +333,7 @@
                          ;; NTEmacs で Widget 付きメニューアイテムの
                          ;; 日本語がうまく表示できない問題への対策
                          ;; (NTEmacs 22.1, 23.1)
-                         (encode-coding-string (cdr cons) 'shift_jis)
+                         (encode-coding-string (cdr cons) 'utf-8)
                        (cdr cons))))
        ((and (vectorp (car-safe list))
              (setq cons (assoc (aref (car list) 0) skk-emacs-menu-resource-ja)))
@@ -342,7 +342,7 @@
                                ;; NTEmacs で Widget 付きメニューアイテムの
                                ;; 日本語がうまく表示できない問題への対策
                                ;; (NTEmacs 22.1, 23.1)
-                               (encode-coding-string (cdr cons) 'shift_jis)
+                               (encode-coding-string (cdr cons) 'utf-8)
                              (cdr cons)))))
       (setq list (cdr list)))))
 

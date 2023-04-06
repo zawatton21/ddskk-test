@@ -3112,7 +3112,7 @@ Non-nil であれば、指定された CDB 形式辞書を Emacs から直接利
   :group 'skk-cdb
   :group 'skk-dictionary)
 
-(defcustom skk-cdb-coding-system 'euc-jp
+(defcustom skk-cdb-coding-system 'utf-8
   "*個人辞書の検索の後に検索する CDB 形式辞書のコーディング・システム。"
   :type 'coding-system
   :group 'skk-cdb
