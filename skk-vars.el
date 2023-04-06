@@ -26,7 +26,7 @@
 
 ;;; Code:
 
-(require 'wid-edit
+(require 'wid-edit)
 
 (eval-when-compile
   ;; shut down compiler warnings.
