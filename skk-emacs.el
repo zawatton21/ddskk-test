@@ -1,4 +1,4 @@
-;;; skk-emacs.el --- GNU Emacs support for SKK -*- coding: iso-2022-jp -*-
+;;; skk-emacs.el --- GNU Emacs support for SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2004 Masatake YAMATO <jet@gyve.org>
 ;; Copyright (C) 2004-2010 SKK Development Team
@@ -690,7 +690,7 @@ TEXT には `skk-tooltip-face' が適用される。"
       (while (< i len)
         (let ((ch (aref skk-henkan-key i))
               code)
-          (cond ((= ch ?ー)
+          (cond ((= ch ?\u30FC)
                  (aset vec i 0))
                 ((and (>= ch (car skkdic-jisx0208-hiragana-block))
                       (<= ch (cdr skkdic-jisx0208-hiragana-block))
