@@ -175,7 +175,7 @@ This version of SKK requires MULE features"))
   (princ (format "load-path=%s\n" load-path)))
 
 ;; constants.
-(defconst SKK-MK-texinfo-coding-system 'iso-2022-7bit)
+(defconst SKK-MK-texinfo-coding-system 'utf-8)
 
 ;; GENERIC VARIABLE.
 (defvar DOCDIR "./doc")

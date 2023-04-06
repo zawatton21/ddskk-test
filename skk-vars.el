@@ -1,4 +1,4 @@
-;;; skk-vars.el --- common vars and consts in SKK -*- coding: iso-2022-7bit-ss2 -*-
+;;; skk-vars.el --- common vars and consts in SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999-2010 SKK Development Team
 
@@ -26,7 +26,7 @@
 
 ;;; Code:
 
-(require 'wid-edit)
+(require 'wid-edit
 
 (eval-when-compile
   ;; shut down compiler warnings.

@@ -1,4 +1,4 @@
-;;; skk-mkmgk.el --- Make Mazegaki dictionary from SKK-JISYO.* -*- coding: euc-jp -*-
+;;; skk-mkmgk.el --- Make Mazegaki dictionary from SKK-JISYO.* -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

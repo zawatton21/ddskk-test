@@ -1,4 +1,4 @@
-;;; skk-jisx0201.el --- JIS X 0201 ｶﾅ, Roman -*- coding: iso-2022-7bit -*-
+;;; skk-jisx0201.el --- JIS X 0201 ｶﾅ, Roman -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999-2007  SKK Development Team
 
