@@ -1,4 +1,4 @@
-;;; ddskk.el --- Daredevil SKK (Simple Kana to Kanji conversion program) -*- coding: iso-2022-jp -*-
+;;; ddskk.el --- Daredevil SKK (Simple Kana to Kanji conversion program) -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1988-1997 Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
 ;; Copyright (C) 1999-2020 SKK Development Team

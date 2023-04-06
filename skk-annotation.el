@@ -1,4 +1,4 @@
-;;; skk-annotation.el --- SKK annotation 関連プログラム -*- coding: iso-2022-jp -*-
+;;; skk-annotation.el --- SKK annotation 関連プログラム -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2000, 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Copyright (C) 2000-2010  SKK Development Team

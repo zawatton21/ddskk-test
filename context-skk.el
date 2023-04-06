@@ -1,4 +1,4 @@
-;;; context-skk.el --- turning off skk when the point enters where skk is unnecessary -*- coding: iso-2022-jp -*-
+;;; context-skk.el --- turning off skk when the point enters where skk is unnecessary -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2003, 2005 Masatake YAMATO
 

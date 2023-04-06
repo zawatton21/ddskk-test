@@ -1,4 +1,4 @@
-;;; skk-server-completion.el --- server completion のクライアント -*- coding: iso-2022-jp -*-
+;;; skk-server-completion.el --- server completion のクライアント -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2005 Fumihiko MACHIDA <machida@users.sourceforge.jp>
 

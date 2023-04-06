@@ -1,4 +1,4 @@
-;;; skk-macs.el --- Macros and inline functions commonly used in SKK -*- coding: iso-2022-jp -*-
+;;; skk-macs.el --- Macros and inline functions commonly used in SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999-2010 SKK Development Team
 ;; Copyright (C) 1993-2000 Free Software Foundation, Inc.

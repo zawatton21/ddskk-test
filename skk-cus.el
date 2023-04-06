@@ -1,4 +1,4 @@
-;;; skk-cus.el --- SKK の簡単かすたまいず試作品 -*- coding: iso-2022-jp -*-
+;;; skk-cus.el --- SKK の簡単かすたまいず試作品 -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2001 SKK Development Team
 

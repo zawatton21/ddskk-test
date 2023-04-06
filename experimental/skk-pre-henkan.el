@@ -1,4 +1,4 @@
-;;; skk-pre-henkan.el --- SKK 見出し語の代わりに候補を表示 -*- coding: iso-2022-jp -*-
+;;; skk-pre-henkan.el --- SKK 見出し語の代わりに候補を表示 -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2017 Tsuyoshi Kitamoto  <tsuyoshi.kitamoto@gmail.com>
 

@@ -1,4 +1,4 @@
-;;; skk-nicola.el --- SKK に親指シフト入力インタフェイスを提供 -*- coding: iso-2022-jp -*-
+;;; skk-nicola.el --- SKK に親指シフト入力インタフェイスを提供 -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000
 ;;   Itsushi Minoura <minoura@eva.hi-ho.ne.jp>

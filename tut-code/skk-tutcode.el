@@ -1,4 +1,4 @@
-;;; skk-tutcode.el --- assist TUT-code inputting in SKK environment -*- coding: iso-2022-jp -*-
+;;; skk-tutcode.el --- assist TUT-code inputting in SKK environment -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000, 2001 GUNJI Takao <gunji@sils.shoin.ac.jp>
 

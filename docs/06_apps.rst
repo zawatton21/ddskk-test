@@ -4570,7 +4570,7 @@ SPACE の 意）となります。
 
    -  ``euc``, ``ujis``, ``sjis``, ``jis`` の文字列。
       :el:defvar:`skk-coding-system-alist` に従って、順に 'euc-jisx0213, 'euc-jisx0213,
-      'shift_jisx0213, 'iso-2022-jp-3-strict の各シンボルへ変換されます。
+      'shift_jisx0213, 'utf-8-3-strict の各シンボルへ変換されます。
 
 辞書バッファの buffer-file-name
 ===============================

@@ -1,4 +1,4 @@
-;;; skk-abbrev.el --- SKK/Emacs abbrev mode interface -*- coding: iso-2022-jp -*-
+;;; skk-abbrev.el --- SKK/Emacs abbrev mode interface -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

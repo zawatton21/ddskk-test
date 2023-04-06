@@ -1,4 +1,4 @@
-;;; skk-jisx0213.el --- SKK 用 JISX0213 文字コード関連プログラム -*- coding: iso-2022-jp -*-
+;;; skk-jisx0213.el --- SKK 用 JISX0213 文字コード関連プログラム -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

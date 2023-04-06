@@ -1,4 +1,4 @@
-;;; skk-kanagaki-util.el --- SKK の仮名入力サポートのための道具箱 -*- coding: iso-2022-jp -*-
+;;; skk-kanagaki-util.el --- SKK の仮名入力サポートのための道具箱 -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2000, 2001, 2002, 2003, 2004
 ;;   Tetsuo Tsukamoto <czkmt@remus.dti.ne.jp>

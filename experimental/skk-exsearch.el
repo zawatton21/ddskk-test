@@ -1,4 +1,4 @@
-;;; skk-exsearch.el --- 外部検索プログラム共用 interface -*- coding: iso-2022-jp -*-
+;;; skk-exsearch.el --- 外部検索プログラム共用 interface -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

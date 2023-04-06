@@ -1,4 +1,4 @@
-;;; skk-dcomp.el --- SKK dynamic completion -*- coding: iso-2022-jp -*-
+;;; skk-dcomp.el --- SKK dynamic completion -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000, 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Copyright (C) 2008, 2009 IRIE Tetsuya <irie@t.email.ne.jp>

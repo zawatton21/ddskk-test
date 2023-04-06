@@ -7907,7 +7907,7 @@ abbreviation の展開を行うように設定することができるのです�
 @code{junet} などのシンボルで表され、@kbd{M-x describe-coding-system} や
 @kbd{M-x list-coding-systems} で調べることができます。}
 
-@item @samp{euc}, @samp{ujis}, @samp{sjis}, @samp{jis} の文字列。@code{skk-coding-system-alist} に従って、順に @code{euc-jisx0213}, @code{euc-jisx0213}, @code{shift_jisx0213}, @code{iso-2022-jp-3-strict} の各シンボルへ変換されます。
+@item @samp{euc}, @samp{ujis}, @samp{sjis}, @samp{jis} の文字列。@code{skk-coding-system-alist} に従って、順に @code{euc-jisx0213}, @code{euc-jisx0213}, @code{shift_jisx0213}, @code{utf-8-3-strict} の各シンボルへ変換されます。
 
 @end itemize
 

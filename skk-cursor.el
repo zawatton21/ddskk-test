@@ -1,4 +1,4 @@
-;;; skk-cursor.el --- SKK cursor control -*- coding: iso-2022-jp -*-
+;;; skk-cursor.el --- SKK cursor control -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1996, 1997, 1998, 1999, 2000
 ;;   Masatake YAMATO <masata-y@is.aist-nara.ac.jp>

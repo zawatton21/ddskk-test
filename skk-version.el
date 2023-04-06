@@ -1,4 +1,4 @@
-;;; skk-version.el --- version information for SKK -*- coding:iso-2022-jp -*-
+;;; skk-version.el --- version information for SKK -*- coding:utf-8 -*-
 
 ;; Copyright (C) 2000, 2001, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 

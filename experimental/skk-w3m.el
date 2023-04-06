@@ -412,7 +412,7 @@ w3m を backend で動かしていない)。")
              (t
               (format "%%%02X" ch))))   ; escape
           ;; Coerce a string to a list of chars.
-          (append (encode-coding-string str (or coding 'iso-2022-jp))
+          (append (encode-coding-string str (or coding 'utf-8))
                   nil))))
 
 ;; just a copy of w3m-search-escape-query-string of w3m-search.el

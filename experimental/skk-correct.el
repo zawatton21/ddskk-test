@@ -1,4 +1,4 @@
-;;; skk-correct.el --- correct key word for conversion. -*- coding: iso-2022-jp -*-
+;;; skk-correct.el --- correct key word for conversion. -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

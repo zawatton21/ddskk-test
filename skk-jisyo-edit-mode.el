@@ -1,4 +1,4 @@
-;;; skk-jisyo-edit-mode.el --- major mode for editing SKK dictionaries -*- coding: iso-2022-jp -*-
+;;; skk-jisyo-edit-mode.el --- major mode for editing SKK dictionaries -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2001-2010 SKK Development Team
 

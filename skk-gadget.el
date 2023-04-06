@@ -1,4 +1,4 @@
-;;; skk-gadget.el --- 実行変換のためのプログラム -*- coding: iso-2022-jp -*-
+;;; skk-gadget.el --- 実行変換のためのプログラム -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001
 ;;   Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>

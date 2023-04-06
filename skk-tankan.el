@@ -1,4 +1,4 @@
-;;; skk-tankan.el --- SKK 単漢字変換プログラム -*- coding: iso-2022-jp -*-
+;;; skk-tankan.el --- SKK 単漢字変換プログラム -*- coding: utf-8 -*-
 ;; Copyright (C) 2003 YAGI Tatsuya <ynyaaa@ybb.ne.jp>
 ;; Copyright (C) 2010 Tsuyoshi Kitamoto <tsuyoshi.kitamoto@gmail.com>
 

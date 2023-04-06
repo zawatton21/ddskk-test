@@ -1,4 +1,4 @@
-;;; skk-look.el --- UNIX look command interface for SKK -*- coding: iso-2022-jp -*-
+;;; skk-look.el --- UNIX look command interface for SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1998, 1999, 2000 NAKAJIMA Mikio <minakaji@namazu.org>
 

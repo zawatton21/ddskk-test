@@ -1,4 +1,4 @@
-;;; skk-decor.el --- decorate the candidate for SKK -*- mode: emacs-lisp; coding: iso-2022-jp -*-
+;;; skk-decor.el --- decorate the candidate for SKK -*- mode: emacs-lisp; coding: utf-8 -*-
 
 ;; Copyright (C) 2020 Tsuyoshi Kitamoto  <tsuyoshi.kitamoto@gmail.com>
 

@@ -1,4 +1,4 @@
-;;; SKK-MK --- installer for SKK  -*- mode: emacs-lisp; coding: iso-2022-jp -*-
+;;; SKK-MK --- installer for SKK  -*- mode: emacs-lisp; coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Copyright (C) 2003-2020  SKK Development Team
@@ -725,7 +725,7 @@ SKK dictionaries:
       (set-buffer buf)
       (erase-buffer)
       (insert "\
-;;; skk-autoloads.el --- autoload settings for SKK  -*- coding: iso-2022-jp -*-
+;;; skk-autoloads.el --- autoload settings for SKK  -*- coding: utf-8 -*-
 
 ;; This file was generated automatically by SKK-MK at "
 	      (current-time-string)
@@ -759,7 +759,7 @@ SKK dictionaries:
       (insert "(provide 'skk-autoloads)
 ;;; skk-autoloads.el ends here
 ")
-      (let ((coding-system-for-write 'iso-2022-jp))
+      (let ((coding-system-for-write 'utf-8))
 	(write-region (point-min) (point-max) "skk-autoloads.el" nil 'quiet))
       (set-buffer-modified-p nil)
       (kill-buffer buf))))

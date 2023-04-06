@@ -1,4 +1,4 @@
-;;; skk-kanagaki-menu.el --- NICOLA-DDSKK のメニューサポート -*- coding: iso-2022-jp -*-
+;;; skk-kanagaki-menu.el --- NICOLA-DDSKK のメニューサポート -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2000 Tetsuo Tsukamoto <czkmt@remus.dti.ne.jp>
 

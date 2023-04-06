@@ -1,4 +1,4 @@
-;;; skk-lookup.el --- SKK lookup gateway -*- coding: iso-2022-jp -*-
+;;; skk-lookup.el --- SKK lookup gateway -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000, 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

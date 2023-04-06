@@ -1,4 +1,4 @@
-;;; skk-search-web.el --- Google サジェストなどを利用したかな漢字変換 -*- coding: iso-2022-jp -*-
+;;; skk-search-web.el --- Google サジェストなどを利用したかな漢字変換 -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2010, 2011 HAMANO Kiyoto <khiker.mail@gmail.com>
 ;; Copyright (C) 2011 Tsuyoshi Kitamoto <tsuyoshi.kitamoto@gmail.com>

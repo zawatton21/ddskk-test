@@ -1,4 +1,4 @@
-;;; skk-bayesian.el -- Bayesian estimation for SKK -*- coding: iso-2022-jp -*-
+;;; skk-bayesian.el -- Bayesian estimation for SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2004 Kenichi Kurihara <kenichi_kurihara@nifty.com>
 

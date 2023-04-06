@@ -1,4 +1,4 @@
-;;; skk-def.el --- SKK default definition -*- coding: iso-2022-jp -*-
+;;; skk-def.el --- SKK default definition -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

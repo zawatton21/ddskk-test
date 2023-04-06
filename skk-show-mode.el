@@ -1,4 +1,4 @@
-;;; skk-show-mode.el --- モード切替時に tooltip/inline 表示する -*- coding: iso-2022-jp -*-
+;;; skk-show-mode.el --- モード切替時に tooltip/inline 表示する -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2011 Tsuyoshi Kitamoto  <tsuyoshi.kitamoto@gmail.com>
 

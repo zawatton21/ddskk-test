@@ -1,4 +1,4 @@
-;;; skk-study.el --- SKK 学習効果提供プログラム -*- coding: iso-2022-jp -*-
+;;; skk-study.el --- SKK 学習効果提供プログラム -*- coding: utf-8 -*-
 ;; Copyright (C) 1999, 2000, 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>

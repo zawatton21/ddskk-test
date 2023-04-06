@@ -1,4 +1,4 @@
-;;; skk-inline.el --- Inline candidate display support for SKK -*- coding: iso-2022-jp -*-
+;;; skk-inline.el --- Inline candidate display support for SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2005 Masatake YAMATO <jet@gyve.org>
 ;; Copyright (C) 2007 IRIE Tetsuya <irie@t.email.ne.jp>

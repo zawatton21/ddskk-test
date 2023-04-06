@@ -1,4 +1,4 @@
-;;; skk-isearch.el --- isearch mode for SKK -*- coding: iso-2022-jp -*-
+;;; skk-isearch.el --- isearch mode for SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999
 ;;   Enami Tsugutomo <enami@ba2.so-net.or.jp>

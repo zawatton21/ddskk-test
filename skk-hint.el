@@ -1,4 +1,4 @@
-;;; skk-hint.el --- SKK conversion with hints -*- coding: iso-2022-jp -*-
+;;; skk-hint.el --- SKK conversion with hints -*- coding: utf-8 -*-
 ;; Copyright (C) 2001, 2003 Yoshiki Hayashi <yoshiki@xemacs.org>
 
 ;; Author: Yoshiki Hayashi <yoshiki@xemacs.org>

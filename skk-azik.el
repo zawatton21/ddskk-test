@@ -1,4 +1,4 @@
-;;; skk-azik.el --- 拡張ローマ字入力 "AZIK" を SKK で使うための設定 -*- coding: iso-2022-jp -*-
+;;; skk-azik.el --- 拡張ローマ字入力 "AZIK" を SKK で使うための設定 -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2002 ONODA Arata <onoto@ma.nma.ne.jp>
 

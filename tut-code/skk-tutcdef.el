@@ -1,4 +1,4 @@
-;;; skk-tutcdef.el --- SKK TUT-code default definition -*- coding: iso-2022-jp -*-
+;;; skk-tutcdef.el --- SKK TUT-code default definition -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000 GUNJI Takao <gunji@sils.shoin.ac.jp>
 

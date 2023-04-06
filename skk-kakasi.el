@@ -1,4 +1,4 @@
-;;; skk-kakasi.el --- KAKASI 関連プログラム -*- coding: iso-2022-jp -*-
+;;; skk-kakasi.el --- KAKASI 関連プログラム -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1996, 1998, 1999, 2000, 2001
 ;;   NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>

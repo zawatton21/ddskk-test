@@ -1,4 +1,4 @@
-;;; skk-dinsert.el --- SKK dynamic insert -*- coding: iso-2022-jp -*-
+;;; skk-dinsert.el --- SKK dynamic insert -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2002 Eiji Obata <obata@suzuki.kuee.kyoto-u.ac.jp>
 

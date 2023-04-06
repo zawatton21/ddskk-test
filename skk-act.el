@@ -1,4 +1,4 @@
-;;; skk-act.el --- 拡張ローマ字入力 "ACT" を SKK で使うための設定 -*- coding: iso-2022-jp -*-
+;;; skk-act.el --- 拡張ローマ字入力 "ACT" を SKK で使うための設定 -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2003, 2007 IRIE Tetsuya <irie@t.email.ne.jp>
 

@@ -1,4 +1,4 @@
-;;; SKK-CFG --- Configure SKK installation -*- mode: emacs-lisp; coding: iso-2022-jp -*-
+;;; SKK-CFG --- Configure SKK installation -*- mode: emacs-lisp; coding: utf-8 -*-
 
 ;; Copyright (C) 1999 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Copyright (C) 2000, 2001, 2007  SKK Development Team

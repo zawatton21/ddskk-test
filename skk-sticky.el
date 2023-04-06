@@ -1,4 +1,4 @@
-;;; skk-sticky.el --- Improved sticky-shift on SKK -*- coding: iso-2022-jp -*-
+;;; skk-sticky.el --- Improved sticky-shift on SKK -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2008  IRIE Tetsuya
 

@@ -1,4 +1,4 @@
-;;; skk-106-jis.el --- 日本語 106 キーボードによる仮名入力サポート -*- coding: iso-2022-jp -*-
+;;; skk-106-jis.el --- 日本語 106 キーボードによる仮名入力サポート -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2000 Tetsuo Tsukamoto <czkmt@remus.dti.ne.jp>
 

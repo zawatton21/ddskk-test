@@ -1,4 +1,4 @@
-;;; skk-develop.el --- support SKK developper -*- coding: iso-2022-jp -*-
+;;; skk-develop.el --- support SKK developper -*- coding: utf-8 -*-
 
 ;; Copyright (C) 1999, 2000 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
