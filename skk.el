@@ -1550,15 +1550,15 @@ CHAR-LIST の残りと辿れなくなった節点の木の組を返す。"
 
 (defun skk-auto-kutouten (arg)
   (let ((output (cdr (assq last-command-event
-                           (list (list ?- "-" "\uFF0D" "\u30FC")
-                                 (list ?, "," "\uFF0C" (skk-current-touten nil))
-                                 (list ?. "." "\uFF0E" (skk-current-kuten nil))))))
+                           (list (list ?- "-" "－" "ー")
+                                 (list ?, "," "，" (skk-current-touten nil))
+                                 (list ?. "." "．" (skk-current-kuten nil))))))
         (chr (char-before (point))))
     (cond ((null chr)           ;point-min 対策
            (nth 2 output))
           ((and (<= ?0 chr) (>= ?9 chr) skk-use-auto-kutouten)
            (nth 0 output))
-          ((and (<= ?\uFF10 chr) (>= ?\uFF19 chr) skk-use-auto-kutouten)
+          ((and (<= ?０ chr) (>= ?９ chr) skk-use-auto-kutouten)
            (nth 1 output))
           (t
            (nth 2 output)))))
@@ -4838,18 +4838,18 @@ SKK 辞書の候補として正しい形に整形する。"
 
 ;;;###autoload
 (defun skk-hiragana-to-katakana (hiragana)
-  (let ((diff (- ?\u30A2 ?\u3042)))
+  (let ((diff (- ?ア ?あ)))
     (mapconcat (lambda (e)
-                 (if (and (<= ?\u3042 e) (>= ?\u3093 e))
+                 (if (and (<= ?ぁ e) (>= ?ん e))
                      (char-to-string (+ e diff))
                    (char-to-string e)))
                (string-to-int-list hiragana) "")))
 
 ;;;###autoload
 (defun skk-katakana-to-hiragana (katakana)
-  (let ((diff (- ?\u30A2 ?\u3042)))
+  (let ((diff (- ?ア ?あ)))
     (mapconcat (lambda (e)
-                 (if (and (<= ?\u30A2 e) (>= ?\u30F3 e))
+                 (if (and (<= ?ァ e) (>= ?ン e))
                      (char-to-string (- e diff))
                    (char-to-string e)))
                (string-to-int-list katakana) "")))

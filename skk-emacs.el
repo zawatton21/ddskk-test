@@ -690,7 +690,7 @@ TEXT には `skk-tooltip-face' が適用される。"
       (while (< i len)
         (let ((ch (aref skk-henkan-key i))
               code)
-          (cond ((= ch ?\u30FC)
+          (cond ((= ch ?ー)
                  (aset vec i 0))
                 ((and (>= ch (car skkdic-jisx0208-hiragana-block))
                       (<= ch (cdr skkdic-jisx0208-hiragana-block))
