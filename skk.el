@@ -3838,7 +3838,7 @@ If you want to restore the dictionary from your drive, try
                                                ((string= file (skk-jisyo))
                                                 (skk-jisyo t))
                                                (t
-                                                'utf-8)))) ;; use utf-8 as default
+                                                'skk-jisyo-code))))
            (file (or (car-safe file)
                      file))
            (enable-character-translation
@@ -3854,8 +3854,20 @@ If you want to restore the dictionary from your drive, try
         (with-current-buffer buf
           (buffer-disable-undo)
           (auto-save-mode -1)
+          ;; ワーキングバッファのモードラインはアップデートされない？
+          ;;(make-local-variable 'line-number-mode)
+          ;;(make-local-variable 'column-number-mode)
+          ;;(setq column-number-mode nil
+          ;;      line-number-mode nil)
           (setq buffer-read-only nil
                 case-fold-search nil
+                ;; buffer-file-name を nil にしておくと M-x compile など
+                ;; 内部で save-some-buffers をコールしているコマンドを
+                ;; 使ったときでもセーブするかどうかを尋ねてこなくなる。
+                ;; buffer-file-name file
+                ;; cache-long-line-scans nil
+                ;; dabbrev のサーチとなるバッファにならないように存在し
+                ;; ないモード名にしておく。実害のある副作用はないはず。
                 major-mode 'skk-jisyo-mode
                 mode-name "SKK dic")
           (unless nomsg
