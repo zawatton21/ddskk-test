@@ -445,21 +445,26 @@ TO の既存データは破壊される。"
   (and (> nth -1) (setcdr (nthcdr nth list) nil))
   list)
 
-(defadvice skk-kakutei-initialize (before skk-study-ad activate)
-  (let ((kakutei-word (ad-get-arg 0)))
+(defun skk-study-before-kakutei-initialize-advice (&rest args)
+  "Before advice for `skk-kakutei-initialize'.
+引数の先頭（kakutei-word）が非 nil の場合、skk-study-data-ring に
+(skK-henkan-key . kakutei-word) を挿入する。"
+  (let ((kakutei-word (car args)))
     (when kakutei-word
-      (ring-insert
-       skk-study-data-ring (cons skk-henkan-key kakutei-word)))))
+      (ring-insert skk-study-data-ring (cons skk-henkan-key kakutei-word)))))
+(advice-add 'skk-kakutei-initialize :before #'skk-study-before-kakutei-initialize-advice)
 
-(defadvice skk-undo-kakutei (after skk-study-ad activate)
+(defun skk-study-after-undo-kakutei-advice (&rest _args)
+  "After advice for `skk-undo-kakutei'.
+skk-study-data-ring の最新2件の要素を参照し、必要なら
+skk-study-get-current-alist の該当リストから削除処理を行う。"
   (let ((last (ring-ref skk-study-data-ring 0))
         (last2 (ring-ref skk-study-data-ring 1))
         target)
     (when (and last last2)
-      (setq target (assoc (car last)
-                          ;; skk-undo-kakutei is called in henkan buffer
-                          (skk-study-get-current-alist))
+      (setq target (assoc (car last) (skk-study-get-current-alist))
             target (delq (assoc last2 (cdr target)) target)))))
+(advice-add 'skk-undo-kakutei :after #'skk-study-after-undo-kakutei-advice)
 
 ;; time utilities...
 ;;  from ls-lisp.el.  Welcome!

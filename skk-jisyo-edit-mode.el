@@ -180,19 +180,26 @@ You must edit your private dictionary at your own risk.  Do you accept it? "))
   (skk-message "保存終了: C-c C-c, 編集中止: C-c C-k"
                "Save & Exit: C-c C-c, Abort: C-c C-k"))
 
-(defadvice skk-henkan-in-minibuff (before notify-no-effect disable)
+;; skk-henkan-in-minibuff に対する :before アドバイス
+(defun skk-henkan-in-minibuff-notify-no-effect (&rest _args)
+  "個人辞書編集中の場合、通知を行う。（skk-henkan-in-minibuff 用 before advice）"
   (ding)
   (skk-message "個人辞書の編集中です。登録は反映されません。"
                "You are editing private jisyo.  This registration has no effect.")
   (sit-for 1.5))
+(advice-add 'skk-henkan-in-minibuff :before #'skk-henkan-in-minibuff-notify-no-effect)
 
-(defadvice skk-purge-from-jisyo (around notify-no-effect disable)
+;; skk-purge-from-jisyo に対する :around アドバイス
+(defun skk-purge-from-jisyo-notify-no-effect (orig-fun &rest args)
+  "個人辞書編集中の場合は削除できない旨を通知する。（skk-purge-from-jisyo 用 around advice）"
   (if (eq skk-henkan-mode 'active)
       (progn
         (ding)
         (skk-message "個人辞書の編集中です。削除できません。"
                      "You are editing private jisyo.  Can't purge."))
-    ad-do-it))
+    (apply orig-fun args)))
+(advice-add 'skk-purge-from-jisyo :around #'skk-purge-from-jisyo-notify-no-effect)
+
 
 (provide 'skk-jisyo-edit)
 

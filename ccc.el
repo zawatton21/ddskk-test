@@ -270,34 +270,43 @@ This function is the same as `facemenu-color-equal'"
   (ccc-set-frame-background-color (selected-frame) (ccc-current-background-color)))
 
 ;; Advices.
-(defadvice modify-frame-parameters (after ccc-ad activate)
-  (when (and (assq 'cursor-color (ad-get-arg 1))
-             (null ccc-buffer-local-cursor-color))
-    (ccc-set-frame-cursor-color (ad-get-arg 0)
-                                (cdr (assq 'cursor-color (ad-get-arg 1)))))
-  (when (and (assq 'foreground-color (ad-get-arg 1))
-             (null ccc-buffer-local-foreground-color))
-    (ccc-set-frame-foreground-color (ad-get-arg 0)
-                                    (cdr (assq 'foreground-color (ad-get-arg 1)))))
-  (when (and (assq 'background-color (ad-get-arg 1))
-             (null ccc-buffer-local-background-color))
-    (ccc-set-frame-background-color (ad-get-arg 0)
-                                    (cdr (assq 'background-color
-                                               (ad-get-arg 1))))))
+(defun ccc-modify-frame-parameters-advice (&rest args)
+  "After advice for `modify-frame-parameters' to update frame colors."
+  (let ((frame (nth 0 args))
+        (params (nth 1 args)))
+    (when (and (assq 'cursor-color params)
+               (null ccc-buffer-local-cursor-color))
+      (ccc-set-frame-cursor-color frame
+                                  (cdr (assq 'cursor-color params))))
+    (when (and (assq 'foreground-color params)
+               (null ccc-buffer-local-foreground-color))
+      (ccc-set-frame-foreground-color frame
+                                      (cdr (assq 'foreground-color params))))
+    (when (and (assq 'background-color params)
+               (null ccc-buffer-local-background-color))
+      (ccc-set-frame-background-color frame
+                                      (cdr (assq 'background-color params))))))
+(advice-add 'modify-frame-parameters :after #'ccc-modify-frame-parameters-advice)
 
-(defadvice custom-theme-checkbox-toggle (after ccc-ad activate)
+(defun ccc-custom-theme-checkbox-toggle-advice (&rest args)
+  "After advice for `custom-theme-checkbox-toggle' to update default colors and frame colors."
   (setq ccc-default-cursor-color (ccc-current-cursor-color)
         ccc-default-foreground-color (ccc-current-foreground-color)
         ccc-default-background-color (ccc-current-background-color))
   (ccc-set-frame-cursor-color (selected-frame) (ccc-current-cursor-color))
   (ccc-set-frame-foreground-color (selected-frame) (ccc-current-foreground-color))
   (ccc-set-frame-background-color (selected-frame) (ccc-current-background-color)))
+(advice-add 'custom-theme-checkbox-toggle :after #'ccc-custom-theme-checkbox-toggle-advice)
 
-(defadvice enable-theme (after ccc-ad activate)
+(defun ccc-enable-theme-advice (&rest args)
+  "After advice for `enable-theme' to set up current colors."
   (ccc-setup-current-colors))
+(advice-add 'enable-theme :after #'ccc-enable-theme-advice)
 
-(defadvice disable-theme (after ccc-ad activate)
+(defun ccc-disable-theme-advice (&rest args)
+  "After advice for `disable-theme' to set up current colors."
   (ccc-setup-current-colors))
+(advice-add 'disable-theme :after #'ccc-disable-theme-advice)
 
 (provide 'ccc)
 

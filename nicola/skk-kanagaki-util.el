@@ -204,13 +204,16 @@
                           "゜"
                         "゛"))))))
 
-(defadvice isearch-repeat (around skk-kanagaki-workaround activate)
-  (cond ((get 'isearch-barrier 'skk-kanagaki)
-         (goto-char isearch-barrier)
-         ad-do-it
-         (put 'isearch-barrier 'skk-kanagaki nil))
-        (t
-         ad-do-it)))
+(defun skk-kanagaki-workaround-advice (orig-fun &rest args)
+  ;; もし 'isearch-barrier に対して 'skk-kanagaki プロパティが設定されていれば、
+  ;; その位置に移動してから isearch-repeat を実行し、プロパティをクリアする。
+  (if (get 'isearch-barrier 'skk-kanagaki)
+      (progn
+        (goto-char isearch-barrier)
+        (prog1 (apply orig-fun args)
+          (put 'isearch-barrier 'skk-kanagaki nil)))
+    (apply orig-fun args)))
+(advice-add 'isearch-repeat :around #'skk-kanagaki-workaround-advice)
 
 ;;;###autoload
 (defun skk-kanagaki-handakuten (&optional arg)

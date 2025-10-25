@@ -31,6 +31,7 @@
 (require 'advice)
 (require 'skk)
 
+
 ;;;; macros
 
 (defmacro skk-defadvice (function &rest everything-else)

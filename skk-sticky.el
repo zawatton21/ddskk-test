@@ -155,16 +155,17 @@
         (t
          (skk-sticky-set-okuri-mark))))
 
-(defadvice skk-kakutei (after skk-sticky-ad activate)
-  "`skk-sticky-okuri-flag' をクリアする。"
+;; --- skk-kakutei と keyboard-quit の後処理で skk-sticky-okuri-flag をクリアする ---
+(defun skk-sticky-clear-okuri-advice (&rest _args)
+  "After advice: `skk-sticky-okuri-flag' をクリアする。"
   (setq skk-sticky-okuri-flag nil))
+(advice-add 'skk-kakutei :after #'skk-sticky-clear-okuri-advice)
+(advice-add 'keyboard-quit :after #'skk-sticky-clear-okuri-advice)
 
-(defadvice keyboard-quit (after skk-sticky-ad activate)
-  "`skk-sticky-okuri-flag' をクリアする。"
-  (setq skk-sticky-okuri-flag nil))
-
-(defadvice skk-insert (before skk-sticky-ad activate)
-  "`*' の直後であれば入力を大文字に変換する。"
+;; --- skk-insert の前処理で '*' の直後なら入力を大文字に変換する ---
+(defun skk-sticky-uppercase-advice (&rest _args)
+  "Before advice: `skk-sticky-okuri-flag' が立っていて、'*' の直後なら
+入力されたキーを大文字に変換する。"
   (when (and skk-sticky-okuri-flag
              (skk-sticky-looking-back-okuri-mark)
              (string= "" skk-prefix))
@@ -172,12 +173,15 @@
       (set 'last-command-event (if pair
                                    (car pair)
                                  (upcase last-command-event))))))
+(advice-add 'skk-insert :before #'skk-sticky-uppercase-advice)
 
-(defadvice skk-set-henkan-point (before skk-sticky-ad activate)
-  "`point' 直前の `*' を消す。"
+;; --- skk-set-henkan-point の前処理で、point 直前の '*' を削除する ---
+(defun skk-sticky-set-henkan-point-advice (&rest _args)
+  "Before advice: `skk-sticky-okuri-flag' が立っていて、直前に '*' がある場合、その '*' を削除する。"
   (when (and skk-sticky-okuri-flag
              (skk-sticky-looking-back-okuri-mark))
     (delete-backward-char 1)))
+(advice-add 'skk-set-henkan-point :before #'skk-sticky-set-henkan-point-advice)
 
 ;; `skk-kana-input' は通常 `cancel-undo-boundary' を呼ぶが、
 ;; `skk-sticky-key' の2度打ちの際に本来あるべき boundary (C-k の後など)
@@ -207,23 +211,27 @@
          (memq char skk-sticky-key)
          (memq next skk-sticky-key))))
 
-(defadvice skk-insert (around skk-sticky-ad-double activate)
-  "同時打鍵を検出して処理する。"
+;; --- skk-insert の around アドバイス: 同時打鍵を検出して処理する ---
+(defun skk-sticky-double-advice (orig-fun &rest args)
+  "Around advice: 同時打鍵を検出して処理する。
+skk-sticky-key がリストなら、一定間隔内の入力を確認し、
+条件に応じて skk-sticky-set-henkan-point を呼び出すか、元の処理を行う。"
   (cond ((not (consp skk-sticky-key))
-         ad-do-it)
+         (apply orig-fun args))
         ((not (memq last-command-event skk-sticky-key))
-         ad-do-it)
+         (apply orig-fun args))
         ((sit-for skk-sticky-double-interval t)
-         ;; No input in the interval.
-         ad-do-it)
+         ;; 指定間隔内に入力がなければ、通常の処理を実行
+         (apply orig-fun args))
         (t
-         ;; Some key's pressed.
+         ;; 入力があった場合は、次のイベントを読み取り、条件に応じて処理を分岐
          (let ((next-event (read-event)))
            (if (skk-sticky-double-p this-command
                                     (aref (skk-event-key next-event) 0))
                (skk-sticky-set-henkan-point)
-             ad-do-it
+             (apply orig-fun args)
              (skk-unread-event next-event))))))
+(advice-add 'skk-insert :around #'skk-sticky-double-advice)
 
 (provide 'skk-sticky)
 

@@ -61,11 +61,12 @@
 
 (require 'skk)
 
-(defadvice skk-search (around skk-hint-ad activate)
-  ;; skk-current-search-prog-list の要素になっているプログラムを評価して、
-  ;; skk-henkan-key をキーにして検索を行う。
+(defun skk-hint-skk-search-advice (orig-fun &rest args)
+  "Around advice for `skk-search'.
+skk-current-search-prog-list の各プログラムを評価し、
+`skk-hint-henkan-hint' が非 nil の場合は、補完候補を検索する。"
   (if (null skk-hint-henkan-hint)
-      ad-do-it
+      (apply orig-fun args)
     (let (l kouho hint)
       (while (and (null l) skk-current-search-prog-list)
         (setq l (eval (car skk-current-search-prog-list)))
@@ -76,7 +77,8 @@
         (setq kouho (skk-nunion kouho l))
         (setq l (skk-hint-limit kouho hint))
         (setq skk-current-search-prog-list (cdr skk-current-search-prog-list)))
-      (setq ad-return-value l))))
+      l)))
+(advice-add 'skk-search :around #'skk-hint-skk-search-advice)
 
 (defun skk-hint-setup-hint ()
   (cond ((eq skk-hint-state 'kana)
@@ -107,84 +109,99 @@
                     "skk-hint-setup-hint")))
   (setq skk-hint-inhibit-kakutei nil))
 
-(defadvice skk-insert (around skk-hint-ad activate)
-  (cond ((and skk-henkan-mode
-              (eq last-command-event skk-hint-start-char)
-              (not skk-hint-state))
-         (skk-with-point-move
-          (when (featurep 'skk-dcomp)
-            (skk-dcomp-before-kakutei))
-          (setq skk-hint-inhibit-dcomp t)
-          (skk-set-marker skk-hint-start-point (point))
-          (setq skk-hint-state 'kana
-                skk-hint-inhibit-kakutei t)))
-        ((and (eq skk-hint-state 'kana)
-              (eq last-command-event skk-start-henkan-char))
-         (skk-with-point-move
-          (skk-hint-setup-hint)
-          (delete-region skk-hint-start-point (point))
-          (setq skk-hint-state 'henkan)
-          (setq skk-henkan-count -1)
-          (setq skk-henkan-list nil)
-          (skk-start-henkan arg)))
-        ((and (eq skk-hint-state 'kana)
-              (memq last-command-event skk-set-henkan-point-key))
-         (skk-with-point-move
-          (setq skk-hint-end-point (point))
-          (setq skk-hint-state 'okuri)
-          (set 'last-command-event (skk-downcase last-command-event))
-          (setq skk-hint-okuri-char (skk-char-to-unibyte-string
-                                     last-command-event))
-          (skk-kana-input arg)
-          (when (skk-jisx0208-p (char-before))
-            (skk-hint-setup-hint)
-            (delete-region skk-hint-start-point (point))
-            (setq skk-hint-state 'henkan)
-            (setq skk-henkan-count -1)
-            (setq skk-henkan-list nil)
-            (skk-start-henkan arg))))
-        ((eq skk-hint-state 'okuri)
-         (skk-with-point-move
-          (skk-kana-input arg)
-          (skk-hint-setup-hint)
-          (delete-region skk-hint-start-point (point))
-          (setq skk-hint-state 'henkan)
-          (setq skk-henkan-count -1)
-          (setq skk-henkan-list nil)
-          (skk-start-henkan arg)))
-        (t ad-do-it)))
+(defun skk-hint-insert-advice (orig-fun &rest args)
+  "Around advice for `skk-insert' で SKK ヒントの挿入処理を行う。"
+  (let ((arg (car args)))
+    (cond
+     ((and skk-henkan-mode
+           (eq last-command-event skk-hint-start-char)
+           (not skk-hint-state))
+      (skk-with-point-move
+       (when (featurep 'skk-dcomp)
+         (skk-dcomp-before-kakutei))
+       (setq skk-hint-inhibit-dcomp t)
+       (skk-set-marker skk-hint-start-point (point))
+       (setq skk-hint-state 'kana
+             skk-hint-inhibit-kakutei t)))
+     ((and (eq skk-hint-state 'kana)
+           (eq last-command-event skk-start-henkan-char))
+      (skk-with-point-move
+       (skk-hint-setup-hint)
+       (delete-region skk-hint-start-point (point))
+       (setq skk-hint-state 'henkan)
+       (setq skk-henkan-count -1)
+       (setq skk-henkan-list nil)
+       (skk-start-henkan arg)))
+     ((and (eq skk-hint-state 'kana)
+           (memq last-command-event skk-set-henkan-point-key))
+      (skk-with-point-move
+       (setq skk-hint-end-point (point))
+       (setq skk-hint-state 'okuri)
+       (set 'last-command-event (skk-downcase last-command-event))
+       (setq skk-hint-okuri-char (skk-char-to-unibyte-string last-command-event))
+       (skk-kana-input arg)
+       (when (skk-jisx0208-p (char-before))
+         (skk-hint-setup-hint)
+         (delete-region skk-hint-start-point (point))
+         (setq skk-hint-state 'henkan)
+         (setq skk-henkan-count -1)
+         (setq skk-henkan-list nil)
+         (skk-start-henkan arg))))
+     ((eq skk-hint-state 'okuri)
+      (skk-with-point-move
+       (skk-kana-input arg)
+       (skk-hint-setup-hint)
+       (delete-region skk-hint-start-point (point))
+       (setq skk-hint-state 'henkan)
+       (setq skk-henkan-count -1)
+       (setq skk-henkan-list nil)
+       (skk-start-henkan arg)))
+     (t
+      (apply orig-fun args)))))
+(advice-add 'skk-insert :around #'skk-hint-insert-advice)
 
-(defadvice keyboard-quit (before skk-hint-ad activate)
+(defun skk-hint-keyboard-quit-advice (&rest args)
+  "Before advice for `keyboard-quit' で skk-hint-inhibit-kakutei をリセットする。"
   (setq skk-hint-inhibit-kakutei nil))
+(advice-add 'keyboard-quit :before #'skk-hint-keyboard-quit-advice)
 
-(defadvice abort-recursive-edit (before skk-hint-ad activate)
+(defun skk-hint-abort-recursive-edit-advice (&rest args)
+  "Before advice for `abort-recursive-edit' で skk-hint-inhibit-kakutei をリセットする。"
   (setq skk-hint-inhibit-kakutei nil))
+(advice-add 'abort-recursive-edit :before #'skk-hint-abort-recursive-edit-advice)
 
-(defadvice skk-previous-candidate (before skk-hint-ad activate)
+(defun skk-hint-previous-candidate-advice (&rest args)
+  "Before advice for `skk-previous-candidate' で補完ヒント関連の変数をリセットする。"
   (when (and (eq skk-henkan-mode 'active)
-             (not (string= skk-henkan-key ""))
-             (zerop skk-henkan-count))
+             (not (string= skk-henkan-key "")))
     (setq skk-hint-henkan-hint nil
           skk-hint-state nil))
   (setq skk-hint-inhibit-kakutei nil))
+(advice-add 'skk-previous-candidate :before #'skk-hint-previous-candidate-advice)
 
-(defadvice skk-kakutei (around skk-hint-ad activate)
+(defun skk-hint-kakutei-advice (orig-fun &rest args)
+  "Around advice for `skk-kakutei' で skk-hint-inhibit-kakutei が真なら処理をスキップする。"
   (unless skk-hint-inhibit-kakutei
-    ad-do-it))
+    (apply orig-fun args)))
+(advice-add 'skk-kakutei :around #'skk-hint-kakutei-advice)
 
-(defadvice skk-kakutei-initialize (after skk-hint-ad activate)
+(defun skk-hint-kakutei-initialize-advice (&rest args)
+  "After advice for `skk-kakutei-initialize' で各種ヒント関連変数をリセットする。"
   (setq skk-hint-henkan-hint nil
         skk-hint-start-point nil
         skk-hint-state nil
         skk-hint-inhibit-dcomp nil
         skk-hint-inhibit-kakutei nil))
+(advice-add 'skk-kakutei-initialize :after #'skk-hint-kakutei-initialize-advice)
 
-(defadvice skk-delete-backward-char (before skk-hint-ad activate)
+(defun skk-hint-delete-backward-char-advice (&rest args)
+  "Before advice for `skk-delete-backward-char' でヒント関連の状態をリセットする。"
   (when (and (markerp skk-hint-start-point)
              (or (eq (1+ skk-hint-start-point) (point))
                  (eq skk-hint-start-point (point))))
     (setq skk-hint-state nil
           skk-hint-inhibit-kakutei nil)))
+(advice-add 'skk-delete-backward-char :before #'skk-hint-delete-backward-char-advice)
 
 (defun skk-hint-member (char kouho)
   ;; 文字列のリスト KOUHO の中に文字 CHAR を含むものがあれば、その文字列を返す

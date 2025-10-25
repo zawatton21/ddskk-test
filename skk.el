@@ -83,9 +83,16 @@
   (require 'skk-autoloads nil 'noerror)
 
   (provide 'skk)                        ; workaround for recursive require
+  (require 'skk-tankan)
+  (require 'skk-cdb)
   (require 'skk-vars)
   (require 'skk-macs)
   (require 'skk-emacs)
+  (require 'skk-cursor)
+  (require 'skk-version)
+  (require 'skk-cus)
+  (require 'ccc)
+  (require 'skk-comp)
 
   ;; Shut up, compiler.
   (autoload 'skk-kanagaki-initialize "skk-kanagaki") ; nicola/
@@ -457,7 +464,11 @@ dependent."
       ;; tab キーは <tab> の定義が無ければ TAB の定義が割り当てられる。
       ;; Org-mode などは <tab> を定義するので，SKK の方でも <tab> を定義
       ;; する必要がある。
-      (define-key skk-j-mode-map [(tab)] #'skk-comp-wrapper))
+      (define-key skk-j-mode-map [(tab)]
+        (lambda (&optional arg)
+          (interactive "p")
+          (skk-bind-last-command-char skk-try-completion-char
+            (call-interactively #'skk-insert)))))
 
     ;; comp と dcomp での前候補へ戻る動作を Shift TAB でも可能とする。
     (when skk-previous-completion-use-backtab
@@ -5220,16 +5231,15 @@ FACE は「前景色」又は「前景色 + スラッシュ + 背景色」の形
           (skk-erase-prefix 'clean)
         ad-do-it)))))
 
-(defadvice newline (around skk-ad activate)
-  "`skk-egg-like-newline' が non-nil であれば、確定のみ行い、改行しない。"
-  (if (not (or skk-j-mode
-               skk-jisx0201-mode
-               skk-abbrev-mode))
-      ad-do-it
+(defun skk-newline-advice (orig-fun &rest args)
+  "もし `skk-egg-like-newline' が non-nil かつ SKK 関連モードなら、
+変換確定 (skk-kakutei) だけを行い、改行は行わない。"
+  (if (not (or skk-j-mode skk-jisx0201-mode skk-abbrev-mode))
+      (apply orig-fun args)
     (let (;;(arg (ad-get-arg 0))
           ;; `skk-kakutei' を実行すると `skk-henkan-mode' の値が
           ;; 無条件に nil になるので、保存しておく必要がある。
-          (no-newline (and skk-egg-like-newline
+          (no-newline (and skk-egg-like-newline 
                            skk-henkan-mode))
           (auto-fill-function (if (called-interactively-p 'interactive)
                                   auto-fill-function
@@ -5248,16 +5258,15 @@ FACE は「前景色」又は「前景色 + スラッシュ + 背景色」の形
         (skk-kakutei))
       (undo-boundary)
       (unless no-newline
-        ad-do-it))))
+        (apply orig-fun args)))))
+(advice-add 'newline :around #'skk-newline-advice)
 
-(defadvice newline-and-indent (around skk-ad activate)
-  "`skk-egg-like-newline' が non-nil であれば、確定のみ行い、改行しない。"
-  (if (not (or skk-j-mode
-               skk-jisx0201-mode
-               skk-abbrev-mode))
-      ad-do-it
-    (let ((no-newline (and skk-egg-like-newline
-                           skk-henkan-mode))
+(defun skk-newline-and-indent-advice (orig-fun &rest args)
+  "もし `skk-egg-like-newline' が non-nil かつ SKK 関連モードなら、
+変換確定 (skk-kakutei) だけを行い、改行は行わない。"
+  (if (not (or skk-j-mode skk-jisx0201-mode skk-abbrev-mode))
+      (apply orig-fun args)
+    (let ((no-newline (and skk-egg-like-newline skk-henkan-mode))
           (auto-fill-function (if (called-interactively-p 'interactive)
                                   auto-fill-function
                                 nil)))
@@ -5265,7 +5274,8 @@ FACE は「前景色」又は「前景色 + スラッシュ + 背景色」の形
         (skk-kakutei))
       (undo-boundary)
       (unless no-newline
-        ad-do-it))))
+        (apply orig-fun args)))))
+(advice-add 'newline-and-indent :around #'skk-newline-and-indent-advice)
 
 (skk-defadvice exit-minibuffer (around skk-ad activate)
   ;; subr command but no arg.
@@ -5283,47 +5293,48 @@ FACE は「前景色」又は「前景色 + スラッシュ + 背景色」の形
       (unless no-newline
         ad-do-it))))
 
-(defadvice picture-mode-exit (before skk-ad activate)
-  "SKK のバッファローカル変数を無効にし、`picture-mode-exit' をコールする。
-`picture-mode' から出たときにそのバッファで SKK を正常に動かすための処理。"
+(defun skk-picture-mode-exit-advice (&rest _args)
+  "picture-mode 終了前に、SKK のバッファローカル変数を解除する。"
   (when skk-mode
     (skk-kill-local-variables)))
+(advice-add 'picture-mode-exit :before #'skk-picture-mode-exit-advice)
 
-(defadvice undo (before skk-ad activate)
-  "SKK モードが on なら `skk-self-insert-non-undo-count' を初期化する。"
+(defun skk-undo-advice (&rest _args)
+  "undo 前に、SKK モードが有効なら `skk-self-insert-non-undo-count' を初期化する。"
   (when skk-mode
     (setq skk-self-insert-non-undo-count 0)))
+(advice-add 'undo :before #'skk-undo-advice)
 
-(defadvice next-line (before skk-ad activate)
+(defun skk-next-line-advice (&rest _args)
+  "next-line 前に、`skk-henkan-mode' が active なら変換確定 (skk-kakutei) を行う。"
   (when (eq skk-henkan-mode 'active)
     (skk-kakutei)))
+(advice-add 'next-line :before #'skk-next-line-advice)
 
-(defadvice previous-line (before skk-ad activate)
+(defun skk-previous-line-advice (&rest _args)
+  "previous-line 前に、`skk-henkan-mode' が active なら変換確定 (skk-kakutei) を行う。"
   (when (eq skk-henkan-mode 'active)
     (skk-kakutei)))
+(advice-add 'previous-line :before #'skk-previous-line-advice)
 
-(defadvice backward-kill-sentence (before skk-ad activate)
-  ;; C-x DEL
-  ;; どのような動作をするべきか未決定
+(defun skk-backward-kill-sentence-advice (&rest _args)
+  "backward-kill-sentence (C-x DEL) 前に、SKK モードが有効なら変換確定 (skk-kakutei) を行う。"
   (when skk-mode
     (skk-kakutei)))
+(advice-add 'backward-kill-sentence :before #'skk-backward-kill-sentence-advice)
 
 (defmacro skk-wrap-newline-command (cmd)
-  "[return]キーに割り当てられているであろうコマンド (CMD) をラップして、
-skk の動作と整合させる。
- [return]キーにコマンドを割り当てているメジャーモードで skk を使うと、skk が
-`skk-kakutei' を呼び出す機会がないために変換を確定できず `▼' がバッファに
-残ってしまうという問題がある。
-
-本マクロを用いると、変換を確定してから (`skk-kakutei' を実行してから) CMD 本
-体を実行するように CMD をラップする。"
-  `(defadvice ,cmd (around skk-ad activate compile)
-     (cond (skk-henkan-mode
-            (skk-kakutei)
-            (unless skk-egg-like-newline
-              ad-do-it))
-           (t
-            ad-do-it))))
+  "CMD をラップして、SKK の動作と整合させる。
+もし henkan-mode 中なら `skk-kakutei' を呼び出し、
+`skk-egg-like-newline' が nil であれば CMD 本体を実行する。"
+  `(advice-add ',cmd :around
+     (lambda (orig-fun &rest args)
+       (if skk-henkan-mode
+           (progn
+             (skk-kakutei)
+             (unless skk-egg-like-newline
+               (apply orig-fun args)))
+         (apply orig-fun args)))))
 
 (skk-wrap-newline-command comint-send-input)
 (skk-wrap-newline-command ielm-return)

@@ -27,8 +27,9 @@
 
 ;;; Code:
 
-(unless (skk-color-cursor-display-p)
-  (error "%s" "SKK-CURSOR requires color display"))
+
+;; (unless (skk-color-cursor-display-p)
+;;  (error "%s" "SKK-CURSOR requires color display"))
 
 (require 'skk-macs)
 (require 'skk-vars)

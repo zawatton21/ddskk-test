@@ -66,21 +66,24 @@
     (when var
       (list var))))
 
-(defadvice skk-completion-original (around skk-abbrev-ad activate)
-  (let ((first (ad-get-arg 0))
-        c-word)
+(defun skk-abbrev-ad (orig-fun &rest args)
+  "Around advice for `skk-completion-original' to handle abbreviation completions.
+It wraps the original function call and, in case of an error,
+attempts to complete using skk-look-completion."
+  (let ((first (car args))
+        c-word
+        ;; スコープ内で skk-use-look は初期値 nil となる（let で宣言）
+        skk-use-look)
     (condition-case nil
-        ;; not to search by look in ad-do-it.
-        (let (skk-use-look)
-          ad-do-it)
-      ;; no word to be completed.
+        ;; skk-use-look を一時的に nil として、元の関数を実行する
+        (apply orig-fun args)
       (error
        (when skk-abbrev-mode
-         (setq c-word (and (abbrev-expansion skk-completion-word)))
+         (setq c-word (abbrev-expansion skk-completion-word))
          (when (and skk-use-look
                     (or (not c-word)
                         (member c-word skk-completion-stack)))
-           ;; more searching by look when abbreviating is not enough.
+           ;; 略語展開だけでは不十分な場合は、skk-look-completion でさらに補完を試みる
            (while (or (not c-word)
                       (member c-word skk-completion-stack))
              (setq c-word (skk-look-completion)))))
@@ -95,6 +98,8 @@
        (setq skk-completion-stack (cons c-word skk-completion-stack))
        (delete-region skk-henkan-start-point (point))
        (insert c-word)))))
+
+(advice-add 'skk-completion-original :around #'skk-abbrev-ad)
 
 (provide 'skk-abbrev)
 

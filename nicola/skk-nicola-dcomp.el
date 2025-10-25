@@ -35,12 +35,14 @@
                          (featurep 'skk-nicola))
                 (require 'skk-nicola-dcomp))))
 
-(defadvice skk-nicola-self-insert-lshift-1 (around skk-nicola-dcomp activate)
+(defun skk-nicola-self-insert-lshift-1-dcomp-advice (orig-fun &rest args)
+  "SKK-dcomp 用 workaround。
+条件に応じて、元の関数呼び出しの前後で補助処理を行う。"
   (cond
    ((or (not skk-dcomp-activate)
         skk-hint-inhibit-dcomp
         (eq skk-henkan-mode 'active))
-    ad-do-it)
+    (apply orig-fun args))
    (t
     (let (pos)
       (cond
@@ -52,13 +54,11 @@
        ((skk-dcomp-marked-p)
         (skk-dcomp-face-off)
         (unless (member (this-command-keys) skk-dcomp-keep-completion-keys)
-          ;;
           (if (eq this-command 'skk-nicola-self-insert-rshift)
               (setq pos (point))
             (ignore-errors
               (delete-region skk-dcomp-start-point skk-dcomp-end-point))))))
-      ad-do-it
-      ;;
+      (apply orig-fun args)
       (when (and (eq this-command 'skk-nicola-self-insert-rshift)
                  (eq skk-henkan-mode 'on))
         (when (and (markerp skk-dcomp-start-point)
@@ -70,8 +70,9 @@
                    (marker-position skk-dcomp-end-point)
                    (< (point) (marker-position skk-dcomp-end-point)))
           (delete-region skk-dcomp-end-point (point))))
-      ;;
       (skk-dcomp-do-completion (point))))))
+(advice-add 'skk-nicola-self-insert-lshift-1
+            :around #'skk-nicola-self-insert-lshift-1-dcomp-advice)
 
 (provide 'skk-nicola-dcomp)
 

@@ -396,42 +396,67 @@
   `(yes-or-no-p (if skktut-japanese-tut ,japanese ,english)))
 
 ;; advices.
-(defadvice skk-create-file (around skktut-ad disable))
+(defun skktut-ad-skk-create-file (orig-fun &rest args)
+  "SKK チュートリアル用アドバイス（skk-create-file 用、無効状態）。"
+  (apply orig-fun args))
+(advice-add 'skk-create-file :around #'skktut-ad-skk-create-file)
+(advice-disable 'skk-create-file #'skktut-ad-skk-create-file)
 
-(defadvice skk-save-jisyo-original (around skktut-ad disable))
+(defun skktut-ad-skk-save-jisyo-original (orig-fun &rest args)
+  "SKK チュートリアル用アドバイス（skk-save-jisyo-original 用、無効状態）。"
+  (apply orig-fun args))
+(advice-add 'skk-save-jisyo-original :around #'skktut-ad-skk-save-jisyo-original)
+(advice-disable 'skk-save-jisyo-original #'skktut-ad-skk-save-jisyo-original)
 
-(defadvice skk-abbrev-mode (before skktut-ad disable)
-  "SKK チュートリアル用アドバイス付。"
+(defun skktut-ad-skk-abbrev-mode (orig-fun &rest args)
+  "SKK チュートリアル用アドバイス（skk-abbrev-mode 用、無効状態）。
+skktut-question-count が 12 未満ならエラーを発生させる。"
   (when (> 12 skktut-question-count)
-    (skktut-error "このキーはまだ使えません"
-                  "Cannot use this key yet")))
+    (skktut-error "このキーはまだ使えません" "Cannot use this key yet"))
+  (apply orig-fun args))
+(advice-add 'skk-abbrev-mode :before #'skktut-ad-skk-abbrev-mode)
+(advice-disable 'skk-abbrev-mode #'skktut-ad-skk-abbrev-mode)
 
-(defadvice skk-insert (before skktut-ad disable)
-  "SKK チュートリアル用アドバイス付。"
+(defun skktut-ad-skk-insert (orig-fun &rest args)
+  "SKK チュートリアル用アドバイス（skk-insert 用、無効状態）。
+skk-set-henkan-point-key に含まれるキーで、かつ skktut-question-count が 12 未満ならエラーを発生させる。"
   (when (and (memq last-command-event skk-set-henkan-point-key)
              (> 12 skktut-question-count))
     (skktut-error "かな/カナモードでは、英大文字はまだ使えません"
-                  "Cannot use upper case character in kana/katakana mode")))
+                  "Cannot use upper case character in kana/katakana mode"))
+  (apply orig-fun args))
+(advice-add 'skk-insert :before #'skktut-ad-skk-insert)
+(advice-disable 'skk-insert #'skktut-ad-skk-insert)
 
-(defadvice skk-kakutei (before skktut-ad disable)
-  "SKK チュートリアル用アドバイス付。"
+(defun skktut-ad-skk-kakutei (orig-fun &rest args)
+  "SKK チュートリアル用アドバイス（skk-kakutei 用、無効状態）。
+対話的呼び出しで skktut-question-count が 1 ならエラーを発生させる。"
   (when (and (called-interactively-p 'interactive)
              (= skktut-question-count 1))
-    (skktut-error "このキーはまだ使えません"
-                  "Cannot use this key yet")))
+    (skktut-error "このキーはまだ使えません" "Cannot use this key yet"))
+  (apply orig-fun args))
+(advice-add 'skk-kakutei :before #'skktut-ad-skk-kakutei)
+(advice-disable 'skk-kakutei #'skktut-ad-skk-kakutei)
 
-(defadvice skk-mode (before skktut-ad disable)
-  "SKK チュートリアル用アドバイス付。"
+(defun skktut-ad-skk-mode (orig-fun &rest args)
+  "SKK チュートリアル用アドバイス（skk-mode 用、無効状態）。
+対話的呼び出しで skktut-question-count が 1 ならエラーを発生させる。"
   (when (and (called-interactively-p 'interactive)
              (= skktut-question-count 1))
-    (skktut-error "このキーはまだ使えません"
-                  "Cannot use this key yet")))
+    (skktut-error "このキーはまだ使えません" "Cannot use this key yet"))
+  (apply orig-fun args))
+(advice-add 'skk-mode :before #'skktut-ad-skk-mode)
+(advice-disable 'skk-mode #'skktut-ad-skk-mode)
 
-(defadvice skk-get-jisyo-buffer (around skktut-ad disable)
-  (cond ((string= (skk-jisyo) skktut-tut-jisyo)
-         (setq ad-return-value (get-buffer skktut-jisyo-buffer)))
-        (t
-         ad-do-it)))
+(defun skktut-ad-skk-get-jisyo-buffer (orig-fun &rest args)
+  "SKK チュートリアル用アドバイス（skk-get-jisyo-buffer 用、無効状態）。
+skk-jisyo が skktut-tut-jisyo なら専用バッファを返す。"
+  (if (string= (skk-jisyo) skktut-tut-jisyo)
+      (get-buffer skktut-jisyo-buffer)
+    (apply orig-fun args)))
+(advice-add 'skk-get-jisyo-buffer :around #'skktut-ad-skk-get-jisyo-buffer)
+(advice-disable 'skk-get-jisyo-buffer #'skktut-ad-skk-get-jisyo-buffer)
+
 
 ;; hooks
 (add-hook 'kill-buffer-hook

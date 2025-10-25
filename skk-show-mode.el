@@ -35,15 +35,20 @@
 
 (require 'skk-emacs)
 
-(defadvice skk-isearch-set-initial-mode (before skk-show-mode activate)
+;; skk-isearch-set-initial-mode に対する :before アドバイス
+(defun skk-show-mode-set-initial-mode-advice (&rest _args)
   (setq skk-show-mode-show nil))
+(advice-add 'skk-isearch-set-initial-mode :before #'skk-show-mode-set-initial-mode-advice)
 
-(defadvice skk-isearch-initialize-working-buffer (before skk-show-mode activate)
+;; skk-isearch-initialize-working-buffer に対する :before アドバイス
+(defun skk-show-mode-initialize-working-buffer-advice (&rest _args)
   (setq skk-show-mode-show nil))
+(advice-add 'skk-isearch-initialize-working-buffer :before #'skk-show-mode-initialize-working-buffer-advice)
 
-(defadvice skk-cursor-set (after skk-show-mode activate)
-  "かなモードやアスキーモードへ切り替わったときに skk-*-mode-string を
-tooltip / inline 表示する."
+;; skk-cursor-set に対する :after アドバイス
+(defun skk-show-mode-cursor-set-advice (&rest _args)
+  "かなモードやアスキーモードへ切り替わったときに
+skk-*-mode-string を tooltip / inline 表示する。"
   (when (and skk-show-mode-invoked
              skk-show-mode-show
              (not skk-isearch-switch))
@@ -51,6 +56,7 @@ tooltip / inline 表示する."
       (when func
         (funcall func))))
   (setq skk-show-mode-invoked t))
+(advice-add 'skk-cursor-set :after #'skk-show-mode-cursor-set-advice)
 
 (defun skk-show-mode-inline ()
   (let ((skk-henkan-start-point (point))

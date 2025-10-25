@@ -452,220 +452,274 @@
   ;; dcomp との順番制御のため、ここで呼ぶ
   (skk-henkan-on-message))
 
-;;; advices.
+;;; advices. 
 ;; main dynamic completion engine.
-(defadvice skk-kana-input (around skk-dcomp-ad activate)
+
+
+;;; skk-kana-input の around アドバイス
+(defun skk-dcomp-skk-kana-input-advice (orig-fun &rest args)
+  "SKK 補完用: skk-hint や dcomp 関連の状態に応じた処理を行う。
+条件に合わない場合は元の関数をそのまま呼び出し、
+それ以外の場合は各種補完の前処理・後処理を実行する。"
   (cond
    ((or skk-hint-inhibit-dcomp
-        (not (and (or skk-dcomp-activate
-                      skk-dcomp-multiple-activate)
+        (not (and (or skk-dcomp-activate skk-dcomp-multiple-activate)
                   skk-henkan-mode)))
-    ad-do-it)
+    (apply orig-fun args))
    (t
     (cond
-     ((or (eq skk-henkan-mode 'active) ; ▼モード
+     ((or (eq skk-henkan-mode 'active)
           (skk-get-prefix skk-current-rule-tree)
           (not skk-comp-stack))
       (skk-set-marker skk-dcomp-start-point nil)
       (skk-set-marker skk-dcomp-end-point nil))
-
-     ;; experimental/skk-pre-henkan.el
      ((and (featurep 'skk-pre-henkan)
            (eq last-command 'skk-comp-do))
       (skk-kakutei))
-
      ((skk-dcomp-marked-p)
       (skk-dcomp-face-off)
-      (unless (member (this-command-keys)
-                      skk-dcomp-keep-completion-keys)
+      (unless (member (this-command-keys) skk-dcomp-keep-completion-keys)
         (skk-dcomp-delete-completion))))
-    ad-do-it
+    (apply orig-fun args)
     (when (and skk-j-mode
                (or skk-use-kana-keyboard
-                   ;; 送りあり変換が始まったら補完しない
                    (not (memq last-command-event skk-set-henkan-point-key))))
       (if (skk-get-prefix skk-current-rule-tree)
           (when (and (skk-dcomp-multiple-activate-p)
                      (skk-dcomp-multiple-available-p))
             (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates)))
         (skk-dcomp-do-completion (point)))))))
+(advice-add 'skk-kana-input :around #'skk-dcomp-skk-kana-input-advice)
 
-(defadvice skk-set-henkan-point-subr (around skk-dcomp-ad activate)
+
+;;; skk-set-henkan-point-subr の around アドバイス
+(defun skk-dcomp-set-henkan-point-subr-advice (orig-fun &rest args)
+  "SKK 補完用: skk-set-henkan-point-subr 実行前後に補完処理を行う。"
   (cond
-   ((or skk-dcomp-activate
-        skk-dcomp-multiple-activate)
+   ((or skk-dcomp-activate skk-dcomp-multiple-activate)
     (let ((henkan-mode skk-henkan-mode))
-      ad-do-it
-      (unless (or henkan-mode
-                  (char-after (point)))
+      (apply orig-fun args)
+      (unless (or henkan-mode (char-after (point)))
         (skk-dcomp-do-completion (point)))))
    (t
-    ad-do-it)))
+    (apply orig-fun args))))
+(advice-add 'skk-set-henkan-point-subr :around #'skk-dcomp-set-henkan-point-subr-advice)
 
-(defadvice skk-abbrev-insert (around skk-dcomp-ad activate)
+
+;;; skk-abbrev-insert の around アドバイス
+(defun skk-dcomp-abbrev-insert-advice (orig-fun &rest args)
+  "SKK 補完用: skk-abbrev-insert 前後に dcomp 状態の処理を行う。"
   (cond
-   ((or skk-dcomp-activate
-        skk-dcomp-multiple-activate)
+   ((or skk-dcomp-activate skk-dcomp-multiple-activate)
     (when (skk-dcomp-marked-p)
       (skk-dcomp-face-off)
       (skk-dcomp-delete-completion))
-    ad-do-it
+    (apply orig-fun args)
     (when skk-use-look
       (setq skk-look-completion-words nil))
     (unless (memq last-command-event '(?*))
       (skk-dcomp-do-completion (point))))
    (t
-    ad-do-it)))
+    (apply orig-fun args))))
+(advice-add 'skk-abbrev-insert :around #'skk-dcomp-abbrev-insert-advice)
 
-(defadvice skk-abbrev-comma (around skk-dcomp-ad activate)
+
+;;; skk-abbrev-comma の around アドバイス
+(defun skk-dcomp-abbrev-comma-advice (orig-fun &rest args)
+  "SKK 補完用: skk-abbrev-comma 前後に dcomp 状態の処理を行う。"
   (cond
-   ((and (or skk-dcomp-activate
-             skk-dcomp-multiple-activate)
+   ((and (or skk-dcomp-activate skk-dcomp-multiple-activate)
          (not (eq last-command 'skk-comp-do)))
     (when (skk-dcomp-marked-p)
       (skk-dcomp-face-off)
       (skk-dcomp-delete-completion))
-    ad-do-it
+    (apply orig-fun args)
     (when skk-use-look
       (setq skk-look-completion-words nil))
     (unless (memq last-command-event '(?*))
       (skk-dcomp-do-completion (point))))
    (t
-    ad-do-it)))
+    (apply orig-fun args))))
+(advice-add 'skk-abbrev-comma :around #'skk-dcomp-abbrev-comma-advice)
 
-(defadvice skk-abbrev-period (around skk-dcomp-ad activate)
+
+;;; skk-abbrev-period の around アドバイス
+(defun skk-dcomp-abbrev-period-advice (orig-fun &rest args)
+  "SKK 補完用: skk-abbrev-period 前後に dcomp 状態の処理を行う。"
   (cond
-   ((and (or skk-dcomp-activate
-             skk-dcomp-multiple-activate)
+   ((and (or skk-dcomp-activate skk-dcomp-multiple-activate)
          (not (eq last-command 'skk-comp-do)))
     (when (skk-dcomp-marked-p)
       (skk-dcomp-face-off)
       (skk-dcomp-delete-completion))
-    ad-do-it
+    (apply orig-fun args)
     (when skk-use-look
       (setq skk-look-completion-words nil))
     (unless (memq last-command-event '(?*))
       (skk-dcomp-do-completion (point))))
    (t
-    ad-do-it)))
+    (apply orig-fun args))))
+(advice-add 'skk-abbrev-period :around #'skk-dcomp-abbrev-period-advice)
 
-(defadvice skk-comp-previous (after skk-dcomp-ad activate)
+
+;;; skk-comp-previous の after アドバイス
+(defun skk-dcomp-comp-previous-advice (&rest _args)
+  "SKK 補完用: skk-comp-previous 後に dcomp 状態の処理を行う。"
   (when (and (skk-dcomp-multiple-activate-p)
              (skk-dcomp-multiple-available-p)
-             (or skk-comp-circulate
-                 (< 0 skk-dcomp-multiple-select-index)))
+             (or skk-comp-circulate (< 0 skk-dcomp-multiple-select-index)))
     (skk-kana-cleanup 'force)
     (setq skk-dcomp-multiple-select-index
-          (cond ((and skk-comp-circulate
-                      (< skk-dcomp-multiple-select-index 0))
-                 (1- (length skk-comp-stack)))
-                (t (1- skk-dcomp-multiple-select-index))))
+          (if (and skk-comp-circulate (< skk-dcomp-multiple-select-index 0))
+              (1- (length skk-comp-stack))
+            (1- skk-dcomp-multiple-select-index)))
     (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates t))))
+(advice-add 'skk-comp-previous :after #'skk-dcomp-comp-previous-advice)
 
-(defadvice skk-kakutei (around skk-dcomp-ad activate)
+
+;;; skk-kakutei の around アドバイス
+(defun skk-dcomp-kakutei-advice (orig-fun &rest args)
+  "SKK 補完用: kakutei 実行前に dcomp 処理を開始し、
+実行後に後処理を行う。"
   (skk-dcomp-before-kakutei)
-  ad-do-it
-  (skk-dcomp-after-kakutei))
+  (let ((result (apply orig-fun args)))
+    (skk-dcomp-after-kakutei)
+    result))
+(advice-add 'skk-kakutei :around #'skk-dcomp-kakutei-advice)
 
-(defadvice keyboard-quit (around skk-dcomp-ad activate)
+
+;;; keyboard-quit の around アドバイス
+(defun skk-dcomp-keyboard-quit-advice (orig-fun &rest args)
+  "SKK 補完用: keyboard-quit 実行前に kakutei 前処理を行い、
+実行後に後処理を行う。"
   (skk-dcomp-before-kakutei)
-  ad-do-it
-  (skk-dcomp-after-delete-backward-char))
+  (let ((result (apply orig-fun args)))
+    (skk-dcomp-after-delete-backward-char)
+    result))
+(advice-add 'keyboard-quit :around #'skk-dcomp-keyboard-quit-advice)
 
-(defadvice abort-minibuffers (around skk-dcomp-ad activate)
+
+;;; abort-minibuffers の around アドバイス
+(defun skk-dcomp-abort-minibuffers-advice (orig-fun &rest args)
+  "SKK 補完用: abort-minibuffers 実行前に kakutei前処理を行い、
+実行後に削除後処理を行う。"
   (skk-dcomp-before-kakutei)
-  ad-do-it
-  (skk-dcomp-after-delete-backward-char))
+  (let ((result (apply orig-fun args)))
+    (skk-dcomp-after-delete-backward-char)
+    result))
+(advice-add 'abort-minibuffers :around #'skk-dcomp-abort-minibuffers-advice)
 
-;; (defadvice skk-henkan (before skk-dcomp-ad activate)
-(defadvice skk-start-henkan (before skk-dcomp-ad activate)
+
+;;; skk-start-henkan の before アドバイス
+(defun skk-dcomp-start-henkan-advice (&rest _args)
+  "SKK 補完用: henkan 開始前にバッファ内の補完関連状態をクリーンアップする。"
   (skk-dcomp-cleanup-buffer))
+(advice-add 'skk-start-henkan :before #'skk-dcomp-start-henkan-advice)
 
-(defadvice skk-process-prefix-or-suffix (before skk-dcomp-ad activate)
+
+;;; skk-process-prefix-or-suffix の before アドバイス
+(defun skk-dcomp-process-prefix-or-suffix-advice (&rest _args)
+  "SKK 補完用: prefix/suffix 処理前に、henkan モードの場合はバッファをクリーンアップする。"
   (when skk-henkan-mode
     (skk-dcomp-cleanup-buffer)))
+(advice-add 'skk-process-prefix-or-suffix :before #'skk-dcomp-process-prefix-or-suffix-advice)
 
-(defadvice skk-comp (around skk-dcomp-ad activate)
-  (cond ((and (or skk-dcomp-activate
-                  skk-dcomp-multiple-activate)
-              (skk-dcomp-marked-p))
-         (cond ((integerp (ad-get-arg 0))
-                (skk-dcomp-cleanup-buffer)
-                ad-do-it)
-               (t
-                (goto-char skk-dcomp-end-point)
-                (setq this-command 'skk-comp-do)
-                (skk-dcomp-face-off)
-                (skk-set-marker skk-dcomp-start-point nil)
-                (skk-set-marker skk-dcomp-end-point nil)
-                (when (and (skk-dcomp-multiple-activate-p)
-                           (skk-dcomp-multiple-available-p)
-                           (or skk-comp-circulate
-                               (< skk-dcomp-multiple-select-index
-                                  (1- (length skk-dcomp-multiple-candidates)))))
-                  (setq skk-dcomp-multiple-select-index
-                        (skk-dcomp-multiple-increase-index
-                         skk-dcomp-multiple-select-index t))
-                  (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates t))))))
-        (t
-         ad-do-it
-         (when (and (skk-dcomp-multiple-activate-p)
-                    (skk-dcomp-multiple-available-p))
-           (setq skk-dcomp-multiple-select-index
-                 (skk-dcomp-multiple-increase-index
-                  skk-dcomp-multiple-select-index))
-           (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates
-                                     ;; skk-comp の C-u TAB を考慮する
-                                     (not (and current-prefix-arg
-                                               (listp current-prefix-arg)))))))))
+
+;;; skk-comp の around アドバイス
+(defun skk-dcomp-comp-advice (orig-fun &rest args)
+  "SKK 補完用: skk-comp 実行時に、dcomp 状態に応じた処理を行う。
+条件に応じて、候補表示や選択インデックスの更新を行う。"
+  (cond
+   ((and (or skk-dcomp-activate skk-dcomp-multiple-activate)
+         (skk-dcomp-marked-p))
+    (if (integerp (nth 0 args))
+        (progn
+          (skk-dcomp-cleanup-buffer)
+          (apply orig-fun args))
+      (progn
+        (goto-char skk-dcomp-end-point)
+        (setq this-command 'skk-comp-do)
+        (skk-dcomp-face-off)
+        (skk-set-marker skk-dcomp-start-point nil)
+        (skk-set-marker skk-dcomp-end-point nil)
+        (when (and (skk-dcomp-multiple-activate-p)
+                   (skk-dcomp-multiple-available-p)
+                   (or skk-comp-circulate
+                       (< skk-dcomp-multiple-select-index
+                          (1- (length skk-dcomp-multiple-candidates)))))
+          (setq skk-dcomp-multiple-select-index
+                (skk-dcomp-multiple-increase-index skk-dcomp-multiple-select-index t))
+          (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates t))))))
+   (t
+    (apply orig-fun args)
+    (when (and (skk-dcomp-multiple-activate-p)
+               (skk-dcomp-multiple-available-p))
+      (setq skk-dcomp-multiple-select-index
+            (skk-dcomp-multiple-increase-index skk-dcomp-multiple-select-index))
+      (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates
+                                (not (and current-prefix-arg (listp current-prefix-arg)))))))))
+(advice-add 'skk-comp :around #'skk-dcomp-comp-advice)
 
-(defadvice skk-comp-do (before skk-dcomp-ad activate)
-  (when (and skk-comp-use-prefix
-             (not (string= "" skk-prefix))
-             (eq last-command-event skk-next-completion-char))
-    (ad-set-arg 0 t)))
+
+;;; skk-comp-do の引数補正 (before→filter-args) と after アドバイス
+(defun skk-dcomp-comp-do-filter-advice (args)
+  "SKK 補完用: skk-comp-do の第1引数を、条件に応じて t に変更する。"
+  (if (and skk-comp-use-prefix
+           (not (string= "" skk-prefix))
+           (eq last-command-event skk-next-completion-char))
+      (cons t (cdr args))
+    args))
+(advice-add 'skk-comp-do :filter-args #'skk-dcomp-comp-do-filter-advice)
 
-(defadvice skk-comp-do (after skk-dcomp-ad activate)
+(defun skk-dcomp-comp-do-after-advice (&rest _args)
+  "SKK 補完用: skk-comp-do 後に、複数候補補完の処理を行う。"
   (when (and (skk-dcomp-multiple-activate-p)
              (skk-dcomp-multiple-available-p)
-             ;;(not (ad-get-arg 0))
              (eq last-command-event skk-next-completion-char))
     (skk-kana-cleanup 'force)
     (setq skk-dcomp-multiple-select-index
           (skk-dcomp-multiple-increase-index skk-dcomp-multiple-select-index))
     (skk-dcomp-multiple-show (skk-dcomp-multiple-get-candidates t))))
+(advice-add 'skk-comp-do :after #'skk-dcomp-comp-do-after-advice)
 
-(defadvice skk-comp-start-henkan (around skk-dcomp-ad activate)
-  (cond ((and (eq skk-henkan-mode 'on)
-              (or skk-dcomp-activate
-                  skk-dcomp-multiple-activate)
-              (skk-dcomp-marked-p))
-         (goto-char skk-dcomp-end-point)
-         (setq this-command 'skk-comp-do)
-         (skk-dcomp-face-off)
-         (skk-set-marker skk-dcomp-start-point nil)
-         (skk-set-marker skk-dcomp-end-point nil)
-         (skk-start-henkan (ad-get-arg 0)))
-        (t
-         ad-do-it)))
+
+;;; skk-comp-start-henkan の around アドバイス
+(defun skk-dcomp-comp-start-henkan-advice (orig-fun &rest args)
+  "SKK 補完用: skk-comp-start-henkan 実行時に、補完状態がある場合は
+終了位置に移動してから henkan を開始する。"
+  (if (and (eq skk-henkan-mode 'on)
+           (or skk-dcomp-activate skk-dcomp-multiple-activate)
+           (skk-dcomp-marked-p))
+      (progn
+        (goto-char skk-dcomp-end-point)
+        (setq this-command 'skk-comp-do)
+        (skk-dcomp-face-off)
+        (skk-set-marker skk-dcomp-start-point nil)
+        (skk-set-marker skk-dcomp-end-point nil)
+        (apply #'skk-start-henkan args))
+    (apply orig-fun args)))
+(advice-add 'skk-comp-start-henkan :around #'skk-dcomp-comp-start-henkan-advice)
 
-(defadvice skk-delete-backward-char (after skk-dcomp-ad activate)
+
+;;; skk-delete-backward-char, skk-undo, viper-/vip- del-backward-char,
+;;; skk-previous-candidate の after/around アドバイス
+
+(defun skk-dcomp-after-delete-backward-char-advice (&rest _args)
+  "SKK 補完用: 後方削除後の処理を行う。"
   (skk-dcomp-after-delete-backward-char))
+(advice-add 'skk-delete-backward-char :after #'skk-dcomp-after-delete-backward-char-advice)
+(advice-add 'skk-undo :after #'skk-dcomp-after-delete-backward-char-advice)
+(advice-add 'viper-del-backward-char-in-insert :after #'skk-dcomp-after-delete-backward-char-advice)
+(advice-add 'vip-del-backward-char-in-insert :after #'skk-dcomp-after-delete-backward-char-advice)
 
-(defadvice skk-undo (after skk-dcomp-ad activate)
-  (skk-dcomp-after-delete-backward-char))
-
-(defadvice viper-del-backward-char-in-insert (after skk-dcomp-ad activate)
-  (skk-dcomp-after-delete-backward-char))
-
-(defadvice vip-del-backward-char-in-insert (after skk-dcomp-ad activate)
-  (skk-dcomp-after-delete-backward-char))
-
-(defadvice skk-previous-candidate (around skk-dcomp-ad activate)
+(defun skk-dcomp-previous-candidate-advice (orig-fun &rest args)
+  "SKK 補完用: skk-previous-candidate 実行後に、必要なら後方削除処理を行う。"
   (let ((active (eq skk-henkan-mode 'active)))
-    ad-do-it
+    (apply orig-fun args)
     (when active
       (skk-dcomp-after-delete-backward-char))))
+(advice-add 'skk-previous-candidate :around #'skk-dcomp-previous-candidate-advice)
+
 
 (provide 'skk-dcomp)
 

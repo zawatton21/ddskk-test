@@ -435,11 +435,8 @@ XFree86 上で使用する場合、 例えばこの値を [henkan]
 
 ;; Pieces of advice.
 
-(defadvice skk-setup-keymap (after skk-kanagaki-keys activate preactivate)
-  ;; キーバインド。ただしこれは、より適切なキー定義を見つけるまでの暫定的処置。
-  ;; ここで言う「より適切なキー定義」とは、入力方式に依存するため、SKK の重要
-  ;; なキー定義をファンクションキーに残しておくことは、実用のためよりもむしろ
-  ;; 参考のため。
+(defun skk-kanagaki-keys-setup-keymap-advice (&rest _args)
+  "SKK キーマップ設定後に、仮名入力用の暫定的なキー定義を追加する。"
   (dolist (cell '((skk-kanagaki-set-henkan-point-key
                    . skk-set-henkan-point-subr)
                   (skk-kanagaki-abbrev-mode-key
@@ -468,48 +465,41 @@ XFree86 上で使用する場合、 例えばこの値を [henkan]
                    (eq skk-j-mode-function-key-usage 'kanagaki)))
       (define-key skk-j-mode-map (symbol-value (car cell)) (cdr cell))))
   (define-key help-map skk-kanagaki-help-key 'skk-kanagaki-help))
+(advice-add 'skk-setup-keymap :after #'skk-kanagaki-keys-setup-keymap-advice)
 
-(defadvice skk-insert (around skk-kanagaki-workaround activate compile)
-  "仮名入力用の work around 。"
-  ;;
+(defun skk-kanagaki-workaround-skk-insert-advice (orig-fun &rest args)
+  "仮名入力時の workaround 用アドバイス。
+`skk-process-okuri-early' が副作用を持つ場合があるので、
+状態が 'kana のときはこれを nil にし、さらに
+`skk-set-henkan-point-key' を状況に応じて変更してから元の関数を呼ぶ。"
   (when (and skk-process-okuri-early
              (eq skk-kanagaki-state 'kana))
-    ;; `skk-process-okuri-early' が副作用を持つかも知れない。仮名入力ではそも
-    ;; そも意味のないオプションなので強制的に off にする。
     (setq skk-process-okuri-early nil))
-  ;;
   (let ((skk-set-henkan-point-key
-         (cond
-          ((and (eq skk-kanagaki-state 'kana)
-                (not skk-jisx0201-mode))
-           nil)
-          (t
-           skk-set-henkan-point-key))))
-    ad-do-it))
+         (if (and (eq skk-kanagaki-state 'kana)
+                  (not skk-jisx0201-mode))
+             nil
+           skk-set-henkan-point-key)))
+    (apply orig-fun args)))
+(advice-add 'skk-insert :around #'skk-kanagaki-workaround-skk-insert-advice)
 
-(defadvice skk-compute-henkan-lists-sub-adjust-okuri (around
-                                                      skk-kanagaki-adjust-okuri
-                                                      activate compile)
-  (cond
-   (skk-use-kana-keyboard
-    ;; 仮名入力用の特殊処理
-    (let ((item (ad-get-arg 0))
-          (okuri-key (ad-get-arg 1)))
-      (setq ad-return-value
-            (cond
-             ((or (and (eq skk-kanagaki-state 'kana)
-                       ;; okuri-key が "っ" で item が "って" などだった場合。
-                       (string-match (concat "^" (regexp-quote okuri-key))
-                                     item))
-                  (and (eq skk-kanagaki-state 'rom)
-                       ;; okuri-key が "って" で item が "っ" などだった場合。
-                       (string-match (concat "^" (regexp-quote item))
-                                     okuri-key)))
-              okuri-key)
-             (t
-              item)))))
-   (t
-    ad-do-it)))
+(defun skk-kanagaki-adjust-okuri-advice (orig-fun &rest args)
+  "仮名入力用の特殊な送り仮名調整処理を行う。
+`skk-use-kana-keyboard' が non-nil の場合、
+引数 ITEM と OKURI-KEY を比較し、状況に応じて OKURI-KEY または ITEM を返す。
+それ以外の場合は元の関数を実行する。"
+  (if skk-use-kana-keyboard
+      (let ((item (nth 0 args))
+            (okuri-key (nth 1 args)))
+        (if (or (and (eq skk-kanagaki-state 'kana)
+                     (string-match (concat "^" (regexp-quote okuri-key)) item))
+                (and (eq skk-kanagaki-state 'rom)
+                     (string-match (concat "^" (regexp-quote item)) okuri-key)))
+            okuri-key
+          item))
+    (apply orig-fun args)))
+(advice-add 'skk-compute-henkan-lists-sub-adjust-okuri
+            :around #'skk-kanagaki-adjust-okuri-advice)
 
 (provide 'skk-kanagaki)
 

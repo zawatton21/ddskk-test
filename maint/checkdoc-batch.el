@@ -269,69 +269,83 @@ Output a `checkdoc-batch' error about buffer position POS."
 
 ;;-----------------------------------------------------------------------------
 
-(defadvice checkdoc-autofix-ask-replace (around checkdoc-batch)
+;;;; checkdoc-autofix-ask-replace の around アドバイス
+(defun checkdoc-autofix-ask-replace-advice (orig-fun &rest args)
   "Temporary hack to capture message and say yes to change."
-  (checkdoc-batch-error start (concat question " " replacewith))
-  (delete-region start end)
-  (save-excursion
-    (goto-char start)
-    (insert replacewith)
-    (set-buffer-modified-p nil))
-  (setq ad-return-value t))
+  (let* ((start   (nth 0 args))
+         (end     (nth 1 args))
+         (question   (nth 2 args))
+         (replacewith (nth 3 args)))
+    (checkdoc-batch-error start (concat question " " replacewith))
+    (delete-region start end)
+    (save-excursion
+      (goto-char start)
+      (insert replacewith)
+      (set-buffer-modified-p nil))
+    t))
+(advice-add 'checkdoc-autofix-ask-replace :around #'checkdoc-autofix-ask-replace-advice)
 
-(defadvice checkdoc-y-or-n-p (around checkdoc-batch)
+;;;; checkdoc-y-or-n-p の around アドバイス
+(defun checkdoc-y-or-n-p-advice (orig-fun &rest args)
   "Temporary hack to capture message and say yes to change."
-  (checkdoc-batch-error (point)
-                        (ad-get-arg 0)) ;; QUESTION
-  (setq ad-return-value t))
+  (checkdoc-batch-error (point) (car args))  ;; QUESTION
+  t)
+(advice-add 'checkdoc-y-or-n-p :around #'checkdoc-y-or-n-p-advice)
 
-(defadvice checkdoc-recursive-edit (around checkdoc-batch)
+;;;; checkdoc-recursive-edit の around アドバイス
+(defun checkdoc-recursive-edit-advice (orig-fun &rest args)
   "Temporary hack to capture message and suppress edit."
-  (checkdoc-batch-error (point)
-                        (ad-get-arg 0)) ;; MSG
-  (setq ad-return-value t))
+  (checkdoc-batch-error (point) (car args))  ;; MSG
+  t)
+(advice-add 'checkdoc-recursive-edit :around #'checkdoc-recursive-edit-advice)
 
-(defadvice checkdoc-create-error (around checkdoc-batch)
+;;;; checkdoc-create-error の around アドバイス
+(defun checkdoc-create-error-advice (orig-fun &rest args)
   "Temporary hack to capture checkdoc error messages."
-  ;; START is nil for a whole-buffer thing like missing ";;; Commentary"
-  ;; section
-  (checkdoc-batch-error (or start (point-min))
-                        text)
-  (setq ad-return-value nil))
+  (let ((start (nth 0 args))
+        (text  (nth 1 args)))
+    (checkdoc-batch-error (or start (point-min)) text)
+    nil))
+(advice-add 'checkdoc-create-error :around #'checkdoc-create-error-advice)
 
-(defadvice message (around checkdoc-batch)
+;;;; message の around アドバイス
+(defun message-checkdoc-batch-advice (orig-fun &rest args)
   "Temporary hack to capture checkdoc messages."
-  (let ((format (ad-get-arg 0)))
-    (if (null format)
-        (setq ad-return-value nil)
-      (let ((str (apply 'format (ad-get-args 0))))
-        (setq ad-return-value str)
-        (unless (string-match "\\(\\`Searching for \\|Done\\|Starting new Ispell\\|Ispell process killed\\)" format)
-          (checkdoc-batch-message "%s\n" str))))))
+  (let ((fmt (car args)))
+    (if (null fmt)
+        nil
+      (let ((str (apply 'format args)))
+        (unless (string-match "\\(\\`Searching for \\|Done\\|Starting new Ispell\\|Ispell process killed\\)" fmt)
+          (checkdoc-batch-message "%s\n" str))
+        str))))
+(advice-add 'message :around #'message-checkdoc-batch-advice)
 
-(defadvice read-string (around checkdoc-batch)
+;;;; read-string の around アドバイス
+(defun read-string-checkdoc-batch-advice (orig-fun &rest args)
   "Temporary hack to just return an empty string."
-  (setq ad-return-value ""))
+  "")
+(advice-add 'read-string :around #'read-string-checkdoc-batch-advice)
 
-(defadvice completing-read (around checkdoc-batch)
+;;;; completing-read の around アドバイス
+(defun completing-read-checkdoc-batch-advice (orig-fun &rest args)
   "Temporary hack to just return first completion candidate."
-  (setq ad-return-value
-        (or (checkdoc-batch-completion-first-candidate
-             (ad-get-arg 1)) ;; COLLECTION or TABLE
-            "")))
+  (or (checkdoc-batch-completion-first-candidate (nth 1 args))  ;; COLLECTION or TABLE
+      ""))
+(advice-add 'completing-read :around #'completing-read-checkdoc-batch-advice)
 
-(defadvice ispell-command-loop (around checkdoc-batch)
+;;;; ispell-command-loop の around アドバイス
+(defun ispell-command-loop-checkdoc-batch-advice (orig-fun &rest args)
   "Temporary hack to capture spelling error reports."
   (let ((maybe (delq nil (list miss guess))))
     (setq maybe
           (if maybe
               (concat "\n  maybe "
-                      (mapconcat 'checkdoc-batch-prin1-strings-list maybe
-                                 " or "))
+                      (mapconcat 'checkdoc-batch-prin1-strings-list maybe " or "))
             ""))
     (checkdoc-batch-error (point)
                           (format "spelling %S%s" word maybe)))
-  nil) ;; keep word
+  nil) ;; 常に nil を返して word を維持する
+(advice-add 'ispell-command-loop :around #'ispell-command-loop-checkdoc-batch-advice)
 
 (defconst checkdoc-batch-advised-functions
   '(checkdoc-autofix-ask-replace

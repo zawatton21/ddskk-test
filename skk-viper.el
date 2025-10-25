@@ -42,10 +42,11 @@
   (defvar viper-insert-state-cursor-color))
 
 ;;; macros and inline functions.
-(defmacro skk-viper-advice-select (viper vip arg body)
+(defmacro skk-viper-advice-select (viper vip type &rest body)
+  "SKK Viper 関連のアドバイスを、skk-viper-use-vip-prefix の値に応じて設定する。"
   `(if skk-viper-use-vip-prefix
-       (defadvice ,vip ,arg ,@body)
-     (defadvice ,viper ,arg ,@body)))
+       (advice-add ,vip ,type (lambda (&rest args) ,@body))
+     (advice-add ,viper ,type (lambda (&rest args) ,@body))))
 
 (setq skk-kana-cleanup-command-list
       (cons
@@ -63,33 +64,31 @@
 ;; what should we do if older Viper that doesn't have
 ;; `viper-insert-state-cursor-color'?
 (when (boundp 'viper-insert-state-cursor-color)
-  (defadvice skk-cursor-current-color (around skk-viper-cursor-ad activate)
+  (define-advice skk-cursor-current-color (:around skk-viper-cursor-ad) (orig-fun &rest args)
     "vi-state 以外で且つ SKK モードのときのみ SKK 由来のカーソル色を返す。"
     (cond
      ((not skk-use-color-cursor)
-      ad-do-it)
+      (apply orig-fun args))
      ((or (and (boundp 'viper-current-state)
                (eq viper-current-state 'vi-state))
           (and (boundp 'vip-current-mode)
                (eq vip-current-mode 'vi-mode)))
-      (setq ad-return-value skk-cursor-default-color))
+      skk-cursor-default-color)
      ((not skk-mode)
       (setq viper-insert-state-cursor-color
             skk-viper-saved-cursor-color)
-      (setq ad-return-value
-            (cond
-             ((eq viper-current-state 'insert-state)
-              viper-insert-state-cursor-color)
-             ((eq viper-current-state 'replace-state)
-              viper-replace-overlay-cursor-color)
-             ((eq viper-current-state 'emacs-state)
-              viper-emacs-state-cursor-color))))
+      (cond
+       ((eq viper-current-state 'insert-state)
+        viper-insert-state-cursor-color)
+       ((eq viper-current-state 'replace-state)
+        viper-replace-overlay-cursor-color)
+       ((eq viper-current-state 'emacs-state)
+        viper-emacs-state-cursor-color)))
      (t
-      ad-do-it
-      (setq viper-insert-state-cursor-color ad-return-value))))
+      (setq viper-insert-state-cursor-color (apply orig-fun args))
+      viper-insert-state-cursor-color)))
 
   (let ((funcs
-         ;; cover to VIP/Viper functions.
          (if skk-viper-use-vip-prefix
              '(vip-Append
                vip-Insert
@@ -102,33 +101,28 @@
              viper-change-state-to-emacs
              viper-insert-state-post-command-sentinel))))
     (dolist (func funcs)
-      (eval
-       `(defadvice ,(intern (symbol-name func))
-            (after skk-viper-cursor-ad activate)
-          "Set cursor color which represents skk mode."
-          (when skk-use-color-cursor
-            (skk-cursor-set))))))
+      (define-advice func (:after (&rest _args))
+        "Set cursor color which represents skk mode."
+        (when skk-use-color-cursor
+          (skk-cursor-set)))))
 
   (let ((funcs '(skk-abbrev-mode
                  skk-jisx0208-latin-mode
                  skk-latin-mode
                  skk-toggle-characters)))
     (dolist (func funcs)
-      (eval
-       `(defadvice ,(intern (symbol-name func))
-            (after skk-viper-cursor-ad activate)
-          "\
-`viper-insert-state-cursor-color' を SKK の入力モードのカーソル色と合わせる。"
-          (when skk-use-color-cursor
-            (setq viper-insert-state-cursor-color
-                  (skk-cursor-current-color)))))))
+      (define-advice func (:after (&rest _args))
+        "`viper-insert-state-cursor-color' を SKK の入力モードのカーソル色と合わせる。"
+        (when skk-use-color-cursor
+          (setq viper-insert-state-cursor-color
+                (skk-cursor-current-color))))))
 
-  (defadvice skk-mode (after skk-viper-cursor-ad activate)
+  (define-advice skk-mode (:after (&rest _args))
     "Set cursor color which represents skk mode."
     (when skk-use-color-cursor
       (skk-cursor-set)))
 
-  (defadvice skk-kakutei (after skk-viper-cursor-ad activate)
+  (define-advice skk-kakutei (:after (&rest _args))
     (setq viper-insert-state-cursor-color skk-cursor-hiragana-color)))
 
 (when (boundp 'viper-insert-state-cursor-color)
@@ -144,12 +138,11 @@
 
 ;;; advices.
 ;; vip-4 の同種の関数名は vip-read-string-with-history？
-(defadvice viper-read-string-with-history (after skk-viper-ad activate)
+(define-advice viper-read-string-with-history (:after (&rest _args))
   "次回ミニバッファに入ったときに SKK モードにならないようにする。"
   (skk-remove-skk-pre-command)
   (skk-remove-minibuffer-setup-hook 'skk-j-mode-on
-                                    'skk-setup-minibuffer
-                                    'skk-add-skk-pre-command))
+                                    'skk-setup-minibuffer))
 
 (skk-viper-advice-select
  viper-forward-word-kernel vip-forward-word

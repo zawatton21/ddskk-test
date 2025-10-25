@@ -1027,99 +1027,105 @@ ARG を与えられた場合はその数だけ文字列を連結して入力す�
 
 ;; Pieces of Advice.
 
-(defadvice skk-kanagaki-initialize (after skk-nicols-setup activate)
-  ;; M-x skk-restart 対策として
+(defun skk-nicols-setup-advice (&rest _args)
+  "M-x skk-restart 対策として、skk-mode-hook に
+`skk-nicola-setup' と `skk-nicola-setup-modeline' を追加する。"
   (add-hook 'skk-mode-hook 'skk-nicola-setup)
   (add-hook 'skk-mode-hook 'skk-nicola-setup-modeline))
+(advice-add 'skk-kanagaki-initialize :after #'skk-nicols-setup-advice)
 
-(defadvice skk-insert (before skk-nicola-update-flag activate)
-  "送り待ち状態を管理する。"
+(defun skk-nicola-update-flag-before-insert (&rest _args)
+  "送り待ち状態管理用の before アドバイス。
+`skk-nicola-okuri-flag' がマーカーであり、現在位置がその位置以下または
+`skk-henkan-mode' が 'on でない場合、フラグをクリアする。"
   (when (or (and (markerp skk-nicola-okuri-flag)
-                 (<= (point)
-                     (marker-position
-                      skk-nicola-okuri-flag)))
+                  (<= (point) (marker-position skk-nicola-okuri-flag)))
             (not (eq skk-henkan-mode 'on)))
     (setq skk-nicola-okuri-flag nil)))
+(advice-add 'skk-insert :before #'skk-nicola-update-flag-before-insert)
 
-(defadvice skk-kakutei (before skk-nicola-update-flag activate)
-  "送り待ち状態を管理する。"
+
+(defun skk-nicola-update-flag-before-kakutei (&rest _args)
+  "送り待ち状態管理用の before アドバイス。
+SKK 確定時に、送り開始の標識があればその位置に移動して '*' を削除し、フラグをクリアする。"
   (when (and skk-j-mode
              (eq skk-henkan-mode 'on)
              (markerp skk-nicola-okuri-flag))
-    ;; 確定するときは送り開始の標識を消す。
     (skk-save-point
      (goto-char skk-nicola-okuri-flag)
      (when (eq ?* (following-char))
        (delete-char 1))))
-  ;;
   (setq skk-nicola-okuri-flag nil))
+(advice-add 'skk-kakutei :before #'skk-nicola-update-flag-before-kakutei)
 
-(defadvice skk-previous-candidate (before skk-nicola-update-flag activate)
-  "送り待ち状態を管理する。"
+
+(defun skk-nicola-update-flag-before-previous-candidate (&rest _args)
+  "送り待ち状態管理用の before アドバイス。
+現在位置が `skk-nicola-okuri-flag' 以下、または henkan-mode が 'on でなければフラグをクリアする。"
   (when (or (and (markerp skk-nicola-okuri-flag)
-                 (<= (point)
-                     (marker-position
-                      skk-nicola-okuri-flag)))
+                 (<= (point) (marker-position skk-nicola-okuri-flag)))
             (not (eq skk-henkan-mode 'on)))
     (setq skk-nicola-okuri-flag nil)))
+(advice-add 'skk-previous-candidate :before #'skk-nicola-update-flag-before-previous-candidate)
 
-(defadvice skk-insert (around skk-nicola-workaround activate)
-  ;;
-  (let* ((list (symbol-value
-                (intern (format "skk-%s-plain-rule-list"
-                                skk-kanagaki-keyboard-type))))
+(defun skk-nicola-workaround-skk-insert-advice (orig-fun &rest args)
+  "仮名入力時の workaround 用 around アドバイス。
+skk-kanagaki-state が 'kana で、SKK の j-mode かつ
+last-command-event が、リスト中の『、』または『。』に一致し、
+henkan-mode が有効なら、状況に応じて `skk-kakutei' を実行し、
+場合によっては henkan 開始位置の調整を行う。"
+  (let* ((list (symbol-value (intern (format "skk-%s-plain-rule-list"
+                                             skk-kanagaki-keyboard-type)))
+         )
          (cell1 (rassoc '("、") list))
          (cell2 (rassoc '("。") list))
          marker)
-    (cond
-     ((and (eq skk-kanagaki-state 'kana)
-           skk-j-mode
-           (or (eq last-command-event
-                   (car cell1))
-               (eq last-command-event
-                   (car cell2)))
-           skk-henkan-mode)
-      ;; なぜかこける。原因解明中。
-      (cond
-       ((not (eq skk-henkan-mode 'active))
-        (setq marker skk-henkan-start-point)
-        (skk-kakutei)
-        ad-do-it
-        (unless (or (string= (char-to-string (char-before))
-                             (cadr cell1))
-                    (string= (char-to-string (char-before))
-                             (cadr cell2)))
-          (skk-save-point
-           (goto-char marker)
-           (skk-set-henkan-point-subr))))
-       (t
-        (skk-kakutei)
-        ad-do-it)))
-     (t
-      ad-do-it))))
+    (if (and (eq skk-kanagaki-state 'kana)
+             skk-j-mode
+             (or (eq last-command-event (car cell1))
+                 (eq last-command-event (car cell2)))
+             skk-henkan-mode)
+        (cond
+         ((not (eq skk-henkan-mode 'active))
+          (setq marker skk-henkan-start-point)
+          (skk-kakutei)
+          (let ((result (apply orig-fun args)))
+            (unless (or (string= (char-to-string (char-before))
+                                 (cadr cell1))
+                        (string= (char-to-string (char-before))
+                                 (cadr cell2)))
+              (skk-save-point
+               (goto-char marker)
+               (skk-set-henkan-point-subr)))
+            result))
+         (t
+          (skk-kakutei)
+          (apply orig-fun args)))
+      (apply orig-fun args))))
+(advice-add 'skk-insert :around #'skk-nicola-workaround-skk-insert-advice)
 
-(defadvice skk-isearch-setup-keymap (before skk-nicola-workaround activate)
-  "親指キーでサーチが終了してしまわないようにする。"
+(defun skk-nicola-workaround-isearch-setup-keymap-advice (keymap &rest _args)
+  "親指キーでサーチが終了してしまわないよう、isearch 用キーマップに
+`skk-isearch-wrapper' をバインドする。"
   (let ((keys (append skk-nicola-lshift-keys
                       skk-nicola-rshift-keys)))
     (while keys
-      (define-key (ad-get-arg 0)
-        (car keys)
-        'skk-isearch-wrapper)
+      (define-key keymap (car keys) 'skk-isearch-wrapper)
       (setq keys (cdr keys)))))
+(advice-add 'skk-isearch-setup-keymap :before #'skk-nicola-workaround-isearch-setup-keymap-advice)
 
-(defadvice isearch-char-to-string (around skk-nicola-workaround activate)
-  "エラーが出ると検索が中断して使い辛いので、黙らせる。"
-  (cond ((and skk-use-kana-keyboard
-              (featurep 'skk-isearch)
-              (with-current-buffer
-                  (get-buffer-create
-                   skk-isearch-working-buffer)
-                skk-mode))
-         (ignore-errors
-           ad-do-it))
-        (t
-         ad-do-it)))
+(defun skk-nicola-workaround-isearch-char-to-string-advice (orig-fun &rest args)
+  "エラーが出ると検索が中断して使い辛いので、エラーを抑制する。
+skk-use-kana-keyboard が t かつ skk-isearch が有効で、対象バッファが SKK モードなら
+ignore-errors で元の関数を実行する。"
+  (if (and skk-use-kana-keyboard
+           (featurep 'skk-isearch)
+           (with-current-buffer (get-buffer-create skk-isearch-working-buffer)
+             skk-mode))
+      (ignore-errors (apply orig-fun args))
+    (apply orig-fun args)))
+(advice-add 'isearch-char-to-string :around #'skk-nicola-workaround-isearch-char-to-string-advice)
+
 
 (put 'skk-nicola-insert 'isearch-command t)
 (put 'skk-nicola-self-insert-lshift 'isearch-command t)

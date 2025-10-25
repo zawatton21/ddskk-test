@@ -203,127 +203,121 @@
   (skk-cursor-set))
 
 ;; Pieces of advice.
-(defadvice skk-mode (before skk-jisx0201-ad activate)
+(defun skk-jisx0201-skk-mode-advice (&rest _args)
   (setq skk-jisx0201-mode nil)
   (kill-local-variable 'skk-rule-tree))
+(advice-add 'skk-mode :before #'skk-jisx0201-skk-mode-advice)
 
-(defadvice skk-kakutei (around skk-jisx0201-ad activate)
+(defun skk-jisx0201-skk-kakutei-advice (orig-fun &rest args)
   (let ((jisx0201 skk-jisx0201-mode))
-    ad-do-it
+    (apply orig-fun args)
     (when jisx0201
       (skk-jisx0201-mode-on skk-jisx0201-roman))))
+(advice-add 'skk-kakutei :around #'skk-jisx0201-skk-kakutei-advice)
 
-(defadvice skk-latin-mode (before skk-jisx0201-ad activate)
+(defun skk-jisx0201-skk-latin-mode-advice (&rest _args)
   (setq skk-jisx0201-mode nil)
   (kill-local-variable 'skk-rule-tree))
+(advice-add 'skk-latin-mode :before #'skk-jisx0201-skk-latin-mode-advice)
 
-(defadvice skk-jisx0208-latin-mode (before skk-jisx0201-ad activate)
+(defun skk-jisx0201-skk-jisx0208-latin-mode-advice (&rest _args)
   (setq skk-jisx0201-mode nil)
   (kill-local-variable 'skk-rule-tree))
+(advice-add 'skk-jisx0208-latin-mode :before #'skk-jisx0201-skk-jisx0208-latin-mode-advice)
 
-(defadvice skk-abbrev-mode (before skk-jisx0201-ad activate)
+(defun skk-jisx0201-skk-abbrev-mode-advice (&rest _args)
   (setq skk-jisx0201-mode nil)
   (kill-local-variable 'skk-rule-tree))
+(advice-add 'skk-abbrev-mode :before #'skk-jisx0201-skk-abbrev-mode-advice)
 
-(defadvice skk-set-okurigana (around skk-jisx0201-ad activate)
+(defun skk-jisx0201-skk-set-okurigana-advice (orig-fun &rest args)
   "半角カナの送り仮名を正しく取得する。"
-  (cond
-   (skk-jisx0201-mode
-    (skk-save-point
-     (goto-char skk-okurigana-start-point)
-     (when (eq ?* (following-char))
-       (delete-char 1))
-     (skk-jisx0201-zenkaku-region skk-henkan-start-point
-                                  skk-okurigana-start-point))
-    ;;
-    (let ((pt1 (point))
-          pt2 okuri sokuon)
-      (setq okuri
-            (skk-save-point
-             (backward-char 1)
-             (buffer-substring-no-properties
-              (setq pt2 (point)) pt1)))
-      (cond
-       ((member okuri '("ﾞ" "ﾟ"))
-        (setq okuri
-              (concat (skk-save-point
-                       (backward-char 2)
-                       (buffer-substring-no-properties
-                        (point) pt2))
-                      okuri))
-        (setq sokuon t))
-       (okuri
-        (setq sokuon
-              (skk-save-point
-               (backward-char 2)
-               (buffer-substring-no-properties
-                (point) pt2)))
-        (unless (member sokuon '("ｯ"))
-          (setq sokuon nil))))
-      ;;
-      (when okuri
+  (if skk-jisx0201-mode
+      (progn
         (skk-save-point
-         (backward-char (if sokuon 2 1))
-         (skk-set-marker skk-okurigana-start-point (point)))
-        (setq skk-okuri-char (skk-okurigana-prefix
-                              (skk-katakana-to-hiragana
-                               (skk-jisx0201-zenkaku okuri))))
-        ;;
-        (let ((skk-katakana t))
-          ad-do-it))))
-   (t
-    ad-do-it)))
+         (goto-char skk-okurigana-start-point)
+         (when (eq ?* (following-char))
+           (delete-char 1))
+         (skk-jisx0201-zenkaku-region skk-henkan-start-point
+                                       skk-okurigana-start-point))
+        (let ((pt1 (point))
+              pt2 okuri sokuon)
+          (setq okuri
+                (skk-save-point
+                 (backward-char 1)
+                 (buffer-substring-no-properties
+                  (setq pt2 (point)) pt1)))
+          (cond
+           ((member okuri '("ﾞ" "ﾟ"))
+            (setq okuri
+                  (concat (skk-save-point
+                           (backward-char 2)
+                           (buffer-substring-no-properties (point) pt2))
+                          okuri))
+            (setq sokuon t))
+           (okuri
+            (setq sokuon
+                  (skk-save-point
+                   (backward-char 2)
+                   (buffer-substring-no-properties (point) pt2)))
+            (unless (member sokuon '("ｯ"))
+              (setq sokuon nil))))
+          (when okuri
+            (skk-save-point
+             (backward-char (if sokuon 2 1))
+             (skk-set-marker skk-okurigana-start-point (point)))
+            (setq skk-okuri-char
+                  (skk-okurigana-prefix
+                   (skk-katakana-to-hiragana
+                    (skk-jisx0201-zenkaku okuri))))
+            (let ((skk-katakana t))
+              (apply orig-fun args)))))
+    (apply orig-fun args)))
+(advice-add 'skk-set-okurigana :around #'skk-jisx0201-skk-set-okurigana-advice)
 
-(defadvice skk-insert (around skk-jisx0201-ad activate)
+(defun skk-jisx0201-skk-insert-advice (orig-fun &rest args)
   "SKK JIS X 0201 モードの文字入力を行う。"
-  (cond
-   (skk-jisx0201-mode
-    (let ((arg (ad-get-arg 0))
-          (ch last-command-event))
-      (cond
-       ((or (and (not skk-jisx0201-roman)
-                 (memq ch skk-set-henkan-point-key)
-                 (or skk-okurigana
-                     (not (skk-get-prefix skk-current-rule-tree))
-                     (not (skk-select-branch
-                           skk-current-rule-tree ch))))
-            (and skk-henkan-mode
-                 (memq ch skk-special-midashi-char-list)))
-        ad-do-it)
-       ;;
-       ((and skk-henkan-mode
-             (eq ch skk-start-henkan-char))
-        (skk-kana-cleanup 'force)
-        (unless (or skk-okurigana
-                    skk-okuri-char)
-          (let ((jisx0201 (buffer-substring-no-properties
-                           skk-henkan-start-point
-                           (point)))
-                jisx0208)
-            (when (and jisx0201
-                       (setq jisx0208
-                             (skk-jisx0201-zenkaku jisx0201)))
-              (insert-before-markers jisx0208)
-              (delete-region skk-henkan-start-point
-                             (- (point) (length jisx0208))))))
-        (let ((skk-katakana t))
-          (skk-start-henkan arg))
-        (skk-cursor-set))
-       ;;
-       (skk-jisx0201-roman
-        (let (skk-set-henkan-point-key)
-          ad-do-it))
-       ;;
-       (t
-        ad-do-it))))
-   ;;
-   (t
-    ad-do-it)))
+  (if skk-jisx0201-mode
+      (let* ((arg (car args))
+             (ch last-command-event))
+        (cond
+         ((or (and (not skk-jisx0201-roman)
+                   (memq ch skk-set-henkan-point-key)
+                   (or skk-okurigana
+                       (not (skk-get-prefix skk-current-rule-tree))
+                       (not (skk-select-branch skk-current-rule-tree ch))))
+               (and skk-henkan-mode
+                    (memq ch skk-special-midashi-char-list)))
+          (apply orig-fun args))
+         ((and skk-henkan-mode (eq ch skk-start-henkan-char))
+          (skk-kana-cleanup 'force)
+          (unless (or skk-okurigana skk-okuri-char)
+            (let ((jisx0201 (buffer-substring-no-properties
+                             skk-henkan-start-point (point)))
+                  jisx0208)
+              (when (and jisx0201
+                         (setq jisx0208 (skk-jisx0201-zenkaku jisx0201)))
+                (insert-before-markers jisx0208)
+                (delete-region skk-henkan-start-point
+                               (- (point) (length jisx0208))))))
+          (let ((skk-katakana t))
+            (skk-start-henkan arg))
+          (skk-cursor-set))
+         ((and skk-jisx0201-roman)
+          (let (skk-set-henkan-point-key)
+            (apply orig-fun args)))
+         (t
+          (apply orig-fun args))))
+    (apply orig-fun args)))
+(advice-add 'skk-insert :around #'skk-jisx0201-skk-insert-advice)
 
-(defadvice skk-search-sagyo-henkaku (before skk-jisx0201-set-okuri activate)
+(defun skk-jisx0201-skk-search-sagyo-henkaku-advice (orig-fun &rest args)
   "SKK JIS X 0201 モードでは送り仮名を半角カナにする。"
-  (when skk-jisx0201-mode
-    (ad-set-arg 0 '("ｻ" "ｼ" "ｽ" "ｾ"))))
+  (if skk-jisx0201-mode
+      (apply orig-fun (cons '("ｻ" "ｼ" "ｽ" "ｾ") (cdr args)))
+    (apply orig-fun args)))
+(advice-add 'skk-search-sagyo-henkaku :around
+            #'skk-jisx0201-skk-search-sagyo-henkaku-advice)
 
 ;; functions.
 ;;;###autoload
